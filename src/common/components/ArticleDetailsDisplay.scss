@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -13,7 +13,7 @@
         cssComponentId: article-details-display_ssv8xk
 */
 @import '../styles/colors';
-@import "../styles/breakpoints.scss";
+@import '../styles/breakpoints.scss';
 
 // image overrides
 $borderRadius: 3px;
@@ -42,15 +42,14 @@ $borderRadius: 3px;
 	}
 
 	.spacer::before {
-		content: "•";
+		content: '•';
 		font-style: normal;
 		color: var(--intent-neutral-color);
 	}
 }
 
 .article-details-display_ssv8xk.has-image > .article-container {
-	 > .image_1ctn9c {
-
+	> .image_1ctn9c {
 		width: 190px;
 		margin-right: 2rem;
 		overflow: hidden;
@@ -123,7 +122,7 @@ $borderRadius: 3px;
 		color: var(--text-muted-color);
 		font-size: 0.8rem;
 		> .icon_rour3d {
-			margin-right: 0.3em
+			margin-right: 0.3em;
 		}
 		margin-bottom: 0.15em;
 	}
@@ -162,7 +161,8 @@ $borderRadius: 3px;
 		display: flex;
 		justify-content: space-between;
 
-		> .stats, > .actions {
+		> .stats,
+		> .actions {
 			display: flex;
 			align-items: center;
 		}
@@ -187,7 +187,6 @@ $borderRadius: 3px;
 			}
 		}
 	}
-
 }
 
 .article-details-display_ssv8xk > .article-container {
@@ -213,20 +212,32 @@ $borderRadius: 3px;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .article-details-display_ssv8xk > .article-container > .content > .title > .bookmark > .percent-complete {
+	#{$root}
+		.article-details-display_ssv8xk
+		> .article-container
+		> .content
+		> .title
+		> .bookmark
+		> .percent-complete {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-text-color
+				'color': $intent-text-color,
 			)
 		);
 	}
 	// todo
-	#{$root} .article-details-display_ssv8xk > .article-container > .content > .title > .bookmark > .icon_rour3d {
+	#{$root}
+		.article-details-display_ssv8xk
+		> .article-container
+		> .content
+		> .title
+		> .bookmark
+		> .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $intent-neutral-color
+				'color': $intent-neutral-color,
 			)
 		);
 	}

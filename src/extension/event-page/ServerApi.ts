@@ -1,9 +1,7 @@
 import UserArticle from '../../common/models/UserArticle';
-import SetStore from '../../common/webStorage/SetStore';
-import ObjectStore from '../../common/webStorage/ObjectStore';
 import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
-import Request from './Request';
+import ReadupRequest from './Request';
 import { Cached, cache, isExpired } from './Cached';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
@@ -21,224 +19,276 @@ import CommentRevisionForm from '../../common/models/social/CommentRevisionForm'
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
-import DisplayPreference, { areEqual as areDisplayPreferencesEqual, getClientDefaultDisplayPreference } from '../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	areEqual as areDisplayPreferencesEqual,
+	getClientDefaultDisplayPreference,
+} from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
+import AsyncObjectStore from '../common/storage/AsyncObjectStore';
+import AsyncSetStore from '../common/storage/AsyncSetStore';
 
-function addCustomHeaders(req: XMLHttpRequest, params: Request) {
-	req.setRequestHeader('X-Readup-Client', `web/extension@${window.reallyreadit.extension.config.version.extension}`);
+function getCustomHeaders() {
+	return {
+		'X-Readup-Client': `web/extension@${window.reallyreadit.extension.config.version.extension}`,
+	};
 }
+
 /**
  * An API for the event page to communicate with Readup's resource API.
  */
 export default class ServerApi {
 	public static alarms = {
 		checkNotifications: 'ServerApi.checkNotifications',
-		getBlacklist: 'ServerApi.getBlacklist'
+		getBlacklist: 'ServerApi.getBlacklist',
 	};
 	// cached local storage
-	private _displayedNotifications = new SetStore<string, DisplayedNotification>(
-		'displayedNotifications',
-		notification => notification.id
+	private _displayedNotifications = new AsyncSetStore<
+		string,
+		DisplayedNotification
+	>('displayedNotifications', (notification) => notification.id);
+	private _displayPreference = new AsyncObjectStore<DisplayPreference | null>(
+		'displayPreference',
+		null
 	);
-	private _displayPreference = new ObjectStore<DisplayPreference | null>('displayPreference', null);
-	private _blacklist = new ObjectStore<Cached<string[]>>('blacklist', {
+	private _blacklist = new AsyncObjectStore<Cached<string[]>>('blacklist', {
 		value: [],
 		timestamp: 0,
-		expirationTimespan: 0
+		expirationTimespan: 0,
 	});
-	private _user = new ObjectStore<UserAccount>('user', null);
+	private _user = new AsyncObjectStore<UserAccount>('user', null);
+
+	/**
+	 * @deprecated
+	 */
+	public async initializeAsyncStores() {
+		await this._blacklist.initialized();
+		await this._displayPreference.initialized();
+		await this._user.initialized();
+		await this._displayedNotifications.initialized();
+	}
+
 	// handlers
-	private readonly _onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+	private readonly _onDisplayPreferenceChanged: (
+		preference: DisplayPreference
+	) => void;
 	private readonly _onUserSignedOut: () => void;
 	private readonly _onUserUpdated: (user: UserAccount) => void;
-	constructor(
-		handlers: {
-			onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
-			onUserSignedOut: () => void,
-			onUserUpdated: (user: UserAccount) => void
-		}
-	) {
+	constructor(handlers: {
+		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+		onUserSignedOut: () => void;
+		onUserUpdated: (user: UserAccount) => void;
+	}) {
 		// alarms
-		chrome.alarms.onAlarm.addListener(
-			alarm => {
-				if (!this.isAuthenticated()) {
-					return;
-				}
-				switch (alarm.name) {
-					case ServerApi.alarms.checkNotifications:
-						this.checkNotifications();
-						break;
-					case ServerApi.alarms.getBlacklist:
-						this.checkBlacklistCache();
-						break;
-				}
+		chrome.alarms.onAlarm.addListener((alarm) => {
+			if (!this.isAuthenticated()) {
+				return;
 			}
-		);
+			switch (alarm.name) {
+				case ServerApi.alarms.checkNotifications:
+					this.checkNotifications();
+					break;
+				case ServerApi.alarms.getBlacklist:
+					this.checkBlacklistCache();
+					break;
+			}
+		});
 		// notifications
 		if (chrome.notifications) {
-			chrome.notifications.onClicked.addListener(
-				id => {
-					chrome.tabs.create({
-						url: createUrl(window.reallyreadit.extension.config.apiServer, '/Extension/Notification/' + id)
-					});
-				}
-			);
+			chrome.notifications.onClicked.addListener((id) => {
+				chrome.tabs.create({
+					url: createUrl(
+						window.reallyreadit.extension.config.apiServer,
+						'/Extension/Notification/' + id
+					),
+				});
+			});
 		}
 		// handlers
 		this._onDisplayPreferenceChanged = handlers.onDisplayPreferenceChanged;
 		this._onUserSignedOut = handlers.onUserSignedOut;
 		this._onUserUpdated = handlers.onUserUpdated;
 	}
+
 	private checkNotifications() {
 		if (!chrome.notifications) {
 			return;
 		}
-		chrome.notifications.getAll(
-			chromeNotifications => {
-				const
-					now = Date.now(),
-					displayedNotificationExpiration = now - (2 * 60 * 1000),
+		chrome.notifications.getAll(async (chromeNotifications) => {
+			const now = Date.now(),
+				displayedNotificationExpiration = now - 2 * 60 * 1000,
+				{ current: currentNotifications, expired: expiredNotifications } = (
+					await this._displayedNotifications.getAll()
+				).reduce<{
+					current: DisplayedNotification[];
+					expired: DisplayedNotification[];
+				}>(
+					(result, notification) => {
+						if (notification.date >= displayedNotificationExpiration) {
+							result.current.push(notification);
+						} else {
+							result.expired.push(notification);
+						}
+						return result;
+					},
 					{
-						current: currentNotifications,
-						expired: expiredNotifications
-					} = this._displayedNotifications
-						.getAll()
-						.reduce<{
-							current: DisplayedNotification[],
-							expired: DisplayedNotification[]
-						}>(
-							(result, notification) => {
-								if (notification.date >= displayedNotificationExpiration) {
-									result.current.push(notification);
-								} else {
-									result.expired.push(notification);
-								}
-								return result;
-							},
-							{
-								current: [],
-								expired: []
-							}
-						);
-				expiredNotifications.forEach(
-					notification => {
-						this._displayedNotifications.remove(notification.id);
+						current: [],
+						expired: [],
 					}
 				);
-				this.fetchJson<NotificationsQueryResult>({
-						method: 'GET',
-						path: '/Extension/Notifications',
-						data: {
-							ids: Object
-								.keys(chromeNotifications)
-								.concat(
-									currentNotifications
-										.filter(
-											notification => !(notification.id in chromeNotifications)
-										)
-										.map(
-											notification => notification.id
-										)
-								)
-						}
-					})
-					.then(
-						result => {
-							result.cleared.forEach(
-								id => {
-									chrome.notifications.clear(id);
-									this._displayedNotifications.remove(id);
-								}
-							);
-							result.created.forEach(
-								notification => {
-									chrome.notifications.create(
-										notification.id,
-										{
-											type: 'basic',
-											iconUrl: '../icons/icon.svg',
-											title: notification.title,
-											message: notification.message,
-											isClickable: true
-										}
-									);
-									this._displayedNotifications.set({
-										id: notification.id,
-										date: Date.now()
-									});
-								}
-							);
-							const currentUser = this.getUser();
-							if (!areEqual(currentUser, result.user)) {
-								this._user.set(result.user);
-								// don't broadcast on sign in order to avoid sending stale data
-								if (currentUser) {
-									console.log(`[ServerApi] user updated (notification check)`);
-									this._onUserUpdated(result.user);
-								}
-							}
-						}
-					)
-					.catch(
-						() => { }
+			await Promise.all(
+				expiredNotifications.map(async (notification) => {
+					await this._displayedNotifications.remove(notification.id);
+				})
+			);
+			this.fetchJson<NotificationsQueryResult>({
+				method: 'GET',
+				path: '/Extension/Notifications',
+				data: {
+					ids: Object.keys(chromeNotifications).concat(
+						currentNotifications
+							.filter(
+								(notification) => !(notification.id in chromeNotifications)
+							)
+							.map((notification) => notification.id)
+					),
+				},
+			})
+				.then(async (result) => {
+					await Promise.all(
+						result.cleared.map(async (id) => {
+							chrome.notifications.clear(id);
+							await this._displayedNotifications.remove(id);
+						})
 					);
-			}
-		);
+					await Promise.all(
+						result.created.map(async (notification) => {
+							chrome.notifications.create(notification.id, {
+								type: 'basic',
+								iconUrl: '../icons/icon.svg',
+								title: notification.title,
+								message: notification.message,
+								isClickable: true,
+							});
+							await this._displayedNotifications.set({
+								id: notification.id,
+								date: Date.now(),
+							});
+						})
+					);
+					const currentUser = await this.getUser();
+					if (!areEqual(currentUser, result.user)) {
+						await this._user.set(result.user);
+						// don't broadcast on sign in order to avoid sending stale data
+						if (currentUser) {
+							console.log(`[ServerApi] user updated (notification check)`);
+							this._onUserUpdated(result.user);
+						}
+					}
+				})
+				.catch(() => {});
+		});
 	}
-	private checkBlacklistCache() {
-		if (isExpired(this._blacklist.get())) {
+	private async checkBlacklistCache() {
+		if (isExpired(await this._blacklist.get())) {
 			this.fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' })
-				.then(rules => this._blacklist.set(cache(rules, 719000)))
+				.then((rules) => this._blacklist.set(cache(rules, 719000)))
 				.catch(() => {});
 		}
 	}
-	private fetchJson<T>(request: Request) {
+	private async fetchJson<T>(request: ReadupRequest) {
 		const _this = this;
 		return new Promise<T>((resolve, reject) => {
-			const
-				req = new XMLHttpRequest(),
-				url = createUrl(window.reallyreadit.extension.config.apiServer, request.path);
-			req.withCredentials = true;
-			req.addEventListener('load', function () {
-				const contentType = this.getResponseHeader('Content-Type');
-				let object: any;
-				if (
-					contentType?.startsWith('application/json') ||
-					contentType?.startsWith('application/problem+json')
-				) {
-					object = JSON.parse(this.responseText);
-				}
-				if (this.status === 200) {
-					if (object) {
-						resolve(object);
-					} else {
-						resolve();
-					}
-				} else {
-					if (this.status === 401) {
-						console.log(`[ServerApi] user signed out (received 401 response from API server)`);
-						_this.userSignedOut();
-						_this._onUserSignedOut();
-					}
-					reject(object || ['ServerApi XMLHttpRequest load event. Status: ' + this.status + ' Status text: ' + this.statusText + ' Response text: ' + this.responseText]);
-				}
-			});
-			req.addEventListener('error', function () {
-				reject(['ServerApi XMLHttpRequest error event']);
-			});
+			const url = createUrl(
+				window.reallyreadit.extension.config.apiServer,
+				request.path
+			);
+
+			// Prepare request
+			let req: Request;
 			if (request.method === 'POST') {
-				req.open(request.method, url);
-				addCustomHeaders(req, request);
-				req.setRequestHeader('Content-Type', 'application/json');
-				req.send(JSON.stringify(request.data));
+				req = new Request(url, {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						...getCustomHeaders(),
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(request.data),
+				});
 			} else {
-				req.open(request.method, url + createQueryString(request.data));
-				addCustomHeaders(req, request);
-				req.send();
+				req = new Request(`${url}${createQueryString(request.data)}`, {
+					credentials: 'include',
+					headers: {
+						...getCustomHeaders(),
+					},
+				});
 			}
+
+			// Send request
+			fetch(req)
+				// Parse response
+				.then((response: Response) => {
+					const contentType = response.headers.get('Content-Type');
+					if (
+						contentType?.startsWith('application/json') ||
+						contentType?.startsWith('application/problem+json')
+					) {
+						return response.json().then((object) => ({
+							response,
+							responseText: undefined,
+							responseObject: object,
+						}));
+					}
+					return response.text().then((text) => ({
+						response,
+						responseObject: undefined,
+						responseText: text,
+					}));
+				})
+				// Process response
+				.then(
+					({
+						response,
+						responseText,
+						responseObject,
+					}: {
+						response: Response;
+						responseText?: string;
+						responseObject?: any;
+					}) => {
+						if (response.status === 200) {
+							if (responseObject) {
+								resolve(responseObject);
+							} else {
+								resolve(null);
+							}
+						} else {
+							if (response.status === 401) {
+								console.log(
+									`[ServerApi] user signed out (received 401 response from API server)`
+								);
+								_this.userSignedOut();
+								_this._onUserSignedOut();
+							}
+							reject(
+								responseObject || [
+									'ServerApi fetch response. Status: ' +
+										response.status +
+										' Status text: ' +
+										response.statusText +
+										' Response text: ' +
+										responseText,
+								]
+							);
+						}
+					}
+				)
+				.catch(() => {
+					reject(['ServerApi fetch error']);
+				});
 		});
 	}
 	public registerPage(tabId: number, data: ParseResult) {
@@ -246,95 +296,100 @@ export default class ServerApi {
 			method: 'POST',
 			path: '/Extension/GetUserArticle',
 			data,
-			id: tabId
+			id: tabId,
+		});
+	}
+	public getArticleDetails(slug: string) {
+		return this.fetchJson<UserArticle>({
+			method: 'GET',
+			path: '/Articles/Details',
+			data: { slug },
 		});
 	}
 	public getComments(slug: string) {
 		return this.fetchJson<CommentThread[]>({
 			method: 'GET',
 			path: '/Articles/ListComments',
-			data: { slug }
+			data: { slug },
 		});
 	}
 	public postArticle(form: PostForm) {
 		return this.fetchJson<Post>({
 			method: 'POST',
 			path: '/Social/Post',
-			data: form
+			data: form,
 		});
 	}
 	public postComment(form: CommentForm) {
 		return this.fetchJson<CommentCreationResponse>({
 			method: 'POST',
 			path: '/Social/Comment',
-			data: form
+			data: form,
 		});
 	}
 	public postCommentAddendum(form: CommentAddendumForm) {
 		return this.fetchJson<CommentThread>({
 			method: 'POST',
 			path: '/Social/CommentAddendum',
-			data: form
+			data: form,
 		});
 	}
 	public postCommentRevision(form: CommentRevisionForm) {
 		return this.fetchJson<CommentThread>({
 			method: 'POST',
 			path: '/Social/CommentRevision',
-			data: form
+			data: form,
 		});
 	}
 	public deleteComment(form: CommentDeletionForm) {
 		return this.fetchJson<CommentThread>({
 			method: 'POST',
 			path: '/Social/CommentDeletion',
-			data: form
+			data: form,
 		});
 	}
 	public commitReadState(tabId: number, data: ReadStateCommitData) {
 		return this.fetchJson<UserArticle>({
 			method: 'POST',
 			path: '/Extension/CommitReadState',
-			data
+			data,
 		});
 	}
 	public isAuthenticated() {
 		return this.getUser() != null;
 	}
-	public getUser() {
-		return this._user.get();
+	public async getUser() {
+		return await this._user.get();
 	}
-	public getBlacklist() {
-		return this._blacklist
-			.get().value
-			.map(
-				pattern => new RegExp(pattern)
-			);
+	public async getBlacklist() {
+		return (await this._blacklist.get()).value.map(
+			(pattern) => new RegExp(pattern)
+		);
 	}
 	public rateArticle(articleId: number, score: number) {
 		return this.fetchJson<{
-			article: UserArticle,
-			rating: Rating
+			article: UserArticle;
+			rating: Rating;
 		}>({
 			method: 'POST',
 			path: '/Articles/Rate',
 			data: {
 				articleId,
-				score
-			}
+				score,
+			},
 		});
 	}
 	public reportArticleIssue(request: ArticleIssueReportRequest) {
 		return this.fetchJson<void>({
 			method: 'POST',
 			path: '/Analytics/ArticleIssueReport',
-			data: request
+			data: request,
 		});
 	}
 	public requestTwitterBrowserLinkRequestToken() {
 		return this.fetchJson<TwitterRequestToken>({
 			method: 'POST',
-			path: '/Auth/TwitterBrowserLinkRequest'
+			path: '/Auth/TwitterBrowserLinkRequest',
 		});
 	}
 	public setStarred(articleId: number, isStarred: boolean) {
@@ -343,20 +398,20 @@ export default class ServerApi {
 			path: '/Extension/SetStarred',
 			data: {
 				articleId,
-				isStarred
-			}
+				isStarred,
+			},
 		});
 	}
 	public logExtensionInstallation(data: InstallationRequest) {
 		return this.fetchJson<InstallationResponse>({
 			method: 'POST',
 			path: '/Extension/Install',
-			data
+			data,
 		});
 	}
-	public userSignedIn(profile: WebAppUserProfile) {
-		this._user.set(profile.userAccount);
-		this._displayPreference.set(profile.displayPreference);
+	public async userSignedIn(profile: WebAppUserProfile) {
+		await this._user.set(profile.userAccount);
+		await this._displayPreference.set(profile.displayPreference);
 		this.checkNotifications();
 	}
 	public userSignedOut() {
@@ -364,51 +419,52 @@ export default class ServerApi {
 		this._displayPreference.clear();
 		this._displayedNotifications.clear();
 	}
-	public userUpdated(user: UserAccount) {
-		this._user.set(user || null);
+	public async userUpdated(user: UserAccount) {
+		await this._user.set(user || null);
 	}
-	public getDisplayPreference() {
-		const storedPreference = this._displayPreference.get();
+
+	public async getDisplayPreferenceFromCache() {
+		return await this._displayPreference.get();
+	}
+
+	public async getDisplayPreference() {
+		const storedPreference = await this._displayPreference.get();
 		this.fetchJson<DisplayPreference | null>({
-				method: 'GET',
-				path: '/UserAccounts/DisplayPreference'
+			method: 'GET',
+			path: '/UserAccounts/DisplayPreference',
+		})
+			.then(async (preference) => {
+				if (
+					storedPreference != null &&
+					preference != null &&
+					areDisplayPreferencesEqual(await storedPreference, preference)
+				) {
+					return;
+				}
+				if (preference) {
+					this.displayPreferenceChanged(preference);
+				} else {
+					this.changeDisplayPreference(
+						(preference = getClientDefaultDisplayPreference())
+					);
+				}
+				console.log(`[ServerApi] display preference changed`);
+				this._onDisplayPreferenceChanged(preference);
 			})
-			.then(
-				preference => {
-					if (
-						storedPreference != null &&
-						preference != null &&
-						areDisplayPreferencesEqual(storedPreference, preference)
-					) {
-						return;
-					}
-					if (preference) {
-						this.displayPreferenceChanged(preference);
-					} else {
-						this.changeDisplayPreference(
-							preference = getClientDefaultDisplayPreference()
-						);
-					}
-					console.log(`[ServerApi] display preference changed`);
-					this._onDisplayPreferenceChanged(preference);
-				}
-			)
-			.catch(
-				() => {
-					console.log(`[ServerApi] error fetching display preference`);
-				}
-			);
+			.catch(() => {
+				console.log(`[ServerApi] error fetching display preference`);
+			});
 		return storedPreference;
 	}
-	public displayPreferenceChanged(preference: DisplayPreference) {
-		this._displayPreference.set(preference);
+	public async displayPreferenceChanged(preference: DisplayPreference) {
+		await this._displayPreference.set(preference);
 	}
-	public changeDisplayPreference(preference: DisplayPreference) {
-		this.displayPreferenceChanged(preference);
+	public async changeDisplayPreference(preference: DisplayPreference) {
+		await this.displayPreferenceChanged(preference);
 		return this.fetchJson<DisplayPreference>({
 			method: 'POST',
 			path: '/UserAccounts/DisplayPreference',
-			data: preference
+			data: preference,
 		});
 	}
 }

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -24,46 +24,119 @@
 	margin-bottom: 20px;
 }
 .author-screen_2cri7v > .main > .content > .profile > h1 {
-	font-family: "Museo Sans (700)";
+	font-family: 'Museo Sans (700)';
 	font-size: 22pt;
 	text-align: center;
 }
 .author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 {
 	margin-top: 20px;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > p + p {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8
+	> .box
+	> .content
+	> p
+	+ p {
 	margin-top: 20px;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8 > .box > .content > .heading {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8
+	> .box
+	> .content
+	> .heading {
 	font-family: 'Museo Sans (700)';
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8.donation
+	> .box
+	> .content {
 	display: flex;
 	flex-flow: row;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .icon-container {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8.donation
+	> .box
+	> .content
+	> .icon-container {
 	padding-right: 20px;
 	font-size: 40px;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8.donation
+	> .box
+	> .content
+	> .text-container {
 	text-align: left;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container > p + p {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8.donation
+	> .box
+	> .content
+	> .text-container
+	> p
+	+ p {
 	margin-top: 10px;
 }
-.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container > p > .link_ke15oa {
+.author-screen_2cri7v
+	> .main
+	> .content
+	> .profile
+	> .info-box_8xzdd8.donation
+	> .box
+	> .content
+	> .text-container
+	> p
+	> .link_ke15oa {
 	white-space: normal;
 }
 
 @media (max-width: 500px) {
-	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content {
+	.author-screen_2cri7v
+		> .main
+		> .content
+		> .profile
+		> .info-box_8xzdd8.donation
+		> .box
+		> .content {
 		flex-flow: column;
 	}
-	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .icon-container {
+	.author-screen_2cri7v
+		> .main
+		> .content
+		> .profile
+		> .info-box_8xzdd8.donation
+		> .box
+		> .content
+		> .icon-container {
 		padding-right: 0;
 		padding-bottom: 10px;
 	}
-	.author-screen_2cri7v > .main > .content > .profile > .info-box_8xzdd8.donation > .box > .content > .text-container {
+	.author-screen_2cri7v
+		> .main
+		> .content
+		> .profile
+		> .info-box_8xzdd8.donation
+		> .box
+		> .content
+		> .text-container {
 		text-align: center;
 	}
 }

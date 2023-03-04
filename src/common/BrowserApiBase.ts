@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import EventEmitter from './EventEmitter';
@@ -21,27 +21,33 @@ import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
 
 export default abstract class BrowserApiBase extends EventEmitter<{
-	'articleUpdated': ArticleUpdatedEvent,
-	'articlePosted': Post,
-	'authServiceLinkCompleted': AuthServiceBrowserLinkResponse,
-	'commentPosted': CommentThread,
-	'commentUpdated': CommentThread,
-	'displayPreferenceChanged': DisplayPreference,
-	'extensionInstallationChanged': ExtensionInstallationEvent,
-	'notificationPreferenceChanged': NotificationPreference,
-	'updateAvailable': SemanticVersion,
-	'userSignedIn': WebAppUserProfile | UserAccount,
-	'userSignedOut': void,
-	'userUpdated': UserAccount
+	articleUpdated: ArticleUpdatedEvent;
+	articlePosted: Post;
+	authServiceLinkCompleted: AuthServiceBrowserLinkResponse;
+	commentPosted: CommentThread;
+	commentUpdated: CommentThread;
+	displayPreferenceChanged: DisplayPreference;
+	extensionInstallationChanged: ExtensionInstallationEvent;
+	notificationPreferenceChanged: NotificationPreference;
+	updateAvailable: SemanticVersion;
+	userSignedIn: WebAppUserProfile | UserAccount;
+	userSignedOut: void;
+	userUpdated: UserAccount;
 }> {
 	public abstract articleUpdated(event: ArticleUpdatedEvent): void;
 	public abstract articlePosted(post: Post): void;
-	public abstract authServiceLinkCompleted(response: AuthServiceBrowserLinkResponse): void;
+	public abstract authServiceLinkCompleted(
+		response: AuthServiceBrowserLinkResponse
+	): void;
 	public abstract commentPosted(comment: CommentThread): void;
 	public abstract commentUpdated(comment: CommentThread): void;
 	public abstract displayPreferenceChanged(preference: DisplayPreference): void;
-	public abstract extensionInstallationChanged(event: ExtensionInstallationEvent): void;
-	public abstract notificationPreferenceChanged(preference: NotificationPreference): void;
+	public abstract extensionInstallationChanged(
+		event: ExtensionInstallationEvent
+	): void;
+	public abstract notificationPreferenceChanged(
+		preference: NotificationPreference
+	): void;
 	public abstract setTitle(title: string): void;
 	public abstract updateAvailable(version: SemanticVersion): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -30,7 +30,11 @@
 .reader-leaderboards_8eclav > .leaderboards > .placeholder {
 	padding: 10px 15px;
 }
-.reader-leaderboards_8eclav > .leaderboards > .reader-leaderboard_ky3yfu > .footer > .streak-status {
+.reader-leaderboards_8eclav
+	> .leaderboards
+	> .reader-leaderboard_ky3yfu
+	> .footer
+	> .streak-status {
 	text-align: center;
 	padding: 10px 0 5px 0;
 	border-top-width: 1px;
@@ -47,11 +51,16 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .reader-leaderboards_8eclav > .leaderboards > .reader-leaderboard_ky3yfu > .footer > .streak-status {
+	#{$root}
+		.reader-leaderboards_8eclav
+		> .leaderboards
+		> .reader-leaderboard_ky3yfu
+		> .footer
+		> .streak-status {
 		@include theme-colors(
 			$scheme,
 			(
-				"border-top-color": $content-divider-color
+				'border-top-color': $content-divider-color,
 			)
 		);
 	}

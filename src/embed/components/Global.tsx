@@ -1,18 +1,20 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import DialogManager from '../../common/components/DialogManager';
 import Toaster, { Intent, Toast } from '../../common/components/Toaster';
 import ClipboardTextInput from '../../common/components/ClipboardTextInput';
-import DialogService, { DialogState } from '../../common/services/DialogService';
+import DialogService, {
+	DialogState,
+} from '../../common/services/DialogService';
 import ToasterService from '../../common/services/ToasterService';
 import ClipboardService from '../../common/services/ClipboardService';
 import InfoBox from '../../common/components/InfoBox';
@@ -34,33 +36,35 @@ import KeyValuePair from '../../common/KeyValuePair';
 export enum GlobalError {
 	None,
 	ArticleLookupFailure,
-	UserSignedOut
+	UserSignedOut,
 }
 export interface Props {
-	article: UserArticle,
-	captcha: CaptchaBase,
-	clipboardService: ClipboardService,
-	dialogs: KeyValuePair<number, DialogState>[],
-	dialogService: DialogService<{}>,
-	error: string | null,
-	onboardingAnalyticsAction: string | null,
-	onCloseOnboarding: (reason: ExitReason) => void,
-	onCreateAccount: (form: CreateAccountForm) => Promise<void>,
-	onCreateAuthServiceAccount: (form: CreateAuthServiceAccountForm) => Promise<void>,
-	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (form: SignInForm) => Promise<void>,
-	onSignInWithAuthService: (provider: AuthServiceProvider) => Promise<BrowserPopupResponseResponse>,
-	toasterService: ToasterService,
-	toasts: Toast[],
-	user: UserAccount | null
+	article: UserArticle;
+	captcha: CaptchaBase;
+	clipboardService: ClipboardService;
+	dialogs: KeyValuePair<number, DialogState>[];
+	dialogService: DialogService<{}>;
+	error: string | null;
+	onboardingAnalyticsAction: string | null;
+	onCloseOnboarding: (reason: ExitReason) => void;
+	onCreateAccount: (form: CreateAccountForm) => Promise<void>;
+	onCreateAuthServiceAccount: (
+		form: CreateAuthServiceAccountForm
+	) => Promise<void>;
+	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onSignIn: (form: SignInForm) => Promise<void>;
+	onSignInWithAuthService: (
+		provider: AuthServiceProvider
+	) => Promise<BrowserPopupResponseResponse>;
+	toasterService: ToasterService;
+	toasts: Toast[];
+	user: UserAccount | null;
 }
 export default (props: Props) => (
-	<div className={classNames('global_lutpij', { 'error': !!props.error })}>
-		<ProgressIndicator
-			article={props.article}
-		/>
-		{props.onboardingAnalyticsAction ?
+	<div className={classNames('global_lutpij', { error: !!props.error })}>
+		<ProgressIndicator article={props.article} />
+		{props.onboardingAnalyticsAction ? (
 			<OnboardingFlow
 				analyticsAction={props.onboardingAnalyticsAction}
 				captcha={props.captcha}
@@ -72,8 +76,8 @@ export default (props: Props) => (
 				onSignIn={props.onSignIn}
 				onSignInWithAuthService={props.onSignInWithAuthService}
 				user={props.user}
-			/> :
-			null}
+			/>
+		) : null}
 		<DialogManager
 			dialogs={props.dialogs}
 			onGetDialogRenderer={props.dialogService.getDialogRenderer}
@@ -85,14 +89,11 @@ export default (props: Props) => (
 			toasts={props.toasts}
 		/>
 		<ClipboardTextInput onSetRef={props.clipboardService.setTextInputRef} />
-		{props.error ?
-			<InfoBox
-				position="absolute"
-				style="warning"
-			>
+		{props.error ? (
+			<InfoBox position="absolute" style="warning">
 				<p>An error occurred while processing the article:</p>
 				<p>{props.error}</p>
-			</InfoBox> :
-			null}
+			</InfoBox>
+		) : null}
 	</div>
 );

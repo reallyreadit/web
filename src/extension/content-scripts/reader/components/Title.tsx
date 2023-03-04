@@ -12,20 +12,29 @@ import AotdRank from '../../../../common/components/AotdRank';
 import AotdScore from '../../../../common/components/AotdScore';
 import { createByline } from '../../../../common/reading/styleArticleDocument';
 
-type ServerArticle = Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'dateStarred' | 'firstPoster' | 'hotScore' | 'slug'>;
+type ServerArticle = Pick<
+	UserArticle,
+	| 'aotdContenderRank'
+	| 'aotdTimestamp'
+	| 'commentCount'
+	| 'dateStarred'
+	| 'firstPoster'
+	| 'hotScore'
+	| 'slug'
+>;
 export interface Props {
-	article: Fetchable<ServerArticle>,
-	authors: string[],
-	onCreateAbsoluteUrl: (path: string) => string,
-	onSetStarred: (isStarred: boolean) => Promise<void>,
-	onToggleDebugMode: () => void,
-	onViewComments: (article: Pick<UserArticle, 'slug'>) => void,
-	onViewProfile: (userName: string) => void,
-	title: string,
-	wordCount: number
+	article: Fetchable<ServerArticle>;
+	authors: string[];
+	onCreateAbsoluteUrl: (path: string) => string;
+	onSetStarred: (isStarred: boolean) => Promise<void>;
+	onToggleDebugMode: () => void;
+	onViewComments: (article: Pick<UserArticle, 'slug'>) => void;
+	onViewProfile: (userName: string) => void;
+	title: string;
+	wordCount: number;
 }
 interface State {
-	isStarring: boolean
+	isStarring: boolean;
 }
 export default class Title extends React.PureComponent<Props, State> {
 	private _debugSequence: number[] = [];
@@ -63,31 +72,36 @@ export default class Title extends React.PureComponent<Props, State> {
 			return;
 		}
 		this.setState({
-			isStarring: true
+			isStarring: true,
 		});
-		this.props
-			.onSetStarred(!this.props.article.value.dateStarred)
-			.then(
-				() => {
-					this.setState({
-						isStarring: false
-					});
-				}
-			);
+		this.props.onSetStarred(!this.props.article.value.dateStarred).then(() => {
+			this.setState({
+				isStarring: false,
+			});
+		});
 	};
-	private readonly _viewComments = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	private readonly _viewComments = (
+		event: React.MouseEvent<HTMLAnchorElement>
+	) => {
 		event.preventDefault();
 		this.props.onViewComments(this.props.article.value);
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			isStarring: false
+			isStarring: false,
 		};
 	}
 	public render() {
-		let
-			article: Pick<UserArticle, 'aotdContenderRank' | 'aotdTimestamp' | 'commentCount' | 'dateStarred' | 'firstPoster' | 'hotScore'>,
+		let article: Pick<
+				UserArticle,
+				| 'aotdContenderRank'
+				| 'aotdTimestamp'
+				| 'commentCount'
+				| 'dateStarred'
+				| 'firstPoster'
+				| 'hotScore'
+			>,
 			commentsLinkHref: string;
 		if (this.props.article.isLoading) {
 			article = {
@@ -96,28 +110,29 @@ export default class Title extends React.PureComponent<Props, State> {
 				commentCount: 0,
 				dateStarred: null,
 				firstPoster: null,
-				hotScore: 0
+				hotScore: 0,
 			};
 			commentsLinkHref = '';
 		} else {
-			const
-				[sourceSlug, articleSlug] = this.props.article.value.slug.split('_'),
+			const [sourceSlug, articleSlug] =
+					this.props.article.value.slug.split('_'),
 				articleUrlParams = {
 					['articleSlug']: articleSlug,
-					['sourceSlug']: sourceSlug
+					['sourceSlug']: sourceSlug,
 				};
 			article = this.props.article.value;
 			commentsLinkHref = this.props.onCreateAbsoluteUrl(
-				findRouteByKey(routes, ScreenKey.Comments)
-					.createUrl(articleUrlParams)
+				findRouteByKey(routes, ScreenKey.Comments).createUrl(articleUrlParams)
 			);
 		}
 		return (
 			<div className="title_35dbqk">
-				<div className={classNames('fetchable', { 'loaded': !this.props.article.isLoading })}>
-					<AotdRank
-						article={article}
-					/>
+				<div
+					className={classNames('fetchable', {
+						loaded: !this.props.article.isLoading,
+					})}
+				>
+					<AotdRank article={article} />
 					<AotdScore
 						article={article}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
@@ -128,21 +143,24 @@ export default class Title extends React.PureComponent<Props, State> {
 						href={commentsLinkHref}
 						onClick={this._viewComments}
 					>
-						{article.commentCount} {formatCountable(article.commentCount, 'comment')}
+						{article.commentCount}{' '}
+						{formatCountable(article.commentCount, 'comment')}
 					</a>
 				</div>
 				<div className="title">
 					<Star
 						busy={this.state.isStarring}
-						className={classNames('star', { 'loaded': !this.props.article.isLoading })}
+						className={classNames('star', {
+							loaded: !this.props.article.isLoading,
+						})}
 						onClick={this._toggleStar}
 						starred={!!this.props.article.value?.dateStarred}
 					/>
 					{this.props.title}
 				</div>
-				{this.props.authors.length ?
-					<div className="byline">{createByline(this.props.authors)}</div> :
-					null}
+				{this.props.authors.length ? (
+					<div className="byline">{createByline(this.props.authors)}</div>
+				) : null}
 				<div className="length">
 					<span className="value">
 						{calculateEstimatedReadTime(this.props.wordCount)} min read.
@@ -153,7 +171,7 @@ export default class Title extends React.PureComponent<Props, State> {
 						<div
 							className="debug-right"
 							onClick={this._handleDebugClickRight}
-						></div>	
+						></div>
 					</span>
 				</div>
 			</div>

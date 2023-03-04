@@ -1,14 +1,14 @@
 {
 	"apiServer": {
 		"protocol": "https",
-		"host": "api.readup.com"
+		"host": "api.readup.org"
 	},
 	"staticServer": {
 		"protocol": "https",
-		"host": "static.readup.com"
+		"host": "static.readup.org"
 	},
 	"webServer": {
 		"protocol": "https",
-		"host": "readup.com"
+		"host": "readup.org"
 	}
 }

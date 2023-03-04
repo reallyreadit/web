@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -29,12 +29,12 @@
 	animation-fill-mode: forwards;
 }
 .browser-onboarding-flow_74077a::before {
-	content: "";
+	content: '';
 	min-height: 10px;
 	flex: 1 1 auto;
 }
 .browser-onboarding-flow_74077a::after {
-	content: "";
+	content: '';
 	min-height: 10px;
 	flex: 3 1 auto;
 }
@@ -55,7 +55,7 @@
 	animation: browser-onboarding-flow_74077a-steps-slide-out 250ms forwards;
 }
 .browser-onboarding-flow_74077a > .steps::after {
-	content: "";
+	content: '';
 	display: block;
 	height: 40px;
 }
@@ -73,11 +73,18 @@
 	width: 40px;
 	height: 40px;
 }
-.browser-onboarding-flow_74077a > .steps > .titlebar > .icon-right > .icon_rour3d {
+.browser-onboarding-flow_74077a
+	> .steps
+	> .titlebar
+	> .icon-right
+	> .icon_rour3d {
 	font-size: 16px;
 	cursor: pointer;
 }
-.browser-onboarding-flow_74077a > .steps > .transition-container_ko0vbz > .content {
+.browser-onboarding-flow_74077a
+	> .steps
+	> .transition-container_ko0vbz
+	> .content {
 	padding: 0 15px;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -90,8 +97,11 @@
 	.browser-onboarding-flow_74077a > .steps::after {
 		height: 0;
 	}
-	.browser-onboarding-flow_74077a > .steps > .transition-container_ko0vbz > .content::after {
-		content: "";
+	.browser-onboarding-flow_74077a
+		> .steps
+		> .transition-container_ko0vbz
+		> .content::after {
+		content: '';
 		flex: 1 1 auto;
 		min-height: 40px;
 	}
@@ -155,7 +165,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"animation-name": "browser-onboarding-flow_74077a-overlay-fade-in"
+				'animation-name': 'browser-onboarding-flow_74077a-overlay-fade-in',
 			)
 		);
 	}
@@ -163,7 +173,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"animation-name": "browser-onboarding-flow_74077a-overlay-fade-out"
+				'animation-name': 'browser-onboarding-flow_74077a-overlay-fade-out',
 			)
 		);
 	}
@@ -171,16 +181,21 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background": $app-background-color,
-				"box-shadow": 0px 1px 3px 1px
+				'background': $app-background-color,
+				'box-shadow': 0px 1px 3px 1px,
 			)
 		);
 	}
-	#{$root} .browser-onboarding-flow_74077a > .steps > .titlebar > .icon-right > .icon_rour3d {
+	#{$root}
+		.browser-onboarding-flow_74077a
+		> .steps
+		> .titlebar
+		> .icon-right
+		> .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $text-muted-color
+				'color': $text-muted-color,
 			)
 		);
 	}

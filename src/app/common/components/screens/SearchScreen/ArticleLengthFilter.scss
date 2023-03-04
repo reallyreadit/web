@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -35,7 +35,10 @@
 	pointer-events: none;
 }
 .article-length-filter_fx9wpo > .content > .inputs > input::-moz-range-thumb,
-.article-length-filter_fx9wpo > .content > .inputs > input::-webkit-slider-thumb {
+.article-length-filter_fx9wpo
+	> .content
+	> .inputs
+	> input::-webkit-slider-thumb {
 	-moz-appearance: none;
 	-webkit-appearance: none;
 	appearance: none;
@@ -66,18 +69,32 @@
 @include theme using ($root, $scheme) {
 	#{$root} .article-length-filter_fx9wpo > .content > .inputs {
 		@if $scheme == light {
-			background-image: linear-gradient(map-get($light-theme, $control-border-color), map-get($light-theme, $control-border-color));
+			background-image: linear-gradient(
+				map-get($light-theme, $control-border-color),
+				map-get($light-theme, $control-border-color)
+			);
 		} @else {
-			background-image: linear-gradient(map-get($dark-theme, $control-border-color), map-get($dark-theme, $control-border-color));
+			background-image: linear-gradient(
+				map-get($dark-theme, $control-border-color),
+				map-get($dark-theme, $control-border-color)
+			);
 		}
 	}
-	#{$root} .article-length-filter_fx9wpo > .content > .inputs > input::-moz-range-thumb,
-	#{$root} .article-length-filter_fx9wpo > .content > .inputs > input::-webkit-slider-thumb {
+	#{$root}
+		.article-length-filter_fx9wpo
+		> .content
+		> .inputs
+		> input::-moz-range-thumb,
+	#{$root}
+		.article-length-filter_fx9wpo
+		> .content
+		> .inputs
+		> input::-webkit-slider-thumb {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-background-color,
-				"border-color": $control-border-color
+				'background-color': $control-background-color,
+				'border-color': $control-border-color,
 			)
 		);
 	}

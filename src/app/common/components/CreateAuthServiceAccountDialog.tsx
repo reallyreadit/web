@@ -1,30 +1,38 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
+import FieldsetDialog, {
+	Props as FieldsetDialogProps,
+	State,
+} from './controls/FieldsetDialog';
 import UsernameField from '../../../common/components/controls/authentication/UsernameField';
 import { Intent } from '../../../common/components/Toaster';
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 
 interface Props {
-	onCreateAuthServiceAccount: (form: Form) => Promise<void>,
-	onLinkExistingAccount: (token: string) => void,
-	token: string
+	onCreateAuthServiceAccount: (form: Form) => Promise<void>;
+	onLinkExistingAccount: (token: string) => void;
+	token: string;
 }
 export type Form = Pick<AuthServiceAccountForm, 'token' | 'name'>;
-export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void, Props, Partial<State> & {
-	name?: string,
-	nameError?: string
-}> {
-	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
+export default class CreateAuthServiceAccountDialog extends FieldsetDialog<
+	void,
+	Props,
+	Partial<State> & {
+		name?: string;
+		nameError?: string;
+	}
+> {
+	private readonly _handleNameChange = (name: string, nameError: string) =>
+		this.setState({ name, nameError });
 	private readonly _linkExistingAccount = () => {
 		this.props.onLinkExistingAccount(this.props.token);
 	};
@@ -32,7 +40,7 @@ export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void,
 		super(
 			{
 				title: 'Choose a Reader Name',
-				submitButtonText: 'Sign Up'
+				submitButtonText: 'Sign Up',
 			},
 			props
 		);
@@ -49,34 +57,45 @@ export default class CreateAuthServiceAccountDialog extends FieldsetDialog<void,
 					value={this.state.name}
 				/>
 				<div className="link">
-					<span onClick={this._linkExistingAccount}>Already have an account?</span>
+					<span onClick={this._linkExistingAccount}>
+						Already have an account?
+					</span>
 				</div>
 			</>
 		);
 	}
 	protected getClientErrors() {
-		return [{
-			name: this.state.nameError
-		}];
+		return [
+			{
+				name: this.state.nameError,
+			},
+		];
 	}
 	protected submitForm() {
 		return this.props.onCreateAuthServiceAccount({
 			token: this.props.token,
-			name: this.state.name
+			name: this.state.name,
 		});
 	}
 	protected onError(errors: string[]) {
-		if (errors.some(error => error === 'DuplicateName')) {
+		if (errors.some((error) => error === 'DuplicateName')) {
 			this.setState({ nameError: 'Reader name already in use.' });
 		}
-		if (errors.some(error => error === 'DuplicateEmail')) {
+		if (errors.some((error) => error === 'DuplicateEmail')) {
 			this.props.onShowToast('Email address already in use.', Intent.Danger);
 		}
-		if (errors.some(error => error === 'InvalidSessionId')) {
+		if (errors.some((error) => error === 'InvalidSessionId')) {
 			this.props.onShowToast('Invalid session id.', Intent.Danger);
 		}
-		if (errors.some(error => error === 'AuthenticationExpired')) {
-			this.props.onShowToast(<>Authentication expired.<br />Please sign in again.</>, Intent.Danger);
+		if (errors.some((error) => error === 'AuthenticationExpired')) {
+			this.props.onShowToast(
+				<>
+					Authentication expired.
+					<br />
+					Please sign in again.
+				</>,
+				Intent.Danger
+			);
 		}
 	}
 }

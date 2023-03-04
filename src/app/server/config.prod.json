@@ -1,11 +1,11 @@
 {
 	"apiServer": {
 		"protocol": "https",
-		"host": "api.readup.com"
+		"host": "api.readup.org"
 	},
 	"chromeExtensionId": "mkeiglkfdfamdjehidenkklibndmljfi",
 	"contentRootPath": "../../../client",
-	"cookieDomain": ".readup.com",
+	"cookieDomain": ".readup.org",
 	"cookieName": "sessionKey",
 	"logStream": {
 		"type": "rotating-file",
@@ -19,10 +19,10 @@
 	"serveStaticContent": false,
 	"staticServer": {
 		"protocol": "https",
-		"host": "static.readup.com"
+		"host": "static.readup.org"
 	},
 	"webServer": {
 		"protocol": "https",
-		"host": "readup.com"
+		"host": "readup.org"
 	}
 }

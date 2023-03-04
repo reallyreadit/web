@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -40,8 +40,12 @@
 }
 
 @keyframes star_n3lkaj-spinner {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @include theme using ($root, $scheme) {
@@ -49,8 +53,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"fill": $control-background-color,
-				"stroke": $control-border-color
+				'fill': $control-background-color,
+				'stroke': $control-border-color,
 			)
 		);
 	}
@@ -58,8 +62,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"fill": $star-starred-background-color,
-				"stroke": $star-starred-border-color
+				'fill': $star-starred-background-color,
+				'stroke': $star-starred-border-color,
 			)
 		);
 	}

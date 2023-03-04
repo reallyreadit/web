@@ -1,21 +1,28 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import UserArticle from '../../../../common/models/UserArticle';
 import Fetchable from '../../../../common/Fetchable';
-import UserAccount, { hasAnyAlerts } from '../../../../common/models/UserAccount';
+import UserAccount, {
+	hasAnyAlerts,
+} from '../../../../common/models/UserAccount';
 import CommunityReads from '../../../../common/models/CommunityReads';
-import CommunityReadsList, { updateCommunityReads } from '../controls/articles/CommunityReadsList';
+import CommunityReadsList, {
+	updateCommunityReads,
+} from '../controls/articles/CommunityReadsList';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
+import {
+	FetchFunctionWithParams,
+	FetchFunction,
+} from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
 import { Screen, NavReference, NavOptions } from '../Root';
 import PageSelector from '../controls/PageSelector';
@@ -39,40 +46,53 @@ import { Sort } from '../controls/articles/AotdView';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
-	deviceType: DeviceType,
-	location: RouteLocation,
-	onBeginOnboarding: (analyticsAction: string) => void,
-	onClearAlerts: (alert: Alert) => void,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateStaticContentUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
-	onGetPublisherArticles: FetchFunctionWithParams<PublisherArticleQuery, PageResult<UserArticle>>,
-	onGetUserCount: FetchFunction<{ userCount: number }>,
-	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onPostArticle: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterUserChangeHandler: (handler: (user: UserAccount | null) => void) => Function,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewAotdHistory: () => void,
-	onViewAuthor: (slug: string, name: string) => void,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	user: UserAccount | null
+	deviceType: DeviceType;
+	location: RouteLocation;
+	onBeginOnboarding: (analyticsAction: string) => void;
+	onClearAlerts: (alert: Alert) => void;
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onCreateStaticContentUrl: (path: string) => string;
+	onGetCommunityReads: FetchFunctionWithParams<
+		CommunityReadsQuery,
+		CommunityReads
+	>;
+	onGetPublisherArticles: FetchFunctionWithParams<
+		PublisherArticleQuery,
+		PageResult<UserArticle>
+	>;
+	onGetUserCount: FetchFunction<{ userCount: number }>;
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
+	onOpenNewPlatformNotificationRequestDialog: () => void;
+	onPostArticle: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onReadArticle: (
+		article: UserArticle,
+		e: React.MouseEvent<HTMLElement>
+	) => void;
+	onRegisterArticleChangeHandler: (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => Function;
+	onRegisterUserChangeHandler: (
+		handler: (user: UserAccount | null) => void
+	) => Function;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleArticleStar: (article: UserArticle) => Promise<void>;
+	onViewAotdHistory: () => void;
+	onViewAuthor: (slug: string, name: string) => void;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	user: UserAccount | null;
 }
 interface State {
-	communityReads: Fetchable<CommunityReads>,
-	isLoading: boolean,
-	isLoadingNewItems: boolean,
-	maxLength?: number,
-	minLength?: number,
-	newAotd: boolean,
-	sort: Sort
+	communityReads: Fetchable<CommunityReads>;
+	isLoading: boolean;
+	isLoadingNewItems: boolean;
+	maxLength?: number;
+	minLength?: number;
+	newAotd: boolean;
+	sort: Sort;
 }
 class HomeScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
@@ -80,21 +100,26 @@ class HomeScreen extends React.Component<Props, State> {
 		this.setState({
 			isLoading: true,
 			isLoadingNewItems: false,
-			newAotd: false
+			newAotd: false,
 		});
-		this.fetchItems(this.state.minLength, this.state.maxLength, pageNumber, this.state.sort);
+		this.fetchItems(
+			this.state.minLength,
+			this.state.maxLength,
+			pageNumber,
+			this.state.sort
+		);
 	};
 	private readonly _changeSort = (sort: Sort) => {
 		this.setState({
 			isLoading: true,
 			newAotd: false,
-			sort
+			sort,
 		});
 		this.fetchItems(this.state.minLength, this.state.maxLength, 1, sort);
 	};
 	private readonly _loadNewItems = () => {
 		this.setState({
-			isLoadingNewItems: true
+			isLoadingNewItems: true,
 		});
 		this.fetchItems(null, null, 1, this.state.sort);
 	};
@@ -110,21 +135,19 @@ class HomeScreen extends React.Component<Props, State> {
 						minLength: null,
 						pageNumber: 1,
 						pageSize: 40,
-						sort
+						sort,
 					},
-					this._asyncTracker.addCallback(
-						communityReads => {
-							this.setState({
-								communityReads
-							});
-							this.clearAlertIfNeeded();
-						}
-					)
+					this._asyncTracker.addCallback((communityReads) => {
+						this.setState({
+							communityReads,
+						});
+						this.clearAlertIfNeeded();
+					})
 				),
 				isLoading: false,
 				isLoadingNewItems: false,
 				newAotd: false,
-				sort
+				sort,
 			};
 		} else {
 			this.state = {
@@ -134,26 +157,28 @@ class HomeScreen extends React.Component<Props, State> {
 						minLength: null,
 						pageNumber: 1,
 						pageSize: 5,
-						sort
+						sort,
 					},
-					this._asyncTracker.addCallback(
-						communityReads => {
-							this.setState({
-								communityReads
-							});
-							this.clearAlertIfNeeded();
-						}
-					)
+					this._asyncTracker.addCallback((communityReads) => {
+						this.setState({
+							communityReads,
+						});
+						this.clearAlertIfNeeded();
+					})
 				),
 				isLoading: false,
 				isLoadingNewItems: false,
 				newAotd: false,
-				sort
+				sort,
 			};
 		}
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(event => {
-				updateCommunityReads.call(this, event.article, event.isCompletionCommit);
+			props.onRegisterArticleChangeHandler((event) => {
+				updateCommunityReads.call(
+					this,
+					event.article,
+					event.isCompletionCommit
+				);
 			}),
 			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
 				if (user) {
@@ -164,19 +189,17 @@ class HomeScreen extends React.Component<Props, State> {
 								minLength: null,
 								pageNumber: 1,
 								pageSize: 40,
-								sort: CommunityReadSort.Hot
+								sort: CommunityReadSort.Hot,
 							},
-							this._asyncTracker.addCallback(
-								communityReads => {
-									this.setState({
-										communityReads
-									});
-									this.clearAlertIfNeeded();
-								}
-							)
+							this._asyncTracker.addCallback((communityReads) => {
+								this.setState({
+									communityReads,
+								});
+								this.clearAlertIfNeeded();
+							})
 						),
 						isLoading: false,
-						newAotd: false
+						newAotd: false,
 					});
 				} else {
 					this.setState({
@@ -186,21 +209,19 @@ class HomeScreen extends React.Component<Props, State> {
 								minLength: null,
 								pageNumber: 1,
 								pageSize: 5,
-								sort: CommunityReadSort.Hot
+								sort: CommunityReadSort.Hot,
 							},
-							this._asyncTracker.addCallback(
-								communityReads => {
-									this.setState({
-										communityReads
-									});
-									this.clearAlertIfNeeded();
-								}
-							)
+							this._asyncTracker.addCallback((communityReads) => {
+								this.setState({
+									communityReads,
+								});
+								this.clearAlertIfNeeded();
+							})
 						),
 						isLoading: false,
 						maxLength: null,
 						minLength: null,
-						newAotd: false
+						newAotd: false,
 					});
 				}
 			})
@@ -212,26 +233,29 @@ class HomeScreen extends React.Component<Props, State> {
 			this._hasClearedAlert = true;
 		}
 	}
-	private fetchItems(minLength: number | null, maxLength: number | null, pageNumber: number, sort: Sort) {
+	private fetchItems(
+		minLength: number | null,
+		maxLength: number | null,
+		pageNumber: number,
+		sort: Sort
+	) {
 		this.props.onGetCommunityReads(
 			{
 				maxLength,
 				minLength,
 				pageNumber,
 				pageSize: 40,
-				sort
+				sort,
 			},
-			this._asyncTracker.addCallback(
-				communityReads => {
-					this.setState({
-						communityReads,
-						isLoading: false,
-						isLoadingNewItems: false,
-						newAotd: false
-					});
-					this.clearAlertIfNeeded();
-				}
-			)
+			this._asyncTracker.addCallback((communityReads) => {
+				this.setState({
+					communityReads,
+					isLoading: false,
+					isLoadingNewItems: false,
+					newAotd: false,
+				});
+				this.clearAlertIfNeeded();
+			})
 		);
 	}
 	public componentDidMount() {
@@ -247,7 +271,7 @@ class HomeScreen extends React.Component<Props, State> {
 			!prevProps.user.aotdAlert
 		) {
 			this.setState({
-				newAotd: true
+				newAotd: true,
 			});
 			this._hasClearedAlert = false;
 		}
@@ -259,26 +283,36 @@ class HomeScreen extends React.Component<Props, State> {
 		if (this.props.user) {
 			return (
 				<ScreenContainer className="home-screen_1sjipy">
-					{this.state.communityReads && this.state.communityReads.isLoading ?
-						<LoadingOverlay position="static" /> :
+					{this.state.communityReads && this.state.communityReads.isLoading ? (
+						<LoadingOverlay position="static" />
+					) : (
 						<>
-							{this.state.newAotd ?
+							{this.state.newAotd ? (
 								<UpdateBanner
 									isBusy={this.state.isLoadingNewItems}
 									onClick={this._loadNewItems}
 									text="Show new Article of the Day"
-								/> :
-								null}
-							{!this.state.communityReads.value.userReadCount ?
+								/>
+							) : null}
+							{!this.state.communityReads.value.userReadCount ? (
 								<StickyNote>
 									<strong>Welcome to Readup.</strong>
 									<span>It's time to start reading!</span>
-								</StickyNote> :
-								null}
+								</StickyNote>
+							) : null}
 							<CommunityReadsList
-								aotd={this.state.communityReads && this.state.communityReads.value.aotd}
-								aotdHasAlert={this.state.communityReads && this.state.communityReads.value.aotdHasAlert}
-								articles={this.state.communityReads && this.state.communityReads.value.articles}
+								aotd={
+									this.state.communityReads &&
+									this.state.communityReads.value.aotd
+								}
+								aotdHasAlert={
+									this.state.communityReads &&
+									this.state.communityReads.value.aotdHasAlert
+								}
+								articles={
+									this.state.communityReads &&
+									this.state.communityReads.value.articles
+								}
 								deviceType={this.props.deviceType}
 								isLoading={this.state.isLoading}
 								maxLength={this.state.maxLength}
@@ -298,14 +332,17 @@ class HomeScreen extends React.Component<Props, State> {
 								sort={this.state.sort}
 								user={this.props.user}
 							/>
-							{!this.state.isLoading ?
+							{!this.state.isLoading ? (
 								<PageSelector
-									pageNumber={this.state.communityReads.value.articles.pageNumber}
+									pageNumber={
+										this.state.communityReads.value.articles.pageNumber
+									}
 									pageCount={this.state.communityReads.value.articles.pageCount}
 									onChange={this._changePage}
-								/> :
-								null}
-						</>}
+								/>
+							) : null}
+						</>
+					)}
 				</ScreenContainer>
 			);
 		}
@@ -315,13 +352,17 @@ class HomeScreen extends React.Component<Props, State> {
 				deviceType={this.props.deviceType}
 				location={this.props.location}
 				onBeginOnboarding={this.props.onBeginOnboarding}
-				onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
+				onCopyAppReferrerTextToClipboard={
+					this.props.onCopyAppReferrerTextToClipboard
+				}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
 				onGetPublisherArticles={this.props.onGetPublisherArticles}
 				onGetUserCount={this.props.onGetUserCount}
 				onNavTo={this.props.onNavTo}
-				onOpenNewPlatformNotificationRequestDialog={this.props.onOpenNewPlatformNotificationRequestDialog}
+				onOpenNewPlatformNotificationRequestDialog={
+					this.props.onOpenNewPlatformNotificationRequestDialog
+				}
 				onPostArticle={this.props.onPostArticle}
 				onRateArticle={this.props.onRateArticle}
 				onReadArticle={this.props.onReadArticle}
@@ -339,23 +380,30 @@ class HomeScreen extends React.Component<Props, State> {
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
-	deps: Pick<Props, Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>>
+	deps: Pick<
+		Props,
+		Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>
+	>
 ) {
 	return {
-		create: (id: number, location: RouteLocation, sharedState: SharedState) => ({
+		create: (
+			id: number,
+			location: RouteLocation,
+			sharedState: SharedState
+		) => ({
 			id,
 			key,
 			location,
-			title: 'Readup: Social Reading'
+			title: 'Readup: Social Reading',
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
-			<HomeScreen {
-				...{
+			<HomeScreen
+				{...{
 					...deps,
 					...sharedState,
-					location: screenState.location
-				}
-			} />
-		)
+					location: screenState.location,
+				}}
+			/>
+		),
 	};
 }

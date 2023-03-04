@@ -8,7 +8,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-import {IconName} from "./components/Icon";
+import { IconName } from './components/Icon';
 
 export enum DeviceType {
 	Unknown = 'Unknown Browser',
@@ -17,9 +17,13 @@ export enum DeviceType {
 	DesktopChrome = 'Chrome',
 	DesktopFirefox = 'Firefox',
 	DesktopSafari = 'Safari',
-	DesktopEdge = 'Edge'
+	DesktopEdge = 'Edge',
 }
-export type CompatibleBrowser = DeviceType.DesktopChrome | DeviceType.DesktopEdge | DeviceType.DesktopFirefox | DeviceType.DesktopSafari;
+export type CompatibleBrowser =
+	| DeviceType.DesktopChrome
+	| DeviceType.DesktopEdge
+	| DeviceType.DesktopFirefox
+	| DeviceType.DesktopSafari;
 type CompatibleDevice = CompatibleBrowser | DeviceType.Ios;
 export function getDeviceType(userAgent: string) {
 	// test for mobile os first since browsers don't matter there
@@ -79,7 +83,7 @@ export function getBrowserIconName(deviceType: CompatibleBrowser): IconName {
 		case DeviceType.DesktopChrome:
 			return 'chrome';
 		case DeviceType.DesktopEdge:
-			return 'edge'
+			return 'edge';
 		case DeviceType.DesktopFirefox:
 			return 'firefox';
 		case DeviceType.DesktopSafari:
@@ -90,7 +94,9 @@ export function getBrowserIconName(deviceType: CompatibleBrowser): IconName {
 /**
  * Pre-3.0 legacy function
  */
-export function isCompatibleBrowser(deviceType: DeviceType): deviceType is CompatibleBrowser {
+export function isCompatibleBrowser(
+	deviceType: DeviceType
+): deviceType is CompatibleBrowser {
 	return (
 		deviceType === DeviceType.DesktopChrome ||
 		deviceType === DeviceType.DesktopEdge ||
@@ -98,7 +104,9 @@ export function isCompatibleBrowser(deviceType: DeviceType): deviceType is Compa
 		deviceType === DeviceType.DesktopSafari
 	);
 }
-export function isCompatibleDevice(deviceType: DeviceType): deviceType is CompatibleDevice {
+export function isCompatibleDevice(
+	deviceType: DeviceType
+): deviceType is CompatibleDevice {
 	return isCompatibleBrowser(deviceType) || deviceType === DeviceType.Ios;
 }
 export function isMobileDevice(deviceType: DeviceType) {

@@ -1,15 +1,18 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import FieldsetDialog, { Props as FieldsetDialogProps, State } from './controls/FieldsetDialog';
+import FieldsetDialog, {
+	Props as FieldsetDialogProps,
+	State,
+} from './controls/FieldsetDialog';
 import EmailAddressField from '../../../common/components/controls/authentication/EmailAddressField';
 import PasswordField from '../../../common/components/controls/authentication/PasswordField';
 import UsernameField from '../../../common/components/controls/authentication/UsernameField';
@@ -18,33 +21,45 @@ import { Intent } from '../../../common/components/Toaster';
 import UserAccountForm from '../../../common/models/userAccounts/UserAccountForm';
 
 interface Props {
-	analyticsAction: string,
-	autoFocus?: boolean,
-	captcha: CaptchaBase,
-	onCreateAccount: (form: Form) => Promise<void>,
-	onSignIn?: () => void,
-	title?: string
+	analyticsAction: string;
+	autoFocus?: boolean;
+	captcha: CaptchaBase;
+	onCreateAccount: (form: Form) => Promise<void>;
+	onSignIn?: () => void;
+	title?: string;
 }
-export type Form = Pick<UserAccountForm, 'name' | 'email' | 'password' | 'captchaResponse'> & { analyticsAction: string }
-export default class CreateAccountDialog extends FieldsetDialog<void, Props, Partial<State> & {
-	name?: string,
-	nameError?: string,
-	email?: string,
-	emailError?: string,
-	password?: string,
-	passwordError?: string
-}> {
+export type Form = Pick<
+	UserAccountForm,
+	'name' | 'email' | 'password' | 'captchaResponse'
+> & { analyticsAction: string };
+export default class CreateAccountDialog extends FieldsetDialog<
+	void,
+	Props,
+	Partial<State> & {
+		name?: string;
+		nameError?: string;
+		email?: string;
+		emailError?: string;
+		password?: string;
+		passwordError?: string;
+	}
+> {
 	public static defaultProps: Pick<Props, 'autoFocus'> = {
-		autoFocus: true
+		autoFocus: true,
 	};
-	private readonly _handleNameChange = (name: string, nameError: string) => this.setState({ name, nameError });
-	private readonly _handleEmailChange = (email: string, emailError: string) => this.setState({ email, emailError });
-	private readonly _handlePasswordChange = (password: string, passwordError: string) => this.setState({ password, passwordError });
+	private readonly _handleNameChange = (name: string, nameError: string) =>
+		this.setState({ name, nameError });
+	private readonly _handleEmailChange = (email: string, emailError: string) =>
+		this.setState({ email, emailError });
+	private readonly _handlePasswordChange = (
+		password: string,
+		passwordError: string
+	) => this.setState({ password, passwordError });
 	constructor(props: Props & FieldsetDialogProps) {
 		super(
 			{
 				title: props.title || 'Sign Up',
-				submitButtonText: 'Sign Up'
+				submitButtonText: 'Sign Up',
 			},
 			props
 		);
@@ -74,43 +89,52 @@ export default class CreateAccountDialog extends FieldsetDialog<void, Props, Par
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
-				{this.props.onSignIn ?
+				{this.props.onSignIn ? (
 					<div className="link">
 						<span onClick={this.props.onSignIn}>Already have an account?</span>
-					</div> :
-					null}
+					</div>
+				) : null}
 			</>
 		);
 	}
 	protected getClientErrors() {
-		return [{
-			name: this.state.nameError,
-			email: this.state.emailError,
-			password: this.state.passwordError
-		}];
+		return [
+			{
+				name: this.state.nameError,
+				email: this.state.emailError,
+				password: this.state.passwordError,
+			},
+		];
 	}
 	protected submitForm() {
 		return this.props.captcha
 			.execute('createUserAccount')
-			.then(
-				captchaResponse => this.props.onCreateAccount({
+			.then((captchaResponse) =>
+				this.props.onCreateAccount({
 					email: this.state.email,
 					name: this.state.name,
 					password: this.state.password,
 					captchaResponse,
-					analyticsAction: this.props.analyticsAction
+					analyticsAction: this.props.analyticsAction,
 				})
 			);
 	}
 	protected onError(errors: string[]) {
-		if (errors.some(error => error === 'DuplicateName')) {
+		if (errors.some((error) => error === 'DuplicateName')) {
 			this.setState({ nameError: 'Reader name already in use.' });
 		}
-		if (errors.some(error => error === 'DuplicateEmail')) {
+		if (errors.some((error) => error === 'DuplicateEmail')) {
 			this.setState({ emailError: 'Email address already in use.' });
 		}
-		if (errors.some(error => error === 'InvalidCaptcha')) {
-			this.props.onShowToast(<>Invalid Captcha<br />Please Try Again</>, Intent.Danger);
+		if (errors.some((error) => error === 'InvalidCaptcha')) {
+			this.props.onShowToast(
+				<>
+					Invalid Captcha
+					<br />
+					Please Try Again
+				</>,
+				Intent.Danger
+			);
 		}
 	}
 	public componentDidMount() {

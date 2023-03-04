@@ -69,7 +69,8 @@
 	cursor: pointer;
 	text-decoration: none;
 
-	&:hover, &.active {
+	&:hover,
+	&.active {
 		font-family: 'Museo Sans (700)';
 	}
 }
@@ -121,10 +122,11 @@
 		background-repeat: no-repeat;
 	}
 
-	.home-header_2afwll#{$qualifier} > .menu-controls-container > .mobile-menu-toggle {
+	.home-header_2afwll#{$qualifier}
+		> .menu-controls-container
+		> .mobile-menu-toggle {
 		display: none;
 	}
-
 
 	.home-header_2afwll#{$qualifier} {
 		flex: 0 0 auto;
@@ -152,7 +154,7 @@
 }
 
 @media screen and (min-width: 768px) {
-	@include desktop-styles()
+	@include desktop-styles();
 }
 
 @include desktop-styles(':not(.responsive)');
@@ -162,16 +164,22 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-bottom-color": $nav-border-color,
-				"background-color": $nav-background-color
+				'border-bottom-color': $nav-border-color,
+				'background-color': $nav-background-color,
 			)
 		);
 	}
 	#{$root} .home-header_2afwll > .menu-controls-container > .logo {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo-white.svg'
+			));
 		}
 	}
 }

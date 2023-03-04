@@ -98,7 +98,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"animation-name": "menu_v25ec5-overlay-fade-in"
+				'animation-name': 'menu_v25ec5-overlay-fade-in',
 			)
 		);
 	}
@@ -106,8 +106,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-left-color": $nav-border-color
+				'background-color': $content-background-color,
+				'border-left-color': $nav-border-color,
 			)
 		);
 	}

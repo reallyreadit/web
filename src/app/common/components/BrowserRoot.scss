@@ -55,8 +55,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $loud-background-color,
-				"color": $loud-text-color
+				'background-color': $loud-background-color,
+				'color': $loud-text-color,
 			)
 		);
 	}
@@ -64,7 +64,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $app-background-color
+				'background-color': $app-background-color,
 			)
 		);
 	}

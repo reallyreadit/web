@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -44,7 +44,7 @@
 		display: flex;
 		flex-direction: row;
 
-	@include from(tablet-landscape) {
+		@include from(tablet-landscape) {
 			padding: 72px 20px 44px 20px;
 		}
 	}
@@ -71,7 +71,8 @@
 	&__link-set {
 		margin-bottom: 22px;
 
-		&__title, & > ul > li {
+		&__title,
+		& > ul > li {
 			margin-bottom: 8px;
 			display: block;
 		}
@@ -81,7 +82,8 @@
 			font-family: 'Museo Sans (700)';
 		}
 
-		a {
+		a.link_ke15oa,
+		span.link_ke15oa {
 			text-decoration: none;
 		}
 
@@ -89,7 +91,8 @@
 			width: 140px;
 		}
 
-		> ul > li > a.link_ke15oa > span > .icon_rour3d {
+		> ul > li > a.link_ke15oa > span > .icon_rour3d,
+		> ul > li > span.link_ke15oa > span > .icon_rour3d {
 			margin-right: 0.4rem;
 			vertical-align: top;
 		}
@@ -98,7 +101,8 @@
 			margin-bottom: 0;
 			max-width: 160px;
 
-			&__title, & > ul > li {
+			&__title,
+			& > ul > li {
 				margin-bottom: 12px;
 			}
 		}
@@ -110,16 +114,22 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-top-color": $nav-border-color,
+				'border-top-color': $nav-border-color,
 				// "background-color": $nav-background-color
 			)
 		);
 	}
 	#{$root} .column-footer_ltflpc .content .logo {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo-white.svg'
+			));
 		}
 	}
 }

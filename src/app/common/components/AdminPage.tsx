@@ -1,16 +1,19 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-
 import * as React from 'react';
-import BulkMailing, { BulkMailingTestRequest, BulkMailingRequest, BulkEmailSubscriptionStatusFilter } from '../../../common/models/BulkMailing';
+import BulkMailing, {
+	BulkMailingTestRequest,
+	BulkMailingRequest,
+	BulkEmailSubscriptionStatusFilter,
+} from '../../../common/models/BulkMailing';
 import Fetchable from '../../../common/Fetchable';
 import Link from '../../../common/components/Link';
 import CreateBulkMailingDialog from './AdminPage/CreateBulkMailingDialog';
@@ -29,7 +32,10 @@ import DateRangeQuery from '../../../common/models/analytics/DateRangeQuery';
 import ConversionsReportRow from '../../../common/models/analytics/ConversionsReportRow';
 import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssuesReportRow';
 import { ArticleAuthorControl } from './AdminPage/ArticleAuthorControl';
-import { AuthorAssignmentRequest, AuthorUnassignmentRequest } from '../../../common/models/articles/AuthorAssignment';
+import {
+	AuthorAssignmentRequest,
+	AuthorUnassignmentRequest,
+} from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { calculateEstimatedReadTime } from '../../../common/calculate';
@@ -41,52 +47,87 @@ import { SignupsReport } from './AdminPage/SignupsReport';
 import { ConversionsReport } from './AdminPage/ConversionsReport';
 import { ArticleIssuesReport } from './AdminPage/ArticleIssuesReport';
 import { WeeklyUserActivityReport } from './AdminPage/WeeklyUserActivityReport';
-import { PayoutReportRequest, PayoutReportResponse } from '../../../common/models/subscriptions/PayoutReport';
+import {
+	PayoutReportRequest,
+	PayoutReportResponse,
+} from '../../../common/models/subscriptions/PayoutReport';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 import { PayoutReport } from './AdminPage/PayoutReport';
 import { AuthorUserAccountControl } from './AdminPage/AuthorUserAccountControl';
 
-const bulkMailingSubscriptionStatusLabels: { [key in BulkEmailSubscriptionStatusFilter]: string } = {
-	[BulkEmailSubscriptionStatusFilter.CurrentlySubscribed]: 'Currently Subscribed',
+const bulkMailingSubscriptionStatusLabels: {
+	[key in BulkEmailSubscriptionStatusFilter]: string;
+} = {
+	[BulkEmailSubscriptionStatusFilter.CurrentlySubscribed]:
+		'Currently Subscribed',
 	[BulkEmailSubscriptionStatusFilter.NeverSubscribed]: 'Never Subscribed',
-	[BulkEmailSubscriptionStatusFilter.NotCurrentlySubscribed]: 'Not Currently Subscribed'
+	[BulkEmailSubscriptionStatusFilter.NotCurrentlySubscribed]:
+		'Not Currently Subscribed',
 };
 interface Props {
-	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>,
-	onAssignUserAccountToAuthor: (request: AuthorUserAccountAssignmentRequest) => Promise<void>,
-	onCloseDialog: () => void,
-	onGetArticleIssueReports: FetchFunctionWithParams<DateRangeQuery, ArticleIssuesReportRow[]>,
-	onGetAuthorMetadataAssignmentQueue: FetchFunction<AuthorMetadataAssignmentQueueResponse>,
-	onGetBulkMailings: (callback: (mailings: Fetchable<BulkMailing[]>) => void) => Fetchable<BulkMailing[]>,
-	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>,
-	onGetDailyTotals: FetchFunctionWithParams<DateRangeQuery, DailyTotalsReportRow[]>,
-	onGetPayoutReport: FetchFunctionWithParams<PayoutReportRequest, PayoutReportResponse>,
-	onGetRevenueReport: FetchFunctionWithParams<DateRangeQuery, RevenueReportResponse>,
-	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>,
-	onGetUserStats: (callback: (state: Fetchable<UserAccountStats>) => void) => Fetchable<UserAccountStats>,
-	onGetWeeklyUserActivityReport: FetchFunctionWithParams<DateRangeQuery, WeeklyUserActivityReportRow[]>,
-	onNavTo: (ref: NavReference) => void,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onSendBulkMailing: (request: BulkMailingRequest) => Promise<void>,
-	onSendTestBulkMailing: (request: BulkMailingTestRequest) => Promise<void>,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onUnassignAuthorFromArticle: (request: AuthorUnassignmentRequest) => Promise<void>,
-	user: UserAccount
+	onAssignAuthorToArticle: (request: AuthorAssignmentRequest) => Promise<void>;
+	onAssignUserAccountToAuthor: (
+		request: AuthorUserAccountAssignmentRequest
+	) => Promise<void>;
+	onCloseDialog: () => void;
+	onGetArticleIssueReports: FetchFunctionWithParams<
+		DateRangeQuery,
+		ArticleIssuesReportRow[]
+	>;
+	onGetAuthorMetadataAssignmentQueue: FetchFunction<AuthorMetadataAssignmentQueueResponse>;
+	onGetBulkMailings: (
+		callback: (mailings: Fetchable<BulkMailing[]>) => void
+	) => Fetchable<BulkMailing[]>;
+	onGetConversions: FetchFunctionWithParams<
+		DateRangeQuery,
+		ConversionsReportRow[]
+	>;
+	onGetDailyTotals: FetchFunctionWithParams<
+		DateRangeQuery,
+		DailyTotalsReportRow[]
+	>;
+	onGetPayoutReport: FetchFunctionWithParams<
+		PayoutReportRequest,
+		PayoutReportResponse
+	>;
+	onGetRevenueReport: FetchFunctionWithParams<
+		DateRangeQuery,
+		RevenueReportResponse
+	>;
+	onGetSignups: FetchFunctionWithParams<DateRangeQuery, SignupsReportRow[]>;
+	onGetUserStats: (
+		callback: (state: Fetchable<UserAccountStats>) => void
+	) => Fetchable<UserAccountStats>;
+	onGetWeeklyUserActivityReport: FetchFunctionWithParams<
+		DateRangeQuery,
+		WeeklyUserActivityReportRow[]
+	>;
+	onNavTo: (ref: NavReference) => void;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onSendBulkMailing: (request: BulkMailingRequest) => Promise<void>;
+	onSendTestBulkMailing: (request: BulkMailingTestRequest) => Promise<void>;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onUnassignAuthorFromArticle: (
+		request: AuthorUnassignmentRequest
+	) => Promise<void>;
+	user: UserAccount;
 }
 class AdminPage extends React.Component<
 	Props,
 	{
-		authorMetadataAssignmentQueueResponse: Fetchable<AuthorMetadataAssignmentQueueResponse> | null,
-		userStats: Fetchable<UserAccountStats>,
-		mailings: Fetchable<BulkMailing[]>
+		authorMetadataAssignmentQueueResponse: Fetchable<AuthorMetadataAssignmentQueueResponse> | null;
+		userStats: Fetchable<UserAccountStats>;
+		mailings: Fetchable<BulkMailing[]>;
 	}
 > {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _reloadMailings = () => {
 		this.setState({
 			mailings: this.props.onGetBulkMailings(
-				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
-			)
+				this._asyncTracker.addCallback((mailings) => {
+					this.setState({ mailings });
+				})
+			),
 		});
 	};
 	private readonly _openCreateMailingDialog = () => {
@@ -102,15 +143,16 @@ class AdminPage extends React.Component<
 	};
 	private readonly _fetchAuthorMetadataAssignmentQueue = () => {
 		this.setState({
-			authorMetadataAssignmentQueueResponse: this.props.onGetAuthorMetadataAssignmentQueue(
-				this._asyncTracker.addCallback(
-					authorMetadataAssignmentQueueResponse => {
-						this.setState({
-							authorMetadataAssignmentQueueResponse
-						});
-					}
-				)
-			)
+			authorMetadataAssignmentQueueResponse:
+				this.props.onGetAuthorMetadataAssignmentQueue(
+					this._asyncTracker.addCallback(
+						(authorMetadataAssignmentQueueResponse) => {
+							this.setState({
+								authorMetadataAssignmentQueueResponse,
+							});
+						}
+					)
+				),
 		});
 	};
 	constructor(props: Props) {
@@ -118,11 +160,15 @@ class AdminPage extends React.Component<
 		this.state = {
 			authorMetadataAssignmentQueueResponse: null,
 			userStats: props.onGetUserStats(
-				this._asyncTracker.addCallback(userStats => { this.setState({ userStats }); })
+				this._asyncTracker.addCallback((userStats) => {
+					this.setState({ userStats });
+				})
 			),
 			mailings: props.onGetBulkMailings(
-				this._asyncTracker.addCallback(mailings => { this.setState({ mailings }); })
-			)
+				this._asyncTracker.addCallback((mailings) => {
+					this.setState({ mailings });
+				})
+			),
 		};
 	}
 	public componentWillUnmount() {
@@ -140,8 +186,8 @@ class AdminPage extends React.Component<
 							</div>
 						</caption>
 						<tbody>
-							{!this.state.userStats.isLoading ?
-								this.state.userStats.value ?
+							{!this.state.userStats.isLoading ? (
+								this.state.userStats.value ? (
 									[
 										<tr key="total">
 											<th>Total Count</th>
@@ -150,38 +196,34 @@ class AdminPage extends React.Component<
 										<tr key="confirmed">
 											<th>Confirmed Count</th>
 											<td>{this.state.userStats.value.confirmedCount}</td>
-										</tr>
-									] :
+										</tr>,
+									]
+								) : (
 									<tr>
 										<td>Error loading stats.</td>
-									</tr> :
+									</tr>
+								)
+							) : (
 								<tr>
 									<td>Loading...</td>
-								</tr>}
+								</tr>
+							)}
 						</tbody>
 					</table>
 					<h2>Reports</h2>
-					<RevenueReport
-						onGetRevenueReport={this.props.onGetRevenueReport}
-					/>
-					<ConversionsReport
-						onGetConversions={this.props.onGetConversions}
-					/>
+					<RevenueReport onGetRevenueReport={this.props.onGetRevenueReport} />
+					<ConversionsReport onGetConversions={this.props.onGetConversions} />
 					<WeeklyUserActivityReport
-						onGetWeeklyUserActivityReport={this.props.onGetWeeklyUserActivityReport}
+						onGetWeeklyUserActivityReport={
+							this.props.onGetWeeklyUserActivityReport
+						}
 					/>
-					<DailyTotalsReport
-						onGetDailyTotals={this.props.onGetDailyTotals}
-					/>
-					<SignupsReport
-						onGetSignups={this.props.onGetSignups}
-					/>
+					<DailyTotalsReport onGetDailyTotals={this.props.onGetDailyTotals} />
+					<SignupsReport onGetSignups={this.props.onGetSignups} />
 					<ArticleIssuesReport
 						onGetArticleIssueReports={this.props.onGetArticleIssueReports}
 					/>
-					<PayoutReport
-						onGetPayoutReport={this.props.onGetPayoutReport}
-					/>
+					<PayoutReport onGetPayoutReport={this.props.onGetPayoutReport} />
 					<h2>Tools</h2>
 					<AuthorUserAccountControl
 						onAssignUserAccountToAuthor={this.props.onAssignUserAccountToAuthor}
@@ -197,7 +239,9 @@ class AdminPage extends React.Component<
 							<div className="content">
 								<strong>Article Author Assignment Queue</strong>
 								<div>
-									<button onClick={this._fetchAuthorMetadataAssignmentQueue}>Run Report</button>
+									<button onClick={this._fetchAuthorMetadataAssignmentQueue}>
+										Run Report
+									</button>
 								</div>
 							</div>
 						</caption>
@@ -210,46 +254,74 @@ class AdminPage extends React.Component<
 							</tr>
 						</thead>
 						<tbody>
-							{this.state.authorMetadataAssignmentQueueResponse ?
-								this.state.authorMetadataAssignmentQueueResponse.isLoading ?
+							{this.state.authorMetadataAssignmentQueueResponse ? (
+								this.state.authorMetadataAssignmentQueueResponse.isLoading ? (
 									<tr>
 										<td colSpan={4}>Loading...</td>
-									</tr> :
-									this.state.authorMetadataAssignmentQueueResponse.value ?
-										this.state.authorMetadataAssignmentQueueResponse.value.articles.length ?
-											this.state.authorMetadataAssignmentQueueResponse.value.articles.map(
-												article => {
-													const [sourceSlug, articleSlug] = article.slug.split('_');
-													return (
-														<tr key={article.id}>
-															<td>
-																<Link screen={ScreenKey.Comments} params={{ sourceSlug, articleSlug }} onClick={this.props.onNavTo} text={truncateText(article.title, 30)} />
-															</td>
-															<td>
-																<Link href={article.url} onClick={this.props.onNavTo} text={truncateText(article.url, 30)} />
-															</td>
-															<td>{article.articleAuthors.map(author => author.slug).join(' ')}</td>
-															<td>{calculateEstimatedReadTime(article.wordCount)} min.</td>
-														</tr>
-													);
-												}
-											) :
-											<tr>
-												<td colSpan={4}>Queue is empty. Good job!</td>
-											</tr> :
+									</tr>
+								) : this.state.authorMetadataAssignmentQueueResponse.value ? (
+									this.state.authorMetadataAssignmentQueueResponse.value
+										.articles.length ? (
+										this.state.authorMetadataAssignmentQueueResponse.value.articles.map(
+											(article) => {
+												const [sourceSlug, articleSlug] =
+													article.slug.split('_');
+												return (
+													<tr key={article.id}>
+														<td>
+															<Link
+																screen={ScreenKey.Comments}
+																params={{ sourceSlug, articleSlug }}
+																onClick={this.props.onNavTo}
+																text={truncateText(article.title, 30)}
+															/>
+														</td>
+														<td>
+															<Link
+																href={article.url}
+																onClick={this.props.onNavTo}
+																text={truncateText(article.url, 30)}
+															/>
+														</td>
+														<td>
+															{article.articleAuthors
+																.map((author) => author.slug)
+																.join(' ')}
+														</td>
+														<td>
+															{calculateEstimatedReadTime(article.wordCount)}{' '}
+															min.
+														</td>
+													</tr>
+												);
+											}
+										)
+									) : (
 										<tr>
-											<td colSpan={4}>Error loading queue.</td>
-										</tr> :
+											<td colSpan={4}>Queue is empty. Good job!</td>
+										</tr>
+									)
+								) : (
+									<tr>
+										<td colSpan={4}>Error loading queue.</td>
+									</tr>
+								)
+							) : (
 								<tr>
 									<td colSpan={4}>Click "Run Report" to load queue.</td>
-								</tr>}
+								</tr>
+							)}
 						</tbody>
 					</table>
 					<table>
 						<caption>
 							<div className="content">
 								<strong>Bulk Mailings</strong>
-								<Link iconLeft="plus" text="Create" onClick={this._openCreateMailingDialog} />
+								<Link
+									iconLeft="plus"
+									text="Create"
+									onClick={this._openCreateMailingDialog}
+								/>
 							</div>
 						</caption>
 						<thead>
@@ -267,42 +339,50 @@ class AdminPage extends React.Component<
 							</tr>
 						</thead>
 						<tbody>
-							{!this.state.mailings.isLoading ?
-								this.state.mailings.value ?
-									this.state.mailings.value.length ?
-										this.state.mailings.value.map(m => (
+							{!this.state.mailings.isLoading ? (
+								this.state.mailings.value ? (
+									this.state.mailings.value.length ? (
+										this.state.mailings.value.map((m) => (
 											<tr key={m.id}>
 												<td>{m.dateSent}</td>
 												<td>{m.subject}</td>
 												<td>{m.body}</td>
 												<td>{m.type}</td>
 												<td>
-													{m.subscriptionStatusFilter != null ?
-														bulkMailingSubscriptionStatusLabels[m.subscriptionStatusFilter] :
-														'Any'}
+													{m.subscriptionStatusFilter != null
+														? bulkMailingSubscriptionStatusLabels[
+																m.subscriptionStatusFilter
+														  ]
+														: 'Any'}
 												</td>
 												<td>
-													{m.freeForLifeFilter != null ?
-														m.freeForLifeFilter ?
-															'Free-for-life' :
-															'Not Free-for-life' :
-														'Any'}
+													{m.freeForLifeFilter != null
+														? m.freeForLifeFilter
+															? 'Free-for-life'
+															: 'Not Free-for-life'
+														: 'Any'}
 												</td>
 												<td>{m.userCreatedAfterFilter}</td>
 												<td>{m.userCreatedBeforeFilter}</td>
 												<td>{m.userAccount}</td>
 												<td>{m.recipientCount}</td>
 											</tr>
-										)) :
+										))
+									) : (
 										<tr>
 											<td colSpan={10}>No mailings found.</td>
-										</tr> :
+										</tr>
+									)
+								) : (
 									<tr>
 										<td colSpan={10}>Error loading mailings.</td>
-									</tr> :
+									</tr>
+								)
+							) : (
 								<tr>
 									<td colSpan={10}>Loading...</td>
-								</tr>}
+								</tr>
+							)}
 						</tbody>
 					</table>
 				</div>
@@ -310,9 +390,17 @@ class AdminPage extends React.Component<
 		);
 	}
 }
-export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'user'>>) {
+export default function createScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Admin' }),
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: 'Admin',
+		}),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			return (
 				<AdminPage
@@ -320,7 +408,9 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					onAssignUserAccountToAuthor={deps.onAssignUserAccountToAuthor}
 					onCloseDialog={deps.onCloseDialog}
 					onGetArticleIssueReports={deps.onGetArticleIssueReports}
-					onGetAuthorMetadataAssignmentQueue={deps.onGetAuthorMetadataAssignmentQueue}
+					onGetAuthorMetadataAssignmentQueue={
+						deps.onGetAuthorMetadataAssignmentQueue
+					}
 					onGetBulkMailings={deps.onGetBulkMailings}
 					onGetConversions={deps.onGetConversions}
 					onGetDailyTotals={deps.onGetDailyTotals}
@@ -338,6 +428,6 @@ export default function createScreenFactory<TScreenKey>(key: TScreenKey, deps: P
 					user={sharedState.user}
 				/>
 			);
-		}
-	}
+		},
+	};
 }

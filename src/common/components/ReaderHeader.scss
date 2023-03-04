@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -39,7 +39,7 @@
 	font-size: 22px;
 	cursor: pointer;
 }
-.reader-header_h3o6tn > .widget > .popover_r7v81v > .children  {
+.reader-header_h3o6tn > .widget > .popover_r7v81v > .children {
 	font-size: 22px;
 	cursor: pointer;
 }
@@ -52,11 +52,20 @@
 	}
 }
 
-.reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
+.reader-header_h3o6tn
+	> .widget
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content {
 	position: relative;
 	padding: 10px 5px;
 }
-.reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content > label {
+.reader-header_h3o6tn
+	> .widget
+	> .popover_r7v81v
+	> .menu
+	> .widget-menu-content
+	> label {
 	display: block;
 	padding: 5px 10px;
 	white-space: nowrap;
@@ -94,25 +103,35 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $reader-header-text-color,
-				"background-color": $reader-header-background-color,
-				"border-bottom-color": $reader-header-border-color
+				'color': $reader-header-text-color,
+				'background-color': $reader-header-background-color,
+				'border-bottom-color': $reader-header-border-color,
 			)
 		);
 	}
-	#{$root} .reader-header_h3o6tn > .widget > .popover_r7v81v > .children > .icon_rour3d.disabled {
+	#{$root}
+		.reader-header_h3o6tn
+		> .widget
+		> .popover_r7v81v
+		> .children
+		> .icon_rour3d.disabled {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $control-disabled-color
+				'color': $control-disabled-color,
 			)
 		);
 	}
-	#{$root} .reader-header_h3o6tn > .widget > .popover_r7v81v > .menu > .widget-menu-content {
+	#{$root}
+		.reader-header_h3o6tn
+		> .widget
+		> .popover_r7v81v
+		> .menu
+		> .widget-menu-content {
 		@include theme-colors(
 			$scheme,
 			(
-				"background": $content-background-color
+				'background': $content-background-color,
 			)
 		);
 	}
@@ -120,8 +139,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-background-color,
-				"border-color": $control-border-color
+				'background-color': $control-background-color,
+				'border-color': $control-border-color,
 			)
 		);
 	}
@@ -129,7 +148,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $progress-incomplete-color
+				'background-color': $progress-incomplete-color,
 			)
 		);
 	}
@@ -137,7 +156,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $progress-complete-color
+				'background-color': $progress-complete-color,
 			)
 		);
 	}

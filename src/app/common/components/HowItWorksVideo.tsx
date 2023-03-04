@@ -3,22 +3,23 @@ import Link from '../../../common/components/Link';
 
 export enum VideoMode {
 	Embed,
-	Link
+	Link,
 }
 
-export type Props = {
-	mode: VideoMode.Embed
-} | {
-	mode: VideoMode.Link,
-	onCreateStaticContentUrl: (path: string) => string,
-	onNavTo: (href: string) => void
-};
+export type Props =
+	| {
+			mode: VideoMode.Embed;
+	  }
+	| {
+			mode: VideoMode.Link;
+			onCreateStaticContentUrl: (path: string) => string;
+			onNavTo: (href: string) => void;
+	  };
 
-const
-	className = 'how-it-works-video_7wst2o',
+const className = 'how-it-works-video_7wst2o',
 	videoId = 'JwQOsdnywUs';
 
-export const HowItWorksVideo: React.SFC<Props> = props => {
+export const HowItWorksVideo: React.SFC<Props> = (props) => {
 	switch (props.mode) {
 		case VideoMode.Embed:
 			return (
@@ -42,7 +43,9 @@ export const HowItWorksVideo: React.SFC<Props> = props => {
 				>
 					<img
 						alt="YouTube Video Thumbnail"
-						src={props.onCreateStaticContentUrl('/app/images/how-it-works-video-thumbnail.png')}
+						src={props.onCreateStaticContentUrl(
+							'/app/images/how-it-works-video-thumbnail.png'
+						)}
 					/>
 				</Link>
 			);

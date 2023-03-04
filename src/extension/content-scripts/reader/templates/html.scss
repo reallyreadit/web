@@ -1,42 +1,42 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 @import '../../../../common/styles/colors.scss';
 
 @font-face {
 	font-family: 'Cambria (Bold)';
-	src: url('../ui/fonts/cambria-bold.ttf');
+	src: url('./content-scripts/ui/fonts/cambria-bold.ttf');
 }
 @font-face {
 	font-family: 'Cambria (Regular)';
-	src: url('../ui/fonts/cambria-regular.ttf');
+	src: url('./content-scripts/ui/fonts/cambria-regular.ttf');
 }
 @font-face {
 	font-family: 'Museo Sans (100)';
-	src: url('../ui/fonts/museo-sans-100.ttf');
+	src: url('./content-scripts/ui/fonts/museo-sans-100.ttf');
 }
 @font-face {
 	font-family: 'Museo Sans (300)';
-	src: url('../ui/fonts/museo-sans-300.ttf');
+	src: url('./content-scripts/ui/fonts/museo-sans-300.ttf');
 }
 @font-face {
 	font-family: 'Museo Sans (500)';
-	src: url('../ui/fonts/museo-sans-500.ttf');
+	src: url('./content-scripts/ui/fonts/museo-sans-500.ttf');
 }
 @font-face {
 	font-family: 'Museo Sans (700)';
-	src: url('../ui/fonts/museo-sans-700.ttf');
+	src: url('./content-scripts/ui/fonts/museo-sans-700.ttf');
 }
 @font-face {
 	font-family: 'Museo Sans (900)';
-	src: url('../ui/fonts/museo-sans-900.ttf');
+	src: url('./content-scripts/ui/fonts/museo-sans-900.ttf');
 }
 
 #com_readup_embed {
@@ -64,7 +64,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $text-color
+				'color': $text-color,
 			)
 		);
 	}

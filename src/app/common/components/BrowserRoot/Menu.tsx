@@ -10,20 +10,23 @@ import Button from '../../../../common/components/Button';
 import { Screen } from '../Root';
 
 interface Props {
-	isClosing: boolean,
-	onClose: () => void,
-	onClosed: () => void,
-	onViewAdminPage: () => void,
-	onViewFaq: () => void,
-	onViewLeaderboards: () => void,
-	onViewProfile: () => void,
-	onViewSearch: () => void,
-	onViewSettings: () => void,
-	onViewStats: () => void,
-	selectedScreen: Screen,
-	userAccount: UserAccount | null
+	isClosing: boolean;
+	onClose: () => void;
+	onClosed: () => void;
+	onViewAdminPage: () => void;
+	onViewFaq: () => void;
+	onViewLeaderboards: () => void;
+	onViewProfile: () => void;
+	onViewSearch: () => void;
+	onViewSettings: () => void;
+	onViewStats: () => void;
+	selectedScreen: Screen;
+	userAccount: UserAccount | null;
 }
-export default class extends React.PureComponent<Props, { isSigningOut: boolean }> {
+export default class extends React.PureComponent<
+	Props,
+	{ isSigningOut: boolean }
+> {
 	private readonly _handleAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'menu_v25ec5-drawer-close') {
 			this.props.onClosed();
@@ -43,46 +46,47 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 		const profileRoute = findRouteByKey(routes, ScreenKey.Profile);
 		return (
 			<div
-				className={classNames('menu_v25ec5', { 'closing': this.props.isClosing })}
+				className={classNames('menu_v25ec5', { closing: this.props.isClosing })}
 				onAnimationEnd={this._handleAnimationEnd}
 				onClick={this.props.onClose}
 			>
-				<div
-					className="drawer"
-					onClick={this._stopPropagation}
-				>
+				<div className="drawer" onClick={this._stopPropagation}>
 					<div className="header">
 						<label>{this.props.userAccount.name}</label>
-						<Icon
-							name="cancel"
-							onClick={this.props.onClose}
-						/>
+						<Icon name="cancel" onClick={this.props.onClose} />
 					</div>
 					<ol>
-						{this.props.userAccount.role === UserAccountRole.Admin ?
+						{this.props.userAccount.role === UserAccountRole.Admin ? (
 							<li>
 								<Button
 									href={findRouteByKey(routes, ScreenKey.Admin).createUrl()}
 									onClick={this.props.onViewAdminPage}
-									state={this.props.selectedScreen.key === ScreenKey.Admin ? 'selected' : 'normal'}
+									state={
+										this.props.selectedScreen.key === ScreenKey.Admin
+											? 'selected'
+											: 'normal'
+									}
 									text="Admin"
 									size="x-large"
 									display="block"
 								/>
-							</li> :
-							null}
+							</li>
+						) : null}
 						<li>
 							<Button
 								badge={this.props.userAccount.followerAlertCount}
-								href={profileRoute.createUrl({ userName: this.props.userAccount.name })}
+								href={profileRoute.createUrl({
+									userName: this.props.userAccount.name,
+								})}
 								onClick={this._viewProfile}
 								state={
-									(
-										this.props.selectedScreen.key === ScreenKey.Profile &&
-										profileRoute.getPathParams(this.props.selectedScreen.location.path)['userName'].toLowerCase() === this.props.userAccount.name.toLowerCase()
-									) ?
-										'selected' :
-										'normal'
+									this.props.selectedScreen.key === ScreenKey.Profile &&
+									profileRoute
+										.getPathParams(this.props.selectedScreen.location.path)
+										['userName'].toLowerCase() ===
+										this.props.userAccount.name.toLowerCase()
+										? 'selected'
+										: 'normal'
 								}
 								text="My Profile"
 								size="x-large"
@@ -93,7 +97,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Stats).createUrl()}
 								onClick={this.props.onViewStats}
-								state={this.props.selectedScreen.key === ScreenKey.Stats ? 'selected' : 'normal'}
+								state={
+									this.props.selectedScreen.key === ScreenKey.Stats
+										? 'selected'
+										: 'normal'
+								}
 								text="My Stats"
 								size="x-large"
 								display="block"
@@ -118,7 +126,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Faq).createUrl()}
 								onClick={this.props.onViewFaq}
-								state={this.props.selectedScreen.key === ScreenKey.Faq ? 'selected' : 'normal'}
+								state={
+									this.props.selectedScreen.key === ScreenKey.Faq
+										? 'selected'
+										: 'normal'
+								}
 								text="Help"
 								size="x-large"
 								display="block"
@@ -128,7 +140,11 @@ export default class extends React.PureComponent<Props, { isSigningOut: boolean 
 							<Button
 								href={findRouteByKey(routes, ScreenKey.Settings).createUrl()}
 								onClick={this.props.onViewSettings}
-								state={this.props.selectedScreen.key === ScreenKey.Settings ? 'selected' : 'normal'}
+								state={
+									this.props.selectedScreen.key === ScreenKey.Settings
+										? 'selected'
+										: 'normal'
+								}
 								text="Settings"
 								size="x-large"
 								display="block"

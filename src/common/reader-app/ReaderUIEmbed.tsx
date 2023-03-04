@@ -12,7 +12,9 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import ShareChannel from '../sharing/ShareChannel';
 import Toaster, { Intent } from '../components/Toaster';
-import ToasterService, { State as ToasterState } from '../services/ToasterService';
+import ToasterService, {
+	State as ToasterState,
+} from '../services/ToasterService';
 import DialogService, { DialogServiceState } from '../services/DialogService';
 import AsyncTracker from '../AsyncTracker';
 import UserArticle from '../models/UserArticle';
@@ -24,7 +26,10 @@ import DialogManager from '../components/DialogManager';
 import CommentsSection from '../components/comments/CommentsSection';
 import PostForm from '../models/social/PostForm';
 import Post from '../models/social/Post';
-import { ShareEvent, createRelativeShareSelection } from '../sharing/ShareEvent';
+import {
+	ShareEvent,
+	createRelativeShareSelection,
+} from '../sharing/ShareEvent';
 import PostPrompt from '../components/PostPrompt';
 import CommentForm from '../models/social/CommentForm';
 import CommentDeletionForm from '../models/social/CommentDeletionForm';
@@ -39,9 +44,11 @@ import AuthServiceProvider from '../models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../models/auth/AuthServiceAccountAssociation';
 import ReaderHeader from '../components/ReaderHeader';
 import ArticleIssueReportRequest from '../models/analytics/ArticleIssueReportRequest';
-import DisplayPreference, { getDisplayPreferenceChangeMessage } from '../models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	getDisplayPreferenceChangeMessage,
+} from '../models/userAccounts/DisplayPreference';
 import ShareResponse from '../sharing/ShareResponse';
-import {DeviceType} from '../DeviceType';
+import { DeviceType } from '../DeviceType';
 import { ShareChannelData } from '../sharing/ShareData';
 import ClipboardService from '../services/ClipboardService';
 import ClipboardTextInput from '../components/ClipboardTextInput';
@@ -50,27 +57,31 @@ import { createTweetWebIntentUrl } from '../sharing/twitter';
 import { AppPlatform } from '../AppPlatform';
 
 export interface Props extends DialogServiceState {
-	appPlatform: AppPlatform,
-	article: Fetchable<UserArticle>,
-	comments: Fetchable<CommentThread[]> | null,
-	deviceType: DeviceType,
-	dialogService: DialogService<{}>,
-	displayPreference: DisplayPreference | null,
-	isHeaderHidden: boolean,
-	onChangeDisplayPreference: (preference: DisplayPreference) => Promise<DisplayPreference>,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>,
-	onLinkAuthServiceAccount: (provider: AuthServiceProvider) => Promise<AuthServiceAccountAssociation>,
-	onNavBack: () => void,
-	onNavTo: (url: string) => boolean,
-	onPostArticle: (form: PostForm) => Promise<Post>,
-	onPostComment: (form: CommentForm) => Promise<void>,
-	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>,
-	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>,
-	onReportArticleIssue: (request: ArticleIssueReportRequest) => void,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onToggleStar: () => Promise<void>,
-	user: UserAccount | null
+	appPlatform: AppPlatform;
+	article: Fetchable<UserArticle>;
+	comments: Fetchable<CommentThread[]> | null;
+	deviceType: DeviceType;
+	dialogService: DialogService<{}>;
+	displayPreference: DisplayPreference | null;
+	isHeaderHidden: boolean;
+	onChangeDisplayPreference: (
+		preference: DisplayPreference
+	) => Promise<DisplayPreference>;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onDeleteComment: (form: CommentDeletionForm) => Promise<CommentThread>;
+	onLinkAuthServiceAccount: (
+		provider: AuthServiceProvider
+	) => Promise<AuthServiceAccountAssociation>;
+	onNavBack: () => void;
+	onNavTo: (url: string) => boolean;
+	onPostArticle: (form: PostForm) => Promise<Post>;
+	onPostComment: (form: CommentForm) => Promise<void>;
+	onPostCommentAddendum: (form: CommentAddendumForm) => Promise<CommentThread>;
+	onPostCommentRevision: (form: CommentRevisionForm) => Promise<CommentThread>;
+	onReportArticleIssue: (request: ArticleIssueReportRequest) => void;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onToggleStar: () => Promise<void>;
+	user: UserAccount | null;
 }
 /**
  * A host for reader-related UI & behavior that should be injected after
@@ -85,17 +96,17 @@ export default class ReaderUIEmbed extends React.Component<
 	ToasterState
 > {
 	// article issue reports
-	private readonly _reportArticleIssue = (request: ArticleIssueReportRequest) => {
+	private readonly _reportArticleIssue = (
+		request: ArticleIssueReportRequest
+	) => {
 		this.props.onReportArticleIssue(request);
 		this._toaster.addToast('Issue Reported', Intent.Success);
 	};
 
 	// clipboard
-	protected readonly _clipboard = new ClipboardService(
-		(content, intent) => {
-			this._toaster.addToast(content, intent);
-		}
-	);
+	protected readonly _clipboard = new ClipboardService((content, intent) => {
+		this._toaster.addToast(content, intent);
+	});
 
 	// dialogs
 	protected readonly _openPostDialog = (article: UserArticle) => {
@@ -128,15 +139,15 @@ export default class ReaderUIEmbed extends React.Component<
 				this._clipboard.copyText(data.text, 'Link copied to clipboard');
 				break;
 			case ShareChannel.Email:
-				this.props.onNavTo(`mailto:${createQueryString({
-					'body': data.body,
-					'subject': data.subject
-				})}`);
+				this.props.onNavTo(
+					`mailto:${createQueryString({
+						body: data.body,
+						subject: data.subject,
+					})}`
+				);
 				break;
 			case ShareChannel.Twitter:
-				this.props.onNavTo(
-					createTweetWebIntentUrl(data)
-				);
+				this.props.onNavTo(createTweetWebIntentUrl(data));
 				break;
 		}
 	};
@@ -144,18 +155,18 @@ export default class ReaderUIEmbed extends React.Component<
 		if (this.props.appPlatform === AppPlatform.Ios) {
 			this.props.onShare({
 				...data,
-				selection: createRelativeShareSelection(data.selection, window)
+				selection: createRelativeShareSelection(data.selection, window),
 			});
 			return {
-				channels: [] as ShareChannel[]
+				channels: [] as ShareChannel[],
 			};
 		} else {
 			return {
 				channels: [
 					ShareChannel.Clipboard,
 					ShareChannel.Email,
-					ShareChannel.Twitter
-				]
+					ShareChannel.Twitter,
+				],
 			};
 		}
 	};
@@ -163,15 +174,20 @@ export default class ReaderUIEmbed extends React.Component<
 	// toasts
 	private readonly _toaster = new ToasterService({
 		asyncTracker: new AsyncTracker(),
-		setState: delegate => {
+		setState: (delegate) => {
 			this.setState(delegate);
-		}
+		},
 	});
 
 	// user accounts
-	private readonly _changeDisplayPreference = (preference: DisplayPreference) => {
+	private readonly _changeDisplayPreference = (
+		preference: DisplayPreference
+	) => {
 		if (this.props.displayPreference) {
-			const message = getDisplayPreferenceChangeMessage(this.props.displayPreference, preference);
+			const message = getDisplayPreferenceChangeMessage(
+				this.props.displayPreference,
+				preference
+			);
 			if (message) {
 				this._toaster.addToast(message, Intent.Success);
 			}
@@ -181,24 +197,25 @@ export default class ReaderUIEmbed extends React.Component<
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			toasts: []
+			toasts: [],
 		};
 	}
 	public render() {
 		return (
 			<div className="reader-embed_2818km">
-				{this.props.article.value?.isRead ?
+				{this.props.article.value?.isRead ? (
 					<PostPrompt
 						article={this.props.article.value}
 						onPost={this._openPostDialog}
 						promptMessage="Post this article."
-					/> :
-					null}
-				{this.props.article.value && this.props.comments && this.props.user ?
-					this.props.comments.isLoading ?
+					/>
+				) : null}
+				{this.props.article.value && this.props.comments && this.props.user ? (
+					this.props.comments.isLoading ? (
 						<ContentBox className="loading-comments">
 							<SpinnerIcon /> Loading comments...
-						</ContentBox> :
+						</ContentBox>
+					) : (
 						<CommentsSection
 							article={this.props.article.value}
 							comments={this.props.comments.value}
@@ -215,9 +232,14 @@ export default class ReaderUIEmbed extends React.Component<
 							onShareViaChannel={this._handleShareChannelRequest}
 							onViewProfile={this._viewProfile}
 							user={this.props.user}
-						/> :
-					null}
-				<div className={classNames('header-container', { 'hidden': this.props.isHeaderHidden })}>
+						/>
+					)
+				) : null}
+				<div
+					className={classNames('header-container', {
+						hidden: this.props.isHeaderHidden,
+					})}
+				>
 					<ReaderHeader
 						article={this.props.article}
 						displayPreference={this.props.displayPreference}
@@ -235,7 +257,9 @@ export default class ReaderUIEmbed extends React.Component<
 				<DialogManager
 					dialogs={this.props.dialogs}
 					onGetDialogRenderer={this.props.dialogService.getDialogRenderer}
-					onTransitionComplete={this.props.dialogService.handleTransitionCompletion}
+					onTransitionComplete={
+						this.props.dialogService.handleTransitionCompletion
+					}
 					sharedState={{}}
 				/>
 				<Toaster

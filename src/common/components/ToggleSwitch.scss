@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -36,7 +36,7 @@
 	cursor: default;
 }
 .toggle-switch_t7od1q > .switch::before {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 2px;
 	left: 2px;
@@ -54,7 +54,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-disabled-color
+				'background-color': $control-disabled-color,
 			)
 		);
 	}
@@ -62,7 +62,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-background-color
+				'background-color': $control-background-color,
 			)
 		);
 	}
@@ -70,7 +70,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $text-color
+				'background-color': $text-color,
 			)
 		);
 	}

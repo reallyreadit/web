@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as request from 'request';
@@ -28,13 +28,7 @@ export default class extends ServerApi {
 		deviceType: DeviceType,
 		authCookie: KeyValuePair<string, string | null>
 	) {
-		super(
-			endpoint,
-			new RequestStore(),
-			clientType,
-			clientVersion,
-			deviceType
-		);
+		super(endpoint, new RequestStore(), clientType, clientVersion, deviceType);
 		this._authCookie = authCookie;
 	}
 	public fetchJson<T>(method: 'GET' | 'POST', params: Request) {
@@ -43,11 +37,13 @@ export default class extends ServerApi {
 			if (method === 'GET') {
 				url += createQueryString(params.data);
 			}
-			const options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions) = {
+			const options:
+				| (request.UriOptions & request.CoreOptions)
+				| (request.UrlOptions & request.CoreOptions) = {
 				method,
 				uri: url,
 				headers: {
-					'X-Readup-Client': this.getClientHeaderValue()
+					'X-Readup-Client': this.getClientHeaderValue(),
 				},
 				json: true,
 				callback: (error, res, body) => {
@@ -65,10 +61,11 @@ export default class extends ServerApi {
 							reject([]);
 							break;
 					}
-				}
+				},
 			};
 			if (this.hasAuthCookie() && this.shouldIncludeCredentials) {
-				options.headers['Cookie'] = this._authCookie.key + '=' + this._authCookie.value;
+				options.headers['Cookie'] =
+					this._authCookie.key + '=' + this._authCookie.value;
 			}
 			if (method === 'POST') {
 				options.body = params.data;
@@ -85,12 +82,12 @@ export default class extends ServerApi {
 			if (exchange.responseData) {
 				return {
 					isLoading: false,
-					value: exchange.responseData as T
+					value: exchange.responseData as T,
 				};
 			} else {
 				return {
 					isLoading: false,
-					errors: exchange.responseErrors
+					errors: exchange.responseErrors,
 				};
 			}
 		} else if (!exchange) {
@@ -98,36 +95,26 @@ export default class extends ServerApi {
 		}
 		return { isLoading: true };
 	}
-	protected post<T>(request: Request) : Promise<T> {
+	protected post<T>(request: Request): Promise<T> {
 		return this.fetchJson<T>('POST', request);
 	}
 	public processRequests() {
-		return Promise
-			.all(
-				this._reqStore.exchanges
-					.filter(
-						exchange => !exchange.processed
-					)
-					.map(
-						exchange => this
-							.fetchJson('GET', exchange.request)
-							.then(
-								value => {
-									exchange.responseData = value;
-								}
-							)
-							.catch(
-								errors => {
-									exchange.responseErrors = errors;
-								}
-							)
-							.finally(
-								() => {
-									exchange.processed = true;
-								}
-							)
-					)
-			);
+		return Promise.all(
+			this._reqStore.exchanges
+				.filter((exchange) => !exchange.processed)
+				.map((exchange) =>
+					this.fetchJson('GET', exchange.request)
+						.then((value) => {
+							exchange.responseData = value;
+						})
+						.catch((errors) => {
+							exchange.responseErrors = errors;
+						})
+						.finally(() => {
+							exchange.processed = true;
+						})
+				)
+		);
 	}
 	public hasAuthCookie() {
 		return !!this._authCookie.value;

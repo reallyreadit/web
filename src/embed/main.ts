@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import { DateTime } from 'luxon';
@@ -18,10 +18,16 @@ import parseDocumentContent from '../common/contentParsing/parseDocumentContent'
 import EventManager from '../common/EventManager';
 import { createUrl } from '../common/HttpEndpoint';
 import IFrameMessagingContext from '../common/IFrameMessagingContext';
-import AuthenticationError, { errorMessage as authenticationErrorMessage } from '../common/models/auth/AuthenticationError';
+import AuthenticationError, {
+	errorMessage as authenticationErrorMessage,
+} from '../common/models/auth/AuthenticationError';
 import { isAuthServiceBrowserLinkSuccessResponse } from '../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthServiceProvider from '../common/models/auth/AuthServiceProvider';
-import { InitializationAction, InitializationActivationResponse, InitializationResponse } from '../common/models/embed/InitializationResponse';
+import {
+	InitializationAction,
+	InitializationActivationResponse,
+	InitializationResponse,
+} from '../common/models/embed/InitializationResponse';
 import { createCommentThread } from '../common/models/social/Post';
 import UserAccount from '../common/models/UserAccount';
 import { getClientPreferredColorScheme } from '../common/models/userAccounts/DisplayPreference';
@@ -49,184 +55,152 @@ import { createQueryString } from '../common/routing/queryString';
 import { openTweetComposerBrowserWindow } from '../common/sharing/twitter';
 
 interface State {
-	article: UserArticle,
-	dialogs: KeyValuePair<number, DialogState>[],
-	error: string | null,
-	onboardingAnalyticsAction: string | null,
-	toasts: Toast[],
-	user: UserAccount | null
+	article: UserArticle;
+	dialogs: KeyValuePair<number, DialogState>[];
+	error: string | null;
+	onboardingAnalyticsAction: string | null;
+	toasts: Toast[];
+	user: UserAccount | null;
 }
 
 const apiServer = new ApiServer({
-	clientVersion: new SemanticVersion(window.reallyreadit.embed.config.version.embed),
-	endpoint: window.reallyreadit.embed.config.apiServer
+	clientVersion: new SemanticVersion(
+		window.reallyreadit.embed.config.version.embed
+	),
+	endpoint: window.reallyreadit.embed.config.apiServer,
 });
 
 function activate(initializationResponse: InitializationActivationResponse) {
 	// set up the reader
 	const page = new Page(
 		parseDocumentContent({
-				url: window.location
-			})
-			.primaryTextContainers
+			url: window.location,
+		}).primaryTextContainers
 	);
 	page.setReadState(initializationResponse.userArticle.readState);
-	const reader = new Reader(
-		commitEvent => {
-			apiServer
-				.updateReadProgress({
-					articleId: initializationResponse.article.id,
-					readState: commitEvent.readStateArray
-				})
-				.then(
-					res => {
-						setState({
-							article: res.article
-						});
-						browserApi.articleUpdated({
-							article: res.article,
-							isCompletionCommit: commitEvent.isCompletionCommit
-						});
-					}
-				);
-		}
-	);
+	const reader = new Reader((commitEvent) => {
+		apiServer
+			.updateReadProgress({
+				articleId: initializationResponse.article.id,
+				readState: commitEvent.readStateArray,
+			})
+			.then((res) => {
+				setState({
+					article: res.article,
+				});
+				browserApi.articleUpdated({
+					article: res.article,
+					isCompletionCommit: commitEvent.isCompletionCommit,
+				});
+			});
+	});
 	reader.loadPage(page);
 	// document messaging interface
-	window.addEventListener(
-		'message',
-		event => {
-			if (!/(\/\/|\.)readup\.com$/.test(event.origin)) {
-				return;
-			}
-			switch (event.data?.type as String || null) {
-				case 'toggleVisualDebugging':
-					page.toggleVisualDebugging();
-					break;
-			}
+	window.addEventListener('message', (event) => {
+		if (!/(\/\/|\.)readup\.org$/.test(event.origin)) {
+			return;
 		}
-	);
-	// iframe communication to readup.com and extension
-	const browserApiRelayMessenger = new BrowserApiRelayMessenger({
-		onMessagePosted: messageData => {
-			iframeMessaging.sendMessage({
-				type: 'browser',
-				data: messageData
-			});
+		switch ((event.data?.type as String) || null) {
+			case 'toggleVisualDebugging':
+				page.toggleVisualDebugging();
+				break;
 		}
 	});
+	// iframe communication to readup.org and extension
+	const browserApiRelayMessenger = new BrowserApiRelayMessenger({
+		onMessagePosted: (messageData) => {
+			iframeMessaging.sendMessage({
+				type: 'browser',
+				data: messageData,
+			});
+		},
+	});
 	const browserApi = new BrowserApi(browserApiRelayMessenger)
-		.addListener(
-			'articleUpdated',
-			event => {
+		.addListener('articleUpdated', (event) => {
+			setState({
+				article: event.article,
+			});
+		})
+		.addListener('authServiceLinkCompleted', (response) => {
+			if (
+				isAuthServiceBrowserLinkSuccessResponse(response) &&
+				response.association.provider === AuthServiceProvider.Twitter &&
+				!state.user.hasLinkedTwitterAccount
+			) {
 				setState({
-					article: event.article
+					user: {
+						...state.user,
+						hasLinkedTwitterAccount: true,
+					},
 				});
 			}
-		)
-		.addListener(
-			'authServiceLinkCompleted',
-			response => {
-				if (
-					isAuthServiceBrowserLinkSuccessResponse(response) &&
-					response.association.provider === AuthServiceProvider.Twitter &&
-					!state.user.hasLinkedTwitterAccount
-				) {
-					setState({
-						user: {
-							...state.user,
-							hasLinkedTwitterAccount: true
-						}
-					});
-				}
+		})
+		.addListener('commentPosted', (comment) => {
+			if (comment.articleId === initializationResponse.article.id) {
+				commentsSection.commentPosted(comment);
 			}
-		)
-		.addListener(
-			'commentPosted',
-			comment => {
-				if (comment.articleId === initializationResponse.article.id) {
-					commentsSection.commentPosted(comment);
-				}
+		})
+		.addListener('commentUpdated', (comment) => {
+			if (comment.articleId === initializationResponse.article.id) {
+				commentsSection.commentUpdated(comment);
 			}
-		)
-		.addListener(
-			'commentUpdated',
-			comment => {
-				if (comment.articleId === initializationResponse.article.id) {
-					commentsSection.commentUpdated(comment);
-				}
+		})
+		.addListener('userSignedIn', (data) => {
+			let user: UserAccount;
+			// check for broadcast from legacy web app instance
+			if ('userAccount' in data) {
+				user = data.userAccount;
+			} else {
+				user = data;
 			}
-		)
-		.addListener(
-			'userSignedIn',
-			data => {
-				let user: UserAccount;
-				// check for broadcast from legacy web app instance
-				if ('userAccount' in data) {
-					user = data.userAccount;
-				} else {
-					user = data;
-				}
-				setState({
-					user
-				});
-			}
-		)
-		.addListener(
-			'userSignedOut',
-			() => {
-				setState({
-					error: 'You were signed out in another tab.'
-				});
-			}
-		)
-		.addListener(
-			'userUpdated',
-			user => {
-				setState({
-					user
-				});
-			}
-		);
+			setState({
+				user,
+			});
+		})
+		.addListener('userSignedOut', () => {
+			setState({
+				error: 'You were signed out in another tab.',
+			});
+		})
+		.addListener('userUpdated', (user) => {
+			setState({
+				user,
+			});
+		});
 	const iframe = document.createElement('iframe');
-	iframe.src = createUrl(window.reallyreadit.embed.config.webServer, '/embed-iframe-bridge/index.html');
+	iframe.src = createUrl(
+		window.reallyreadit.embed.config.webServer,
+		'/embed-iframe-bridge/index.html'
+	);
 	iframe.style.display = 'none';
 	document.body.appendChild(iframe);
 	const iframeMessaging = new IFrameMessagingContext(
 		iframe.contentWindow,
 		window.reallyreadit.embed.config.webServer.protocol +
-		'://' +
-		window.reallyreadit.embed.config.webServer.host
+			'://' +
+			window.reallyreadit.embed.config.webServer.host
 	);
-	iframeMessaging.addListener(
-		message => {
-			switch (message.type) {
-				case 'browser':
-					browserApiRelayMessenger.relayMessage(message.data);
-					break;
-			}
+	iframeMessaging.addListener((message) => {
+		switch (message.type) {
+			case 'browser':
+				browserApiRelayMessenger.relayMessage(message.data);
+				break;
 		}
-	);
+	});
 	// services
-	const
-		clipboardService = new ClipboardService(
-			(content, intent) => {
-				toasterService.addToast(content, intent);
-			}
-		),
+	const clipboardService = new ClipboardService((content, intent) => {
+			toasterService.addToast(content, intent);
+		}),
 		createAbsoluteUrl = (path: string) => {
-			return createUrl(window.reallyreadit.embed.config.webServer, path)
+			return createUrl(window.reallyreadit.embed.config.webServer, path);
 		},
 		dialogService = new DialogService({
 			setState: (nextState, callback) => {
-				setState(
-						nextState(state)
-					)
-					.then(callback);
-			}
+				setState(nextState(state)).then(callback);
+			},
 		}),
 		eventManager = new EventManager<{
-			'onOnboardingCompleted': void
+			onOnboardingCompleted: void;
 		}>(),
 		handleShareChannelRequest = (data: ShareChannelData) => {
 			switch (data.channel) {
@@ -236,8 +210,8 @@ function activate(initializationResponse: InitializationActivationResponse) {
 				case ShareChannel.Email:
 					window.open(
 						`mailto:${createQueryString({
-							'body': data.body,
-							'subject': data.subject
+							body: data.body,
+							subject: data.subject,
 						})}`,
 						'_blank'
 					);
@@ -251,8 +225,8 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			channels: [
 				ShareChannel.Clipboard,
 				ShareChannel.Email,
-				ShareChannel.Twitter
-			]
+				ShareChannel.Twitter,
+			],
 		}),
 		navTo = (url: string) => {
 			const result = parseUrlForRoute(url);
@@ -270,11 +244,9 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		},
 		toasterService = new ToasterService({
 			asyncTracker: new AsyncTracker(),
-			setState: nextState => {
-				setState(
-					nextState(state)
-				);
-			}
+			setState: (nextState) => {
+				setState(nextState(state));
+			},
 		}),
 		viewProfile = (userName: string) => {
 			openInNewTab(
@@ -290,32 +262,25 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		error: null,
 		onboardingAnalyticsAction: null,
 		toasts: [],
-		user: initializationResponse.user
+		user: initializationResponse.user,
 	};
 	function setState(nextState: Partial<State>): Promise<any> {
 		state = {
 			...state,
-			...nextState
+			...nextState,
 		};
 		const stateUpdates: (() => Promise<any>)[] = [
-			() => globalUi.setState(state)
+			() => globalUi.setState(state),
 		];
-		if (
-			'article' in nextState ||
-			'user' in nextState
-		) {
-			stateUpdates.push(
-				() => commentsSection.setState({
+		if ('article' in nextState || 'user' in nextState) {
+			stateUpdates.push(() =>
+				commentsSection.setState({
 					article: state.article,
-					user: state.user
+					user: state.user,
 				})
-			)
+			);
 		}
-		return Promise.all(
-			stateUpdates.map(
-				update => update()
-			)
-		);
+		return Promise.all(stateUpdates.map((update) => update()));
 	}
 	// fonts
 	insertFontStyleElement(
@@ -323,13 +288,13 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		[
 			{
 				family: 'SF Pro Text',
-				fileName: 'sf-pro-text.woff'
-			}
+				fileName: 'sf-pro-text.woff',
+			},
 		]
 	);
 	// global ui host
 	const globalUi = new GlobalComponentHost({
-		domAttachmentDelegate: shadowHost => {
+		domAttachmentDelegate: (shadowHost) => {
 			shadowHost.style.position = 'fixed';
 			shadowHost.style.bottom = '0';
 			shadowHost.style.left = '0';
@@ -342,28 +307,22 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			document.body.appendChild(shadowHost);
 		},
 		services: {
-			captcha: new Captcha(
-				null,
-				handler => {
-					// no captcha
-				}
-			),
+			captcha: new Captcha(null, (handler) => {
+				// no captcha
+			}),
 			clipboardService,
 			dialogService,
-			onCloseOnboarding: reason => {
+			onCloseOnboarding: (reason) => {
 				setState({
-						onboardingAnalyticsAction: null
-					})
-					.then(
-						() => {
-							if (reason !== ExitReason.Aborted) {
-								eventManager.triggerEvent('onOnboardingCompleted', null);
-							}
-							eventManager.removeListeners('onOnboardingCompleted');
-						}
-					);
+					onboardingAnalyticsAction: null,
+				}).then(() => {
+					if (reason !== ExitReason.Aborted) {
+						eventManager.triggerEvent('onOnboardingCompleted', null);
+					}
+					eventManager.removeListeners('onOnboardingCompleted');
+				});
 			},
-			onCreateAccount: req => {
+			onCreateAccount: (req) => {
 				return apiServer
 					.createUserAccount({
 						name: req.name,
@@ -376,20 +335,18 @@ function activate(initializationResponse: InitializationActivationResponse) {
 							action: req.analyticsAction,
 							currentPath: window.location.pathname,
 							initialPath: window.location.pathname,
-							referrerUrl: window.document.referrer
+							referrerUrl: window.document.referrer,
 						},
-						pushDevice: null
+						pushDevice: null,
 					})
-					.then(
-						profile => {
-							browserApi.userSignedIn(profile);
-							return setState({
-								user: profile.userAccount
-							});
-						}
-					);
+					.then((profile) => {
+						browserApi.userSignedIn(profile);
+						return setState({
+							user: profile.userAccount,
+						});
+					});
 			},
-			onCreateAuthServiceAccount: req => {
+			onCreateAuthServiceAccount: (req) => {
 				return apiServer
 					.createAuthServiceAccount({
 						name: req.name,
@@ -400,93 +357,77 @@ function activate(initializationResponse: InitializationActivationResponse) {
 							action: req.analyticsAction,
 							currentPath: window.location.pathname,
 							initialPath: window.location.pathname,
-							referrerUrl: window.document.referrer
+							referrerUrl: window.document.referrer,
 						},
-						token: req.token
+						token: req.token,
 					})
-					.then(
-						profile => {
-							browserApi.userSignedIn(profile);
-							return setState({
-								user: profile.userAccount
-							});
-						}
-					);
+					.then((profile) => {
+						browserApi.userSignedIn(profile);
+						return setState({
+							user: profile.userAccount,
+						});
+					});
 			},
-			onRequestPasswordReset: req => {
+			onRequestPasswordReset: (req) => {
 				return apiServer.requestPasswordReset(req);
 			},
 			onShowToast: (content, intent) => {
 				toasterService.addToast(content, intent);
 			},
-			onSignIn: req => {
+			onSignIn: (req) => {
 				return apiServer
 					.signIn({
 						authServiceToken: req.authServiceToken,
 						email: req.email,
 						password: req.password,
-						pushDevice: null
+						pushDevice: null,
 					})
-					.then(
-						profile => {
-							browserApi.userSignedIn(profile);
-							return setState({
-								user: profile.userAccount
-							});
-						}
-					);
+					.then((profile) => {
+						browserApi.userSignedIn(profile);
+						return setState({
+							user: profile.userAccount,
+						});
+					});
 			},
-			onSignInWithAuthService: provider => {
+			onSignInWithAuthService: (provider) => {
 				const popup = new AuthServiceBrowserPopup();
 				// open window synchronously to avoid being blocked by popup blockers
 				popup.open();
 				return apiServer
 					.requestAuthServiceBrowserPopupRequest({
-						provider
+						provider,
 					})
-					.then(
-						response => popup
-							.load(response.popupUrl)
-							.then(
-								() => apiServer
-									.getAuthServiceBrowserPopupResponse({
-										requestId: response.requestId
-									})
-									.then(
-										popupResponse => {
-											if (popupResponse.userProfile) {
-												browserApi.userSignedIn(popupResponse.userProfile);
-												return setState({
-														user: popupResponse.userProfile.userAccount
-													})
-													.then(
-														() => popupResponse
-													);
-											} else {
-												return popupResponse;
-											}
-										}
-									)
-									.catch(
-										reason => {
-											if (
-												isHttpProblemDetails(reason) &&
-												reason.status === 404
-											) {
-												return {
-													association: null,
-													authServiceToken: null,
-													error: AuthenticationError.Cancelled,
-													userProfile: null
-												};
-											}
-											throw reason;
-										}
-									)
-							)
+					.then((response) =>
+						popup.load(response.popupUrl).then(() =>
+							apiServer
+								.getAuthServiceBrowserPopupResponse({
+									requestId: response.requestId,
+								})
+								.then((popupResponse) => {
+									if (popupResponse.userProfile) {
+										browserApi.userSignedIn(popupResponse.userProfile);
+										return setState({
+											user: popupResponse.userProfile.userAccount,
+										}).then(() => popupResponse);
+									} else {
+										return popupResponse;
+									}
+								})
+								.catch((reason) => {
+									if (isHttpProblemDetails(reason) && reason.status === 404) {
+										return {
+											association: null,
+											authServiceToken: null,
+											error: AuthenticationError.Cancelled,
+											userProfile: null,
+										};
+									}
+									throw reason;
+								})
+						)
 					);
 			},
-			toasterService
+			toasterService,
 		},
 		state: {
 			article: state.article,
@@ -494,8 +435,8 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			error: state.error,
 			onboardingAnalyticsAction: state.onboardingAnalyticsAction,
 			toasts: state.toasts,
-			user: state.user
-		}
+			user: state.user,
+		},
 	});
 	globalUi.attach();
 	// comments section host
@@ -521,184 +462,144 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		commentsSection.attach();
 		apiServer
 			.getComments(initializationResponse.article.slug)
-			.then(
-				comments => {
-					commentsSection.setState({
-						comments: {
-							isLoading: false,
-							value: comments
-						}
-					});
-				}
-			);
+			.then((comments) => {
+				commentsSection.setState({
+					comments: {
+						isLoading: false,
+						value: comments,
+					},
+				});
+			});
 	}
 	const commentsSection = new CommentsSectionComponentHost({
-		domAttachmentDelegate: shadowHost => {
+		domAttachmentDelegate: (shadowHost) => {
 			const wrapper = document.createElement('div');
 			wrapper.style.margin = '2em 0 0 0';
 			wrapper.append(shadowHost);
-			lastParagraphElement.insertAdjacentElement(
-				'afterend',
-				wrapper
-			)
+			lastParagraphElement.insertAdjacentElement('afterend', wrapper);
 		},
 		services: {
 			dialogService,
 			onAuthenticationRequired: (analyticsAction, delegate) => {
 				setState({
-					onboardingAnalyticsAction: analyticsAction
+					onboardingAnalyticsAction: analyticsAction,
 				});
 				return eventManager.addListener('onOnboardingCompleted', delegate);
 			},
 			onCreateAbsoluteUrl: createAbsoluteUrl,
-			onDeleteComment: form => apiServer
-				.deleteComment(form)
-				.then(
-					comment => {
-						browserApi.commentUpdated(comment);
-						return comment;
-					}
-				),
-			onLinkAuthServiceAccount: provider => {
+			onDeleteComment: (form) =>
+				apiServer.deleteComment(form).then((comment) => {
+					browserApi.commentUpdated(comment);
+					return comment;
+				}),
+			onLinkAuthServiceAccount: (provider) => {
 				const popup = new AuthServiceBrowserPopup();
 				// open window synchronously to avoid being blocked by popup blockers
 				popup.open();
 				return apiServer
 					.requestAuthServiceBrowserPopupRequest({
-						provider
+						provider,
 					})
-					.then(
-						response => popup
-							.load(response.popupUrl)
-							.then(
-								() => apiServer
-									.getAuthServiceBrowserPopupResponse({
-										requestId: response.requestId
-									})
-									.then(
-										popupResponse => {
-											// simulate legacy account linking api
-											if (popupResponse.association) {
-												browserApi.authServiceLinkCompleted({
-													association: popupResponse.association,
-													error: popupResponse.error,
-													requestToken: ''
-												});
-												return popupResponse.association;
-											} else {
-												throw new Error(
-													popupResponse.error != null ?
-														popupResponse.error === AuthenticationError.Cancelled ?
-															'Cancelled' :
-															authenticationErrorMessage[popupResponse.error] :
-														'BrowserPopupResponseResponse.association is null.'
-												);
-											}
-										}
-									)
-									.catch(
-										reason => {
-											if (
-												isHttpProblemDetails(reason) &&
-												reason.status === 404
-											) {
-												throw new Error('Cancelled');
-											}
-											throw reason;
-										}
-									)
-							)
+					.then((response) =>
+						popup.load(response.popupUrl).then(() =>
+							apiServer
+								.getAuthServiceBrowserPopupResponse({
+									requestId: response.requestId,
+								})
+								.then((popupResponse) => {
+									// simulate legacy account linking api
+									if (popupResponse.association) {
+										browserApi.authServiceLinkCompleted({
+											association: popupResponse.association,
+											error: popupResponse.error,
+											requestToken: '',
+										});
+										return popupResponse.association;
+									} else {
+										throw new Error(
+											popupResponse.error != null
+												? popupResponse.error === AuthenticationError.Cancelled
+													? 'Cancelled'
+													: authenticationErrorMessage[popupResponse.error]
+												: 'BrowserPopupResponseResponse.association is null.'
+										);
+									}
+								})
+								.catch((reason) => {
+									if (isHttpProblemDetails(reason) && reason.status === 404) {
+										throw new Error('Cancelled');
+									}
+									throw reason;
+								})
+						)
 					);
 			},
 			onNavTo: navTo,
-			onPostArticle: form => apiServer
-				.postArticle(form)
-				.then(
-					post => {
-						setState({
-							article: post.article
-						});
-						browserApi.articlePosted(post);
-						browserApi.articleUpdated({
-							article: post.article,
-							isCompletionCommit: false
-						});
-						if (post.comment) {
-							browserApi.commentPosted(
-								createCommentThread(post)
-							);
-						}
-						return post;
+			onPostArticle: (form) =>
+				apiServer.postArticle(form).then((post) => {
+					setState({
+						article: post.article,
+					});
+					browserApi.articlePosted(post);
+					browserApi.articleUpdated({
+						article: post.article,
+						isCompletionCommit: false,
+					});
+					if (post.comment) {
+						browserApi.commentPosted(createCommentThread(post));
 					}
-				),
-			onPostComment: form => apiServer
-				.postComment(form)
-				.then(
-					res => {
-						setState({
-							article: res.article
-						});
-						browserApi.articleUpdated({
-							article: res.article,
-							isCompletionCommit: false
-						});
-						browserApi.commentPosted(res.comment);
-						return res;
-					}
-				),
-			onPostCommentAddendum: form => apiServer
-				.postCommentAddendum(form)
-				.then(
-					comment => {
-						browserApi.commentUpdated(comment);
-						return comment;
-					}
-				),
-			onPostCommentRevision: form => apiServer
-				.postCommentRevision(form)
-				.then(
-					comment => {
-						browserApi.commentUpdated(comment);
-						return comment;
-					}
-				),
+					return post;
+				}),
+			onPostComment: (form) =>
+				apiServer.postComment(form).then((res) => {
+					setState({
+						article: res.article,
+					});
+					browserApi.articleUpdated({
+						article: res.article,
+						isCompletionCommit: false,
+					});
+					browserApi.commentPosted(res.comment);
+					return res;
+				}),
+			onPostCommentAddendum: (form) =>
+				apiServer.postCommentAddendum(form).then((comment) => {
+					browserApi.commentUpdated(comment);
+					return comment;
+				}),
+			onPostCommentRevision: (form) =>
+				apiServer.postCommentRevision(form).then((comment) => {
+					browserApi.commentUpdated(comment);
+					return comment;
+				}),
 			onShare: handleShareRequest,
 			onShareViaChannel: handleShareChannelRequest,
 			onViewProfile: viewProfile,
-			toasterService
+			toasterService,
 		},
 		state: {
 			article: state.article,
 			comments: {
-				isLoading: true
+				isLoading: true,
 			},
-			user: state.user
-		}
+			user: state.user,
+		},
 	});
 }
 
-Promise
-	.all<void, InitializationResponse>([
-		new Promise(
-			resolve => {
-				window.addEventListener(
-					'DOMContentLoaded',
-					() => {
-						resolve();
-					}
-				);
-			}
-		),
-		apiServer.initialize({
-			url: window.location.href
-		})
-	])
-	.then(
-		values => {
-			// check for activation
-			const initializationResponse = values[1];
-			if (initializationResponse.action === InitializationAction.Activate) {
-				activate(initializationResponse);
-			}
-		}
-	);
+Promise.all<void, InitializationResponse>([
+	new Promise((resolve) => {
+		window.addEventListener('DOMContentLoaded', () => {
+			resolve();
+		});
+	}),
+	apiServer.initialize({
+		url: window.location.href,
+	}),
+]).then((values) => {
+	// check for activation
+	const initializationResponse = values[1];
+	if (initializationResponse.action === InitializationAction.Activate) {
+		activate(initializationResponse);
+	}
+});

@@ -8,8 +8,7 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-const
-	{ parallel, series } = require('gulp'),
+const { parallel, series } = require('gulp'),
 	project = require('./build/project'),
 	Server = require('./build/targets/Server'),
 	client = require('./build/targets/client'),
@@ -121,7 +120,7 @@ function buildProdExtension() {
 /**
  * extension MV3
  */
- function cleanDevExtensionMV3() {
+function cleanDevExtensionMV3() {
 	return extensionMV3.clean(project.env.dev);
 }
 function buildDevExtensionMV3() {
@@ -141,7 +140,6 @@ function cleanProdExtensionMV3() {
 function buildProdExtensionMV3() {
 	return extensionMV3.build(project.env.prod);
 }
-
 
 /**
  * metadataParser
@@ -260,8 +258,12 @@ module.exports = {
 	'clean:dev:native-client-share-extension': cleanDevNativeClientShareExtension,
 	'build:dev:native-client-share-extension': buildDevNativeClientShareExtension,
 	'watch:dev:native-client-share-extension': nativeClientShareExtension.watch,
-	'clean:stage:native-client-share-extension': cleanStageNativeClientShareExtension,
-	'build:stage:native-client-share-extension': buildStageNativeClientShareExtension,
-	'clean:prod:native-client-share-extension': cleanProdNativeClientShareExtension,
-	'build:prod:native-client-share-extension': buildProdNativeClientShareExtension
+	'clean:stage:native-client-share-extension':
+		cleanStageNativeClientShareExtension,
+	'build:stage:native-client-share-extension':
+		buildStageNativeClientShareExtension,
+	'clean:prod:native-client-share-extension':
+		cleanProdNativeClientShareExtension,
+	'build:prod:native-client-share-extension':
+		buildProdNativeClientShareExtension,
 };

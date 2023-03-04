@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -23,36 +23,38 @@ import * as classNames from 'classnames';
 import UserArticle from '../models/UserArticle';
 
 interface BaseProps {
-	userName: string,
-	leaderboardBadge: LeaderboardBadge,
-	isAuthor?: boolean,
-	date: string
-	onCreateAbsoluteUrl: (path: string) => string,
-	onGetShareData?: () => ShareData,
-	onShare?: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel?: (data: ShareChannelData) => void,
-	onViewProfile: (userName: string) => void,
+	userName: string;
+	leaderboardBadge: LeaderboardBadge;
+	isAuthor?: boolean;
+	date: string;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onGetShareData?: () => ShareData;
+	onShare?: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel?: (data: ShareChannelData) => void;
+	onViewProfile: (userName: string) => void;
 	/** adds the copy "posted" to make explicitly denote the action done
 	 * NOTE: unused for now, part of an update that we may include soon
-	*/
-	user?: UserAccount
-};
+	 */
+	user?: UserAccount;
+}
 
 type VerboseProps = BaseProps & {
-	verbose: boolean,
+	verbose: boolean;
 	// needed to infer scout status
-	article: UserArticle,
+	article: UserArticle;
 	// note: this is technically redundant, we could currently check for
 	// it being a silent post or not by looking at the presence of sharing props
 	// however, in case we ever allow for sharing silent posts, this is a semantic way
 	// of keeping behavior modular.
-	isComment: boolean,
-	isReply: boolean
-}
+	isComment: boolean;
+	isReply: boolean;
+};
 
 type Props = BaseProps | VerboseProps;
 
-function isVerboseProps(props: BaseProps | VerboseProps): props is VerboseProps {
+function isVerboseProps(
+	props: BaseProps | VerboseProps
+): props is VerboseProps {
 	return typeof (props as VerboseProps).verbose === 'boolean';
 }
 
@@ -60,68 +62,67 @@ function isVerboseProps(props: BaseProps | VerboseProps): props is VerboseProps 
 function getVerboseCopy(props: VerboseProps) {
 	// this is reply to one of the user's posts
 	if (props.isReply) {
-		return "replied";
+		return 'replied';
 	}
 	// scouting status trumps all
 	if (props.userName === props.article.firstPoster) {
-		return "scouted";
+		return 'scouted';
 	}
 	if (props.isComment) {
-		return "commented";
+		return 'commented';
 	}
 	// silent post
-	return "read";
+	return 'read';
 }
 
-const PostHeader = (
-	props: Props
-) => (
-	<div className={classNames('post-header_f4a846', { 'has-flair': props.isAuthor, 'is-verbose': isVerboseProps(props) && props.verbose })}>
-		{!!props.userName && (!props.user || props.user.name !== props.userName) ?
+const PostHeader = (props: Props) => (
+	<div
+		className={classNames('post-header_f4a846', {
+			'has-flair': props.isAuthor,
+			'is-verbose': isVerboseProps(props) && props.verbose,
+		})}
+	>
+		{!!props.userName && (!props.user || props.user.name !== props.userName) ? (
 			<ProfileLink
 				className="user-name"
 				onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
 				onViewProfile={props.onViewProfile}
 				userName={props.userName}
-			/> :
-			<span className="user-name">{props.userName || '[user]'}</span>}
-		{props.leaderboardBadge !== LeaderboardBadge.None ?
-			<LeaderboardBadges badge={props.leaderboardBadge} /> :
-			null}
-		{
-			isVerboseProps(props) && props.verbose ?
-				<span className="posted-copy">{getVerboseCopy(props)}</span> : null
-		}
+			/>
+		) : (
+			<span className="user-name">{props.userName || '[user]'}</span>
+		)}
+		{props.leaderboardBadge !== LeaderboardBadge.None ? (
+			<LeaderboardBadges badge={props.leaderboardBadge} />
+		) : null}
+		{isVerboseProps(props) && props.verbose ? (
+			<span className="posted-copy">{getVerboseCopy(props)}</span>
+		) : null}
 		<span className="age">{format(props.date.replace(/([^Z])$/, '$1Z'))}</span>
-		{(
-			props.userName &&
-			props.onGetShareData &&
-			props.onShare &&
-			props.onShareViaChannel
-		) ?
+		{props.userName &&
+		props.onGetShareData &&
+		props.onShare &&
+		props.onShareViaChannel ? (
 			<ShareControl
 				menuPosition={MenuPosition.RightMiddle}
 				onGetData={props.onGetShareData}
 				onShare={props.onShare}
 				onShareViaChannel={props.onShareViaChannel}
 			>
-				<Icon
-					display="block"
-					name="share"
-				/>
-			</ShareControl> :
-			null}
-		{props.isAuthor ?
+				<Icon display="block" name="share" />
+			</ShareControl>
+		) : null}
+		{props.isAuthor ? (
 			<span className="author">
 				<Icon name="verified-user" />
 				<span>Writer</span>
-			</span> :
-			null}
+			</span>
+		) : null}
 	</div>
 );
 
 PostHeader.defaultProps = {
-	verbose: false
+	verbose: false,
 };
 
 export default PostHeader;

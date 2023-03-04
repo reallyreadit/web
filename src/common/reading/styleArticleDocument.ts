@@ -1,19 +1,21 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import { isReadupElement } from '../contentParsing/utils';
 import { formatList } from '../format';
-import DisplayPreference, { DisplayTheme, getClientPreferredColorScheme } from '../models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	DisplayTheme,
+	getClientPreferredColorScheme,
+} from '../models/userAccounts/DisplayPreference';
 
-export const
-	articleBylineId = 'com_readup_article_byline',
+export const articleBylineId = 'com_readup_article_byline',
 	articleTitleId = 'com_readup_article_title',
 	lightBackgroundColor = '#fdfdfd',
 	darkBackgroundColor = '#181818';
@@ -388,16 +390,57 @@ const htmlTransitionCompletionStyleContent = `
 }
 `;
 const obsoleteStyles: {
-	[key: string]: string[]
+	[key: string]: string[];
 } = {
-	'body': ['alink', 'background', 'bgcolor', 'bottommargin', 'leftmargin', 'link', 'rightmargin', 'text', 'topmargin', 'vlink '],
-	'table': ['align', 'bgcolor', 'border', 'cellpadding', 'cellspacing', 'frame', 'rules', 'summary', 'width'],
-	'thead': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
-	'tbody': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
-	'tfoot': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
-	'tr': ['align', 'bgcolor', 'char', 'charoff', 'valign'],
-	'th': ['align', 'axis', 'bgcolor', 'char', 'charoff', 'height', 'valign', 'width'],
-	'td': ['abbr', 'align', 'axis', 'bgcolor', 'char', 'charoff', 'height', 'scope', 'valign', 'width']
+	body: [
+		'alink',
+		'background',
+		'bgcolor',
+		'bottommargin',
+		'leftmargin',
+		'link',
+		'rightmargin',
+		'text',
+		'topmargin',
+		'vlink ',
+	],
+	table: [
+		'align',
+		'bgcolor',
+		'border',
+		'cellpadding',
+		'cellspacing',
+		'frame',
+		'rules',
+		'summary',
+		'width',
+	],
+	thead: ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	tbody: ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	tfoot: ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	tr: ['align', 'bgcolor', 'char', 'charoff', 'valign'],
+	th: [
+		'align',
+		'axis',
+		'bgcolor',
+		'char',
+		'charoff',
+		'height',
+		'valign',
+		'width',
+	],
+	td: [
+		'abbr',
+		'align',
+		'axis',
+		'bgcolor',
+		'char',
+		'charoff',
+		'height',
+		'scope',
+		'valign',
+		'width',
+	],
 };
 
 export function createByline(authors: string[] | { name?: string }[]) {
@@ -408,38 +451,32 @@ export function createByline(authors: string[] | { name?: string }[]) {
 	if (typeof authors[0] === 'string') {
 		authorNames = authors as string[];
 	} else {
-		authorNames = (authors as { name?: string }[]).map(
-			author => author.name
-		);
+		authorNames = (authors as { name?: string }[]).map((author) => author.name);
 	}
 	return formatList(
 		authorNames
-			.reduce<string[]>(
-				(names, name) => {
-					if (!!name) {
-						const trimmedName = name.trim();
-						if (
-							!names.some(
-								existingAuthorName => existingAuthorName.toLowerCase() === trimmedName.toLowerCase()
-							)
-						) {
-							names.push(trimmedName);
-						}
+			.reduce<string[]>((names, name) => {
+				if (!!name) {
+					const trimmedName = name.trim();
+					if (
+						!names.some(
+							(existingAuthorName) =>
+								existingAuthorName.toLowerCase() === trimmedName.toLowerCase()
+						)
+					) {
+						names.push(trimmedName);
 					}
-					return names;
-				},
-				[]
-			)
+				}
+				return names;
+			}, [])
 			.sort()
 	);
 }
-export function applyDisplayPreferenceToArticleDocument(preference: DisplayPreference | null) {
+export function applyDisplayPreferenceToArticleDocument(
+	preference: DisplayPreference | null
+) {
 	// set theme
-	const theme = (
-		preference ?
-			preference.theme :
-			getClientPreferredColorScheme()
-	);
+	const theme = preference ? preference.theme : getClientPreferredColorScheme();
 	let scheme: 'light' | 'dark';
 	if (theme === DisplayTheme.Light) {
 		scheme = 'light';
@@ -448,131 +485,92 @@ export function applyDisplayPreferenceToArticleDocument(preference: DisplayPrefe
 	}
 	document.documentElement.dataset['com_readup_theme'] = scheme;
 	// set text size
-	document
-		.getElementById('com_readup_article')
-		.dataset['com_readup_text_size'] = (
-			preference ?
-				preference.textSize.toString() :
-				'1'
-		);
+	document.getElementById('com_readup_article').dataset[
+		'com_readup_text_size'
+	] = preference ? preference.textSize.toString() : '1';
 	// hide or show links
-	const anchors = Array.from(
-		document.getElementsByTagName('a')
-	);
+	const anchors = Array.from(document.getElementsByTagName('a'));
 	if (preference == null || preference.hideLinks) {
-		anchors.forEach(
-			a => {
-				a.removeAttribute('href');
-			}
-		);
+		anchors.forEach((a) => {
+			a.removeAttribute('href');
+		});
 	} else {
-		anchors.forEach(
-			a => {
-				a.setAttribute('href', a.dataset['com_readup_href']);
-			}
-		);
+		anchors.forEach((a) => {
+			a.setAttribute('href', a.dataset['com_readup_href']);
+		});
 	}
 }
 interface HeaderMetadata {
-	title: string,
-	byline: string
+	title: string;
+	byline: string;
 }
-export default function styleArticleDocument(
-	{
-		header,
-		useScrollContainer,
-		transitionElement,
-		completeTransition
-	}:
-	{
-		header?: HeaderMetadata,
-		useScrollContainer?: boolean,
-		transitionElement: HTMLElement,
-		completeTransition?: boolean
-	}
-) {
+export default function styleArticleDocument({
+	header,
+	useScrollContainer,
+	transitionElement,
+	completeTransition,
+}: {
+	header?: HeaderMetadata;
+	useScrollContainer?: boolean;
+	transitionElement: HTMLElement;
+	completeTransition?: boolean;
+}) {
 	// add viewport meta
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {
 		const metaElement = document.createElement('meta');
 		metaElement.setAttribute('name', 'viewport');
-		metaElement.setAttribute('content', 'width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover');
+		metaElement.setAttribute(
+			'content',
+			'width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover'
+		);
 		document.head.appendChild(metaElement);
 		window.setTimeout(() => {
 			window.scrollTo(0, 0);
 		}, 500);
 	}
 	// strip styles
-	Array
-		.from(
-			document.getElementsByTagName('link')
-		)
-		.forEach(
-			link => {
-				// rel value could be "stylesheet prefetch"
-				if (
-					link.rel
-						?.toLowerCase()
-						.includes('stylesheet')
-				) {
-					link.remove();
-				}
-			}
-		);
-	Array
-		.from(document.getElementsByTagName('style'))
-		.forEach(style => {
-			if (!isReadupElement(style)) {
-				style.remove();
-			}
-		});
-	Array
-		.from(
-			document.getElementsByTagName('font')
-		)
-		.forEach(
-			fontElement => {
-				while (fontElement.attributes.length) {
-					fontElement.removeAttribute(fontElement.attributes[0].name);
-				}
-			}
-		);
+	Array.from(document.getElementsByTagName('link')).forEach((link) => {
+		// rel value could be "stylesheet prefetch"
+		if (link.rel?.toLowerCase().includes('stylesheet')) {
+			link.remove();
+		}
+	});
+	Array.from(document.getElementsByTagName('style')).forEach((style) => {
+		if (!isReadupElement(style)) {
+			style.remove();
+		}
+	});
+	Array.from(document.getElementsByTagName('font')).forEach((fontElement) => {
+		while (fontElement.attributes.length) {
+			fontElement.removeAttribute(fontElement.attributes[0].name);
+		}
+	});
 	for (const elementName in obsoleteStyles) {
-		for (
-			const element of document.getElementsByTagName(elementName)
-		) {
+		for (const element of document.getElementsByTagName(elementName)) {
 			for (const attributeName of obsoleteStyles[elementName]) {
 				element.removeAttribute(attributeName);
 			}
 		}
 	}
 	// cache transition styles before stripping style attributes
-	const
-		transitionOpacity = transitionElement.style.opacity,
+	const transitionOpacity = transitionElement.style.opacity,
 		transitionTransition = transitionElement.style.transition;
-	Array
-		.from(document.querySelectorAll('[align], [style], [tabindex]'))
-		.forEach(
-			element => {
-				if (!isReadupElement(element)) {
-					element.removeAttribute('align');
-					element.removeAttribute('style');
-					element.removeAttribute('tabindex');
-				}
+	Array.from(document.querySelectorAll('[align], [style], [tabindex]')).forEach(
+		(element) => {
+			if (!isReadupElement(element)) {
+				element.removeAttribute('align');
+				element.removeAttribute('style');
+				element.removeAttribute('tabindex');
 			}
+		}
 	);
 	// restore transition styles
 	transitionElement.style.opacity = transitionOpacity;
 	transitionElement.style.transition = transitionTransition;
 	// cache link hrefs
-	Array
-		.from(
-			document.getElementsByTagName('a')
-		)
-		.forEach(
-			a => {
-				a.dataset['com_readup_href'] = a.href;
-			}
-		);
+	Array.from(document.getElementsByTagName('a')).forEach((a) => {
+		a.dataset['com_readup_href'] = a.href;
+	});
 	// add custom classes
 	document.documentElement.id = 'com_readup_document';
 	if (useScrollContainer) {

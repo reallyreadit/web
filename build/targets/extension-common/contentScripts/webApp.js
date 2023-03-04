@@ -13,12 +13,16 @@ const path = require('path');
 const project = require('../../../project'),
 	createBuild = require('../../../createBuild');
 
-const build = (targetPath) => createBuild({
-	webpack: {
-		entry: path.posix.join(project.srcDir, 'extension/content-scripts/web-app/main.ts'),
-		sourceMaps: false
-	},
-	path: targetPath
-});
+const build = (targetPath) =>
+	createBuild({
+		webpack: {
+			entry: path.posix.join(
+				project.srcDir,
+				'extension/content-scripts/web-app/main.ts'
+			),
+			sourceMaps: false,
+		},
+		path: targetPath,
+	});
 
 module.exports = build;

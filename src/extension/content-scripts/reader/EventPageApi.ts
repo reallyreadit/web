@@ -19,114 +19,129 @@ import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 
-function sendMessage<T>(type: string, data?: {}, responseCallback?: (response: MessageResponse<T>) => void) {
+function sendMessage<T>(
+	type: string,
+	data?: {},
+	responseCallback?: (response: MessageResponse<T>) => void
+) {
 	try {
 		chrome.runtime.sendMessage(
 			{
 				to: 'eventPage',
 				from: 'readerContentScript',
 				type,
-				data
+				data,
 			},
 			responseCallback
 		);
 	} catch (ex) {
 		if (responseCallback) {
 			responseCallback({
-				error: 'Failed to send message.'
+				error: 'Failed to send message.',
 			});
 		}
 	}
 }
 function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
-	return new Promise<T>(
-		(resolve, reject) => {
-			try {
-				sendMessage<T>(
-					type,
-					data,
-					response => {
-						if (isSuccessResponse<T>(response)) {
-							resolve(response.value);
-						} else {
-							reject(response != null ? response.error : "Something went wrong in the event page API");
-						}
-					}
-				);
-			} catch (ex) {
-				reject('Failed to send message.');
-			}
+	return new Promise<T>((resolve, reject) => {
+		try {
+			sendMessage<T>(type, data, (response) => {
+				if (isSuccessResponse<T>(response)) {
+					resolve(response.value);
+				} else {
+					reject(
+						response != null
+							? response.error
+							: 'Something went wrong in the event page API'
+					);
+				}
+			});
+		} catch (ex) {
+			reject('Failed to send message.');
 		}
-	);
+	});
 }
 /**
  * An API for content scripts to communicate to the extension's event (background) page.
  * The event page can itself communicate with Readup's API.
  *
- * @deprecated Event pages are a deprecated concept in Chromium-based browsers:
+ * Event pages are a deprecated concept in Chromium-based browsers:
  * https://developer.chrome.com/docs/extensions/mv2/background_pages/
- * They should be refactored, but might be preserved for Firefox.
  */
 export default class EventPageApi {
 	/**
 	 * Initializes the API with the given response handlers in the client script.
 	 */
 	constructor(handlers: {
-		onArticleUpdated: (event: ArticleUpdatedEvent) => void,
-		onAuthServiceLinkCompleted: (response: AuthServiceBrowserLinkResponse) => void,
-		onCommentPosted: (comment: CommentThread) => void,
-		onCommentUpdated: (comment: CommentThread) => void,
-		onDisplayPreferenceChanged: (preference: DisplayPreference) => void,
-		onUserSignedOut: () => void,
-		onUserUpdated: (user: UserAccount) => void
+		onArticleUpdated: (event: ArticleUpdatedEvent) => void;
+		onAuthServiceLinkCompleted: (
+			response: AuthServiceBrowserLinkResponse
+		) => void;
+		onCommentPosted: (comment: CommentThread) => void;
+		onCommentUpdated: (comment: CommentThread) => void;
+		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+		onUserSignedOut: () => void;
+		onUserUpdated: (user: UserAccount) => void;
 	}) {
-		chrome.runtime.onMessage.addListener(
-			(message, sender, sendResponse) => {
-				// Don't answer messages from other content scripts.
-				// TODO: Explore full consequences of running this messaging service in a chrome-extension://... page instead of a regular http(s)://... web page and refactor as required.
-				if (message.from === 'readerContentScript') {
-					return;
-				}
-				switch (message.type) {
-					case 'articleUpdated':
-						handlers.onArticleUpdated(message.data);
-						break;
-					case 'authServiceLinkCompleted':
-						handlers.onAuthServiceLinkCompleted(message.data);
-						break;
-					case 'commentPosted':
-						handlers.onCommentPosted(message.data);
-						break;
-					case 'commentUpdated':
-						handlers.onCommentUpdated(message.data);
-						break;
-					case 'displayPreferenceChanged':
-						handlers.onDisplayPreferenceChanged(message.data);
-						break;
-					case 'userSignedOut':
-						handlers.onUserSignedOut();
-						break;
-					case 'userUpdated':
-						handlers.onUserUpdated(message.data);
-						break;
-				}
-				// always send a response because the sender must use a callback in order to
-				// check for runtime errors and an error will be triggered if the port is closed
-				sendResponse();
+		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+			// Don't answer messages from other content scripts.
+			// TODO: Explore full consequences of running this messaging service in a chrome-extension://... page instead of a regular http(s)://... web page and refactor as required.
+			if (message.from === 'readerContentScript') {
+				return;
 			}
-		);
+			switch (message.type) {
+				case 'articleUpdated':
+					handlers.onArticleUpdated(message.data);
+					break;
+				case 'authServiceLinkCompleted':
+					handlers.onAuthServiceLinkCompleted(message.data);
+					break;
+				case 'commentPosted':
+					handlers.onCommentPosted(message.data);
+					break;
+				case 'commentUpdated':
+					handlers.onCommentUpdated(message.data);
+					break;
+				case 'displayPreferenceChanged':
+					handlers.onDisplayPreferenceChanged(message.data);
+					break;
+				case 'userSignedOut':
+					handlers.onUserSignedOut();
+					break;
+				case 'userUpdated':
+					handlers.onUserUpdated(message.data);
+					break;
+			}
+			// always send a response because the sender must use a callback in order to
+			// check for runtime errors and an error will be triggered if the port is closed
+			sendResponse();
+		});
 	}
 	public getDisplayPreference() {
-		return sendMessageAwaitingResponse<DisplayPreference | null>('getDisplayPreference');
+		return sendMessageAwaitingResponse<DisplayPreference | null>(
+			'getDisplayPreference'
+		);
 	}
 	public changeDisplayPreference(preference: DisplayPreference) {
-		return sendMessageAwaitingResponse<DisplayPreference>('changeDisplayPreference', preference);
+		return sendMessageAwaitingResponse<DisplayPreference>(
+			'changeDisplayPreference',
+			preference
+		);
 	}
 	public registerPage(data: ParseResult) {
-		return sendMessageAwaitingResponse<ArticleLookupResult>('registerPage', data);
+		return sendMessageAwaitingResponse<ArticleLookupResult>(
+			'registerPage',
+			data
+		);
 	}
-	public commitReadState(commitData: ReadStateCommitData, isCompletionCommit: boolean) {
-		return sendMessageAwaitingResponse<UserArticle>('commitReadState', { commitData, isCompletionCommit });
+	public commitReadState(
+		commitData: ReadStateCommitData,
+		isCompletionCommit: boolean
+	) {
+		return sendMessageAwaitingResponse<UserArticle>('commitReadState', {
+			commitData,
+			isCompletionCommit,
+		});
 	}
 	public unregisterPage() {
 		sendMessage('unregisterPage');
@@ -147,24 +162,41 @@ export default class EventPageApi {
 		return sendMessageAwaitingResponse<Post>('postArticle', form);
 	}
 	public postComment(form: CommentForm) {
-		return sendMessageAwaitingResponse<{ article: UserArticle, comment: CommentThread }>('postComment', form);
+		return sendMessageAwaitingResponse<{
+			article: UserArticle;
+			comment: CommentThread;
+		}>('postComment', form);
 	}
 	public postCommentAddendum(form: CommentAddendumForm) {
-		return sendMessageAwaitingResponse<CommentThread>('postCommentAddendum', form);
+		return sendMessageAwaitingResponse<CommentThread>(
+			'postCommentAddendum',
+			form
+		);
 	}
 	public postCommentRevision(form: CommentRevisionForm) {
-		return sendMessageAwaitingResponse<CommentThread>('postCommentRevision', form);
+		return sendMessageAwaitingResponse<CommentThread>(
+			'postCommentRevision',
+			form
+		);
+	}
+	public readArticle(slug: string) {
+		return sendMessage('readArticle', slug);
 	}
 	public reportArticleIssue(request: ArticleIssueReportRequest) {
 		return sendMessageAwaitingResponse('reportArticleIssue', request);
 	}
 	public requestTwitterBrowserLinkRequestToken() {
-		return sendMessageAwaitingResponse<TwitterRequestToken>('requestTwitterBrowserLinkRequestToken');
+		return sendMessageAwaitingResponse<TwitterRequestToken>(
+			'requestTwitterBrowserLinkRequestToken'
+		);
 	}
 	public setStarred(form: StarForm) {
 		return sendMessageAwaitingResponse<UserArticle>('setStarred', form);
 	}
 	public deleteComment(form: CommentDeletionForm) {
-		return sendMessageAwaitingResponse<CommentThread>('postCommentDeletion', form);
+		return sendMessageAwaitingResponse<CommentThread>(
+			'postCommentDeletion',
+			form
+		);
 	}
 }

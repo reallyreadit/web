@@ -1,18 +1,20 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import CaptchaBase from '../../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../../common/components/Toaster';
 import Icon from '../../../../common/components/Icon';
-import CreateAccountDialog, { Form as CreateAccountDialogForm } from '../CreateAccountDialog';
+import CreateAccountDialog, {
+	Form as CreateAccountDialogForm,
+} from '../CreateAccountDialog';
 import SignInDialog, { Form as SignInDialogForm } from '../SignInDialog';
 import SpinnerIcon from '../../../../common/components/SpinnerIcon';
 import classNames from 'classnames';
@@ -22,19 +24,19 @@ import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvi
 
 const authProviderNames = {
 	[AuthServiceProvider.Apple]: 'Apple ID',
-	[AuthServiceProvider.Twitter]: 'Twitter'
+	[AuthServiceProvider.Twitter]: 'Twitter',
 };
 interface Props {
-	authStatus: AuthStatus,
-	captcha: CaptchaBase,
-	onCloseDialog: () => void,
-	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>,
-	onOpenDialog: (element: React.ReactNode) => void,
-	onOpenRequestPasswordResetDialog: () => void,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (form: SignInDialogForm) => Promise<void>,
-	onSignInWithApple: () => void,
-	onSignInWithTwitter: () => Promise<{}>
+	authStatus: AuthStatus;
+	captcha: CaptchaBase;
+	onCloseDialog: () => void;
+	onCreateAccount: (form: CreateAccountDialogForm) => Promise<void>;
+	onOpenDialog: (element: React.ReactNode) => void;
+	onOpenRequestPasswordResetDialog: () => void;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onSignIn: (form: SignInDialogForm) => Promise<void>;
+	onSignInWithApple: () => void;
+	onSignInWithTwitter: () => Promise<{}>;
 }
 export default class extends React.PureComponent<Props> {
 	private readonly _openCreateAccountDialog = () => {
@@ -46,13 +48,15 @@ export default class extends React.PureComponent<Props> {
 				onCreateAccount={this.props.onCreateAccount}
 				onCloseDialog={this.props.onCloseDialog}
 				onShowToast={this.props.onShowToast}
-				onSignIn={
-					() => this.props.onOpenDialog(
+				onSignIn={() =>
+					this.props.onOpenDialog(
 						<SignInDialog
 							analyticsAction="AuthScreen"
 							autoFocus={false}
 							onCloseDialog={this.props.onCloseDialog}
-							onOpenPasswordResetDialog={this.props.onOpenRequestPasswordResetDialog}
+							onOpenPasswordResetDialog={
+								this.props.onOpenRequestPasswordResetDialog
+							}
 							onShowToast={this.props.onShowToast}
 							onSignIn={this.props.onSignIn}
 						/>
@@ -66,25 +70,29 @@ export default class extends React.PureComponent<Props> {
 			<div className="auth-screen_gnq77a">
 				<div className="content">
 					<div className="logo"></div>
-					<div className={
-						classNames(
-							'status',
-							{
-								'hidden': !this.props.authStatus
-							}
-						)
-					}>
-						{this.props.authStatus ?
-							this.props.authStatus.step === AuthStep.Authenticating ?
+					<div
+						className={classNames('status', {
+							hidden: !this.props.authStatus,
+						})}
+					>
+						{this.props.authStatus ? (
+							this.props.authStatus.step === AuthStep.Authenticating ? (
 								<>
-									<SpinnerIcon /> Signing in with {authProviderNames[this.props.authStatus.provider]}
-								</> :
-								`Error signing in with ${authProviderNames[this.props.authStatus.provider]}` :
-							null}
+									<SpinnerIcon /> Signing in with{' '}
+									{authProviderNames[this.props.authStatus.provider]}
+								</>
+							) : (
+								`Error signing in with ${
+									authProviderNames[this.props.authStatus.provider]
+								}`
+							)
+						) : null}
 					</div>
 					<div className="welcome-text">
 						<p className="welcome-text__summary">Log in or create an account</p>
-						<p className="welcome-text__free-trial small-font">Readup is a free &amp; donation-based app.</p>
+						<p className="welcome-text__free-trial small-font">
+							Readup is a free &amp; donation-based app.
+						</p>
 					</div>
 					<AuthServiceButton
 						onClick={this.props.onSignInWithTwitter}

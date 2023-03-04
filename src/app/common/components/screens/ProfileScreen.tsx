@@ -1,17 +1,20 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import UserAccount from '../../../../common/models/UserAccount';
-import { FetchFunctionWithParams, FetchFunction } from '../../serverApi/ServerApi';
+import {
+	FetchFunctionWithParams,
+	FetchFunction,
+} from '../../serverApi/ServerApi';
 import UserNameQuery from '../../../../common/models/social/UserNameQuery';
 import Profile from '../../../../common/models/social/Profile';
 import UserPostsQuery from '../../../../common/models/social/UserPostsQuery';
@@ -46,96 +49,117 @@ import * as classNames from 'classnames';
 import { PostList } from '../PostList';
 import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import AbstractFollowable from '../AbstractFollowable';
 
 interface Props {
-	deviceType: DeviceType,
-	highlightedCommentId: string | null,
-	highlightedPostId: string | null,
-	location: RouteLocation,
-	onBeginOnboarding: (analyticsAction: string) => void,
-	onClearAlerts: (alert: Alert) => void,
-	onCloseDialog: () => void,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateStaticContentUrl: (path: string) => string,
-	onFollowUser: (form: UserNameForm) => Promise<void>,
-	onGetAuthorArticles: FetchFunctionWithParams<AuthorArticleQuery, PageResult<UserArticle>>,
-	onGetFollowees: FetchFunction<Following[]>,
-	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
-	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>,
-	onReloadProfile: (screenId: number, userName: string, user: UserAccount | null) => Promise<Profile>,
-	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
-	onNavTo: (url: string) => boolean,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onOpenNewPlatformNotificationRequestDialog: () => void,
-	onPostArticle: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function,
-	onRegisterCommentUpdatedHandler: (handler: (comment: CommentThread) => void) => Function,
-	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onUnfollowUser: (form: UserNameForm) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	onViewThread: (comment: CommentThread) => void,
-	profile: Fetchable<Profile>,
-	screenId: number,
-	userAccount: UserAccount | null,
-	userName: string
+	deviceType: DeviceType;
+	highlightedCommentId: string | null;
+	highlightedPostId: string | null;
+	location: RouteLocation;
+	onBeginOnboarding: (analyticsAction: string) => void;
+	onClearAlerts: (alert: Alert) => void;
+	onCloseDialog: () => void;
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onCreateStaticContentUrl: (path: string) => string;
+	onFollowUser: (form: UserNameForm) => Promise<void>;
+	onGetAuthorArticles: FetchFunctionWithParams<
+		AuthorArticleQuery,
+		PageResult<UserArticle>
+	>;
+	onGetFollowees: FetchFunction<Following[]>;
+	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>;
+	onGetPosts: FetchFunctionWithParams<UserPostsQuery, PageResult<Post>>;
+	onReloadProfile: (
+		screenId: number,
+		userName: string,
+		user: UserAccount | null
+	) => Promise<Profile>;
+	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void;
+	onNavTo: (url: string) => boolean;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onOpenNewPlatformNotificationRequestDialog: () => void;
+	onPostArticle: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onReadArticle: (
+		article: UserArticle,
+		e: React.MouseEvent<HTMLElement>
+	) => void;
+	onRegisterArticleChangeHandler: (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => Function;
+	onRegisterArticlePostedHandler: (handler: (post: Post) => void) => Function;
+	onRegisterCommentUpdatedHandler: (
+		handler: (comment: CommentThread) => void
+	) => Function;
+	onRegisterFolloweeCountChangedHandler: (
+		handler: (change: FolloweeCountChange) => void
+	) => Function;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleArticleStar: (article: UserArticle) => Promise<void>;
+	onUnfollowUser: (form: UserNameForm) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	onViewThread: (comment: CommentThread) => void;
+	profile: Fetchable<Profile>;
+	screenId: number;
+	userAccount: UserAccount | null;
+	userName: string;
 }
-export type Deps = Pick<Props, Exclude<keyof Props, 'highlightedCommentId' | 'highlightedPostId' | 'userAccount' | 'userName'>>;
+export type Deps = Pick<
+	Props,
+	Exclude<
+		keyof Props,
+		'highlightedCommentId' | 'highlightedPostId' | 'userAccount' | 'userName'
+	>
+>;
 enum View {
 	Articles = 'Articles',
 	Indeterminate = 'Indeterminate',
-	Posts = 'Posts'
+	Posts = 'Posts',
 }
 type BaseState = {
-	isFollowingButtonBusy: boolean
+	isFollowingButtonBusy: boolean;
 };
 type ArticlesState = BaseState & {
-	view: View.Articles,
-	articles: Fetchable<PageResult<UserArticle>>
+	view: View.Articles;
+	articles: Fetchable<PageResult<UserArticle>>;
 };
 type IndeterminateState = BaseState & {
-	view: View.Indeterminate
+	view: View.Indeterminate;
 };
 type PostsState = BaseState & {
-	view: View.Posts,
-	posts: Fetchable<PageResult<Post>>
+	view: View.Posts;
+	posts: Fetchable<PageResult<Post>>;
 };
 type State = IndeterminateState | ArticlesState | PostsState;
-const
-	listPageSize = 40,
-	headerSelectorItems = [
-		{
-			value: View.Posts
-		},
-		{
-			value: View.Articles
-		}
-	];
+const listPageSize = 40;
+const headerSelectorItems = [
+	{
+		value: View.Posts,
+	},
+	{
+		value: View.Articles,
+	},
+];
 
 export class ProfileScreen extends AbstractFollowable<Props, State> {
-
-	private readonly _changeArticles = (articles: Fetchable<PageResult<UserArticle>>) => {
+	private readonly _changeArticles = (
+		articles: Fetchable<PageResult<UserArticle>>
+	) => {
 		this.setState({
 			view: View.Articles,
 			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-			articles
+			articles,
 		});
 	};
 	private readonly _changeArticlesPageNumber = (_: number) => {
 		this.setState({
 			view: View.Articles,
 			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-			articles: { isLoading: true }
+			articles: { isLoading: true },
 		});
 		this.fetchArticles();
 	};
@@ -143,14 +167,14 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		this.setState({
 			view: View.Posts,
 			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-			posts
+			posts,
 		});
 	};
 	private readonly _changePostsPageNumber = (pageNumber: number) => {
 		this.setState({
 			view: View.Posts,
 			isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-			posts: { isLoading: true }
+			posts: { isLoading: true },
 		});
 		this.fetchPosts(pageNumber);
 	};
@@ -165,8 +189,8 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 					view,
 					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
 					articles: {
-						isLoading: true
-					}
+						isLoading: true,
+					},
 				});
 				this.fetchArticles();
 				break;
@@ -175,8 +199,8 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 					view,
 					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
 					posts: {
-						isLoading: true
-					}
+						isLoading: true,
+					},
 				});
 				this.fetchPosts(1);
 				break;
@@ -187,13 +211,13 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		if (props.profile.isLoading || !props.profile.value) {
 			this.state = {
 				view: View.Indeterminate,
-				isFollowingButtonBusy: false
+				isFollowingButtonBusy: false,
 			};
 		} else {
 			this.state = {
 				view: View.Posts,
 				isFollowingButtonBusy: false,
-				posts: this.fetchPosts(1)
+				posts: this.fetchPosts(1),
 			};
 		}
 	}
@@ -204,17 +228,15 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 				minLength: null,
 				pageNumber: 1,
 				pageSize: listPageSize,
-				slug: this.props.profile.value.authorProfile.slug
+				slug: this.props.profile.value.authorProfile.slug,
 			},
-			this._asyncTracker.addCallback(
-				articles => {
-					this.setState({
-						view: View.Articles,
-						isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-						articles
-					});
-				}
-			)
+			this._asyncTracker.addCallback((articles) => {
+				this.setState({
+					view: View.Articles,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					articles,
+				});
+			})
 		);
 	}
 	private fetchPosts(pageNumber: number) {
@@ -222,17 +244,15 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 			{
 				userName: this.props.userName,
 				pageNumber,
-				pageSize: listPageSize
+				pageSize: listPageSize,
 			},
-			this._asyncTracker.addCallback(
-				posts => {
-					this.setState({
-						view: View.Posts,
-						isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-						posts
-					});
-				}
-			)
+			this._asyncTracker.addCallback((posts) => {
+				this.setState({
+					view: View.Posts,
+					isFollowingButtonBusy: this.state.isFollowingButtonBusy,
+					posts,
+				});
+			})
 		);
 	}
 	private renderList() {
@@ -252,7 +272,9 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 						onPostArticle={this.props.onPostArticle}
 						onRateArticle={this.props.onRateArticle}
 						onReadArticle={this.props.onReadArticle}
-						onRegisterArticleChangeHandler={this.props.onRegisterArticleChangeHandler}
+						onRegisterArticleChangeHandler={
+							this.props.onRegisterArticleChangeHandler
+						}
 						onShare={this.props.onShare}
 						onShareViaChannel={this.props.onShareViaChannel}
 						onToggleArticleStar={this.props.onToggleArticleStar}
@@ -268,9 +290,9 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 						addNewPosts={this.isOwnProfile()}
 						deviceType={this.props.deviceType}
 						emptyListMessage={
-							this.isOwnProfile() ?
-								'You haven\'t posted anything yet.' :
-								`${this.props.userName} hasn't posted anything yet.`
+							this.isOwnProfile()
+								? "You haven't posted anything yet."
+								: `${this.props.userName} hasn't posted anything yet.`
 						}
 						highlightedCommentId={this.props.highlightedCommentId}
 						highlightedPostId={this.props.highlightedPostId}
@@ -283,9 +305,15 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 						onPostArticle={this.props.onPostArticle}
 						onRateArticle={this.props.onRateArticle}
 						onReadArticle={this.props.onReadArticle}
-						onRegisterArticleChangeHandler={this.props.onRegisterArticleChangeHandler}
-						onRegisterArticlePostedHandler={this.props.onRegisterArticlePostedHandler}
-						onRegisterCommentUpdatedHandler={this.props.onRegisterCommentUpdatedHandler}
+						onRegisterArticleChangeHandler={
+							this.props.onRegisterArticleChangeHandler
+						}
+						onRegisterArticlePostedHandler={
+							this.props.onRegisterArticlePostedHandler
+						}
+						onRegisterCommentUpdatedHandler={
+							this.props.onRegisterCommentUpdatedHandler
+						}
 						onShare={this.props.onShare}
 						onShareViaChannel={this.props.onShareViaChannel}
 						onToggleArticleStar={this.props.onToggleArticleStar}
@@ -306,10 +334,14 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 			this.setState(
 				{
 					view: View.Indeterminate,
-					isFollowingButtonBusy: false
+					isFollowingButtonBusy: false,
 				},
 				() => {
-					this.props.onReloadProfile(this.props.screenId, this.props.userName, this.props.userAccount);
+					this.props.onReloadProfile(
+						this.props.screenId,
+						this.props.userName,
+						this.props.userAccount
+					);
 				}
 			);
 		}
@@ -318,7 +350,7 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 			this.setState({
 				view: View.Posts,
 				isFollowingButtonBusy: this.state.isFollowingButtonBusy,
-				posts: this.fetchPosts(1)
+				posts: this.fetchPosts(1),
 			});
 		}
 	}
@@ -341,90 +373,87 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		}
 		return (
 			<div className="profile-screen_1u1j1e">
-				{this.props.profile.isLoading ?
-					<LoadingOverlay position="absolute" /> :
-					!this.props.profile.value ?
-						<InfoBox
-							position="absolute"
-							style="normal"
-						>
-							<p>Profile not found.</p>
-						</InfoBox> :
-						<>
-							{!this.props.userAccount ?
-							<MarketingBanner
-								analyticsAction="CommentsScreen"
-								deviceType={this.props.deviceType}
-								marketingVariant={{headline: 'Readup is the world\'s best reading app', subtext: `Download Readup to read with @${this.props.profile.value.userName}`}}
-								location={this.props.location}
-								onNavTo={this.props.onNavTo}
-								onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							/> :
-								null}
-							<Panel className="main">
-								<div className="profile" data-nosnippet>
-									{this.props.profile.value.authorProfile ?
-										<div className="author">
-											{this.props.profile.value.authorProfile.name}<Icon name="verified-user" title="Verified" />
-										</div> :
-										null}
-									<div className={classNames('user-name', { 'small': !!this.props.profile.value.authorProfile })}>
-										<span className="name">@{this.props.profile.value.userName}</span>
-										{this.props.profile.value.leaderboardBadge !== LeaderboardBadge.None ?
-											<LeaderboardBadges badge={this.props.profile.value.leaderboardBadge} /> :
-											null}
+				{this.props.profile.isLoading ? (
+					<LoadingOverlay position="absolute" />
+				) : !this.props.profile.value ? (
+					<InfoBox position="absolute" style="normal">
+						<p>Profile not found.</p>
+					</InfoBox>
+				) : (
+					<>
+						<Panel className="main">
+							<div className="profile" data-nosnippet>
+								{this.props.profile.value.authorProfile ? (
+									<div className="author">
+										{this.props.profile.value.authorProfile.name}
+										<Icon name="verified-user" title="Verified" />
 									</div>
-										{!isOwnProfile && this.props.userAccount ?
-										<FollowButton
-											following={this.props.profile.value}
-											isBusy={this.state.isFollowingButtonBusy}
-											onFollow={this._followUser}
-											onUnfollow={this._unfollowUser}
-											size="large"
-										/> :
-									null}
-								</div>
-								{this.props.profile.value.authorProfile ?
-									<div className="controls" data-nosnippet>
-										<HeaderSelector
-											disabled={isListLoading}
-											items={headerSelectorItems}
-											onChange={this._changeView}
-											style="compact"
-											value={this.state.view}
+								) : null}
+								<div
+									className={classNames('user-name', {
+										small: !!this.props.profile.value.authorProfile,
+									})}
+								>
+									<span className="name">
+										@{this.props.profile.value.userName}
+									</span>
+									{this.props.profile.value.leaderboardBadge !==
+									LeaderboardBadge.None ? (
+										<LeaderboardBadges
+											badge={this.props.profile.value.leaderboardBadge}
 										/>
-									</div> :
-									null}
-								{this.renderList()}
-							</Panel>
-							<JsonLd<ProfilePage>
-								item={{
-									"@context": "https://schema.org",
-									"@type": "ProfilePage",
-									"description": `Join Readup to read with ${this.props.profile.value.userName}`,
-									"name": this.props.profile.value.userName
-								}}
-							/>
-						</>}
+									) : null}
+								</div>
+								{!isOwnProfile && this.props.userAccount ? (
+									<FollowButton
+										following={this.props.profile.value}
+										isBusy={this.state.isFollowingButtonBusy}
+										onFollow={this._followUser}
+										onUnfollow={this._unfollowUser}
+										size="large"
+									/>
+								) : null}
+							</div>
+							{this.props.profile.value.authorProfile ? (
+								<div className="controls" data-nosnippet>
+									<HeaderSelector
+										disabled={isListLoading}
+										items={headerSelectorItems}
+										onChange={this._changeView}
+										style="compact"
+										value={this.state.view}
+									/>
+								</div>
+							) : null}
+							{this.renderList()}
+						</Panel>
+						<JsonLd<ProfilePage>
+							item={{
+								'@context': 'https://schema.org',
+								'@type': 'ProfilePage',
+								description: `Join Readup to read with ${this.props.profile.value.userName}`,
+								name: this.props.profile.value.userName,
+							}}
+						/>
+					</>
+				)}
 			</div>
-		)
+		);
 	}
 }
 export function getPathParams(location: RouteLocation) {
-	const pathParams = findRouteByKey(routes, ScreenKey.Profile)
-		.getPathParams(location.path);
+	const pathParams = findRouteByKey(routes, ScreenKey.Profile).getPathParams(
+		location.path
+	);
 	return {
-		highlightedCommentId: (
-			pathParams['highlightedType'] === 'comment' ?
-				pathParams['highlightedId'] :
-				null
-		),
-		highlightedPostId: (
-			pathParams['highlightedType'] === 'post' ?
-				pathParams['highlightedId'] :
-				null
-		),
-		userName: pathParams['userName']
+		highlightedCommentId:
+			pathParams['highlightedType'] === 'comment'
+				? pathParams['highlightedId']
+				: null,
+		highlightedPostId:
+			pathParams['highlightedType'] === 'post'
+				? pathParams['highlightedId']
+				: null,
+		userName: pathParams['userName'],
 	};
 }

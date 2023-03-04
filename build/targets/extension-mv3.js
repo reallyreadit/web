@@ -8,87 +8,115 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-const
-	del = require('del'),
-	fs = require('fs'),
-	path = require('path');
+const del = require('del');
+const fs = require('fs');
+const path = require('path');
 
-const
-	project = require('../project'),
-	createBuild = require('../createBuild'),
-	readerContentScript = require('./extension-common/contentScripts/reader'),
-	serviceWorker = require('./extension-mv3/serviceWorker'),
-	// The target path for these "leave node" builds can be configured by passing a parameter
-	optionsPage = require('./extension-common/optionsPage')('extension-mv3/options-page'),
-	webAppContentScript = require('./extension-common/contentScripts/webApp')('extension-mv3/content-scripts/web-app'),
-	alertContentScript = require('./extension-common/contentScripts/alert')('extension-mv3/content-scripts/alert');
+const project = require('../project');
+const createBuild = require('../createBuild');
+const readerContentScript = require('./extension-common/contentScripts/reader');
+const serviceWorker = require('./extension-mv3/serviceWorker');
+// The target path for these "leave node" builds can be configured by passing a parameter
+const optionsPage = require('./extension-common/optionsPage')(
+	'extension-mv3/options-page'
+);
+const webAppContentScript = require('./extension-common/contentScripts/webApp')(
+	'extension-mv3/content-scripts/web-app'
+);
+const alertContentScript = require('./extension-common/contentScripts/alert')(
+	'extension-mv3/content-scripts/alert'
+);
 
-const
-	targetPath = 'extension-mv3',
-	staticAssets = createBuild({
-		onBuildComplete: (buildInfo, resolve) => {
-			// update manifest
+const targetPath = 'extension-mv3';
+const staticAssets = createBuild({
+	onBuildComplete: (buildInfo, resolve) => {
+		// Update manifest
 
-			if (!(typeof buildInfo.src == 'string' && buildInfo.src.endsWith('manifest.json'))) {
-				// Ignore the onBuildComplete called when the static asset batch with base
-				// `${project.srcDir}/extension` has completed
-				return;
-			}
+		console.log(buildInfo);
+		if (
+			buildInfo.src != null &&
+			!(
+				buildInfo.src instanceof Array &&
+				buildInfo.src.find((file) => file.endsWith('manifest.json'))
+			)
+		) {
+			// On build, this function gets called thrice.
+			// Ignore the onBuildComplete called for each base, until the one with the manifest in it appears.
 
-			const
-				manifestFileName = path.posix.join(buildInfo.outPath, '/manifest.json'),
-				manifest = JSON.parse(
-					fs
-						.readFileSync(manifestFileName)
-						.toString()
-				),
-				package = JSON.parse(
-					fs
-						.readFileSync('./package.json')
-						.toString()
-				),
-				config = JSON.parse(
-					fs
-						.readFileSync(path.posix.join(project.srcDir, `extension/common/config.${buildInfo.env}.json`))
-						.toString()
-				),
-				webUrlPattern = config.webServer.protocol + '://' + config.webServer.host + '/*';
-			manifest.version = package['it.reallyread'].version.extension;
-			manifest.content_scripts[0].matches.push(webUrlPattern);
-			manifest.host_permissions.push(webUrlPattern);
-			const manifestOutFilename = path.posix.join(buildInfo.outPath, 'manifest.json')
-			fs.writeFileSync(
-				manifestOutFilename,
-				JSON.stringify(manifest, null, 3)
-			);
-			if (resolve) {
-				resolve();
-			}
+			// On watch, somehow this onBuildComplete gets called once, without src param.
+			// In that case, just let the update happen.
+			if (resolve) resolve();
+			return;
+		}
+
+		const manifestFileName = path.posix.join(
+			buildInfo.outPath,
+			'/manifest.json'
+		);
+		const manifest = JSON.parse(fs.readFileSync(manifestFileName).toString());
+		const packageData = JSON.parse(
+			fs.readFileSync('./package.json').toString()
+		);
+		const config = JSON.parse(
+			fs
+				.readFileSync(
+					path.posix.join(
+						project.srcDir,
+						`extension/common/config.${buildInfo.env}.json`
+					)
+				)
+				.toString()
+		);
+		const webUrlPattern = `${config.webServer.protocol}://${config.webServer.host}/*`;
+		manifest.version = packageData['it.reallyread'].version.extension;
+		manifest.content_scripts[0].matches.push(webUrlPattern);
+		manifest.host_permissions.push(webUrlPattern);
+		const manifestOutFilename = path.posix.join(
+			buildInfo.outPath,
+			'manifest.json'
+		);
+		fs.writeFileSync(manifestOutFilename, JSON.stringify(manifest, null, 3));
+		if (resolve) {
+			resolve();
+		}
+	},
+	path: targetPath,
+	// TODO PROXY EXT: find a way to not assume base path from targetPath here in createBuild
+	// based on an option? (especially in inner scripts)
+	staticAssets: [
+		{
+			base: `${project.srcDir}/extension`,
+			src: [
+				`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
+				`${project.srcDir}/extension/content-scripts/ui/images/**`,
+				`${project.srcDir}/extension/icons/**`,
+			],
 		},
-		path: targetPath,
-		// TODO PROXY EXT: find a way to not assume base path from targetPath here in createBuild
-		// based on an option? (especially in inner scripts)
-		staticAssets: [
-			{
-				base: `${project.srcDir}/extension`,
-				src: [
-					`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
-					`${project.srcDir}/extension/content-scripts/ui/images/**`,
-					`${project.srcDir}/extension/icons/**`
-				]
-			},
-			{
-				base: `${project.srcDir}/extension/mv3`,
-				src: `${project.srcDir}/extension/mv3/manifest.json`,
-			},
-		]
-	});
+		{
+			base: `${project.srcDir}/extension/mv3`,
+			src: [
+				`${project.srcDir}/extension/mv3/manifest.json`,
+				`${project.srcDir}/extension/mv3/rules.json`,
+			],
+		},
+		// We copy these into the root directory, to make the reader url look a little prettier
+		// They are logically part of extension/content-scripts/
+		// TODO: maybe rename this, since it's not really a 'content script' anymore.
+		{
+			base: `${project.srcDir}/extension/content-scripts/reader/`,
+			src: [
+				`${project.srcDir}/extension/content-scripts/reader/reader.html`,
+				`${project.srcDir}/extension/content-scripts/reader/reader-dark.html`,
+			],
+		},
+	],
+});
 
 function clean(env) {
-	return del(project.getOutPath(targetPath, env) + '/*');
+	return del(`${project.getOutPath(targetPath, env)}/*`);
 }
 
-const readerTargetPath = 'extension-mv3/content-scripts/reader'
+const readerTargetPath = 'extension-mv3/content-scripts/reader';
 function build(env) {
 	readerContentScript.setTargetPath(readerTargetPath);
 	return Promise.all([
@@ -99,7 +127,7 @@ function build(env) {
 		optionsPage.build(env),
 		staticAssets.build(env),
 		webAppContentScript.build(env),
-		alertContentScript.build(env)
+		alertContentScript.build(env),
 	]);
 }
 function watch() {
@@ -113,5 +141,7 @@ function watch() {
 }
 
 module.exports = {
-	clean, build, watch
-}
+	clean,
+	build,
+	watch,
+};

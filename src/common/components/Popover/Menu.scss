@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -68,7 +68,7 @@
 }
 .menu_qla37i::before,
 .menu_qla37i::after {
-	content: "";
+	content: '';
 	display: block;
 	position: absolute;
 	border-width: 0 16px 16px 0;
@@ -134,31 +134,61 @@
 }
 
 @keyframes menu_qla37i-pop-in {
-	0% { transform: scale(0, 0); }
-	75% { transform: scale(1.15, 1.15); }
-	100% { transform: scale(1, 1); }
+	0% {
+		transform: scale(0, 0);
+	}
+	75% {
+		transform: scale(1.15, 1.15);
+	}
+	100% {
+		transform: scale(1, 1);
+	}
 }
 @keyframes menu_qla37i-pop-in-align-center {
-	0% { transform: translateX(-50%) scale(0, 0); }
-	75% { transform: translateX(-50%) scale(1.15, 1.15); }
-	100% { transform: translateX(-50%) scale(1, 1); }
+	0% {
+		transform: translateX(-50%) scale(0, 0);
+	}
+	75% {
+		transform: translateX(-50%) scale(1.15, 1.15);
+	}
+	100% {
+		transform: translateX(-50%) scale(1, 1);
+	}
 }
 @keyframes menu_qla37i-pop-in-align-middle {
-	0% { transform: translateY(-50%) scale(0, 0); }
-	75% { transform: translateY(-50%) scale(1.15, 1.15); }
-	100% { transform: translateY(-50%) scale(1, 1); }
+	0% {
+		transform: translateY(-50%) scale(0, 0);
+	}
+	75% {
+		transform: translateY(-50%) scale(1.15, 1.15);
+	}
+	100% {
+		transform: translateY(-50%) scale(1, 1);
+	}
 }
 @keyframes menu_qla37i-pop-out {
-	0% { transform: scale(1, 1); }
-	100% { transform: scale(0, 0); }
+	0% {
+		transform: scale(1, 1);
+	}
+	100% {
+		transform: scale(0, 0);
+	}
 }
 @keyframes menu_qla37i-pop-out-align-center {
-	0% { transform: translateX(-50%) scale(1, 1); }
-	100% { transform: translateX(-50%) scale(0, 0); }
+	0% {
+		transform: translateX(-50%) scale(1, 1);
+	}
+	100% {
+		transform: translateX(-50%) scale(0, 0);
+	}
 }
 @keyframes menu_qla37i-pop-out-align-middle {
-	0% { transform: translateY(-50%) scale(1, 1); }
-	100% { transform: translateY(-50%) scale(0, 0); }
+	0% {
+		transform: translateY(-50%) scale(1, 1);
+	}
+	100% {
+		transform: translateY(-50%) scale(0, 0);
+	}
 }
 
 @include theme using ($root, $scheme) {
@@ -166,9 +196,9 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-color": $control-border-color,
-				"box-shadow": 0px 0px 3px 1px
+				'background-color': $content-background-color,
+				'border-color': $control-border-color,
+				'box-shadow': 0px 0px 3px 1px,
 			)
 		);
 	}
@@ -176,7 +206,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"box-shadow": 0px 0px 3px 1px
+				'box-shadow': 0px 0px 3px 1px,
 			)
 		);
 	}
@@ -185,7 +215,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-bottom-color": $control-border-color
+				'border-bottom-color': $control-border-color,
 			)
 		);
 	}
@@ -194,7 +224,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-bottom-color": $content-background-color
+				'border-bottom-color': $content-background-color,
 			)
 		);
 	}
@@ -203,7 +233,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-right-color": $control-border-color
+				'border-right-color': $control-border-color,
 			)
 		);
 	}
@@ -212,7 +242,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-right-color": $content-background-color
+				'border-right-color': $content-background-color,
 			)
 		);
 	}

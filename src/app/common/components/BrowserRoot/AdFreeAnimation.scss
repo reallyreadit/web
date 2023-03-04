@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -115,11 +115,17 @@ $publisher-text-color: #999999;
 .ad-free-animation_lv6n94 p:nth-of-type(3) > span:last-child {
 	width: 85%;
 }
-.ad-free-animation_lv6n94 p:nth-of-type(4) > span:nth-child(2) > a:nth-child(1) {
+.ad-free-animation_lv6n94
+	p:nth-of-type(4)
+	> span:nth-child(2)
+	> a:nth-child(1) {
 	width: 10%;
 	left: 20%;
 }
-.ad-free-animation_lv6n94 p:nth-of-type(4) > span:nth-child(2) > a:nth-child(2) {
+.ad-free-animation_lv6n94
+	p:nth-of-type(4)
+	> span:nth-child(2)
+	> a:nth-child(2) {
 	width: 15%;
 	left: 60%;
 }
@@ -160,7 +166,7 @@ $publisher-text-color: #999999;
 	background-color: #ccc;
 }
 .ad-free-animation_lv6n94 .banner > .video::before {
-	content: "";
+	content: '';
 	position: absolute;
 	border-width: 0.4em 0 0.4em 0.6em;
 	border-style: solid;
@@ -200,7 +206,7 @@ $publisher-text-color: #999999;
 }
 .ad-free-animation_lv6n94 .popup > .dialog > .close::before,
 .ad-free-animation_lv6n94 .popup > .dialog > .close::after {
-	content: "";
+	content: '';
 	position: absolute;
 	width: 25%;
 	height: 100%;
@@ -226,7 +232,7 @@ $publisher-text-color: #999999;
 	background-color: white;
 	height: 0.5em;
 	width: 80%;
-	top: 2.0em;
+	top: 2em;
 	position: absolute;
 	left: calc(50% - 40%);
 }
@@ -234,7 +240,7 @@ $publisher-text-color: #999999;
 	background-color: #999;
 	height: 0.5em;
 	width: 30%;
-	top: 3.0em;
+	top: 3em;
 	position: absolute;
 	left: calc(50% - 15%);
 }

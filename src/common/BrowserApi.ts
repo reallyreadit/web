@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import BrowserApiBase from './BrowserApiBase';
@@ -15,7 +15,10 @@ import ArticleUpdatedEvent from './models/ArticleUpdatedEvent';
 import CommentThread from './models/CommentThread';
 import Post from './models/social/Post';
 import NotificationPreference from './models/notifications/NotificationPreference';
-import ExtensionInstallationEvent, { ExtensionUninstalledEvent, ExtensionInstalledEvent } from './ExtensionInstallationEvent';
+import ExtensionInstallationEvent, {
+	ExtensionUninstalledEvent,
+	ExtensionInstalledEvent,
+} from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
@@ -24,8 +27,8 @@ import StorageBroadcastChannel from './messaging/StorageBroadcastChannel';
 
 export type MessageListener = (messageData: any) => void;
 interface Messenger {
-	addListener: (listener: MessageListener) => void,
-	postMessage: (data: any) => void
+	addListener: (listener: MessageListener) => void;
+	postMessage: (data: any) => void;
 }
 export class BroadcastChannelMessenger {
 	private readonly _channel: BroadcastChannelInterface;
@@ -38,16 +41,11 @@ export class BroadcastChannelMessenger {
 		} else {
 			this._channel = new StorageBroadcastChannel(channelName);
 		}
-		this._channel.addEventListener(
-			'message',
-			event => {
-				this._listeners.forEach(
-					listener => {
-						listener(event.data);
-					}
-				);
-			}
-		);
+		this._channel.addEventListener('message', (event) => {
+			this._listeners.forEach((listener) => {
+				listener(event.data);
+			});
+		});
 	}
 	public addListener(listener: MessageListener) {
 		this._listeners.push(listener);
@@ -56,46 +54,45 @@ export class BroadcastChannelMessenger {
 		this._channel.postMessage(data);
 	}
 }
-type SerializedExtensionInstallationEvent = (
-	Pick<ExtensionInstalledEvent, 'type'> & {
-		version: string
-	} |
-	ExtensionUninstalledEvent
-);
+type SerializedExtensionInstallationEvent =
+	| (Pick<ExtensionInstalledEvent, 'type'> & {
+			version: string;
+	  })
+	| ExtensionUninstalledEvent;
 export default class BrowserApi extends BrowserApiBase {
 	private readonly _messenger: Messenger;
-	constructor(
-		messenger: Messenger = new BroadcastChannelMessenger()
-	) {
+	constructor(messenger: Messenger = new BroadcastChannelMessenger()) {
 		super();
 		this._messenger = messenger;
-		this._messenger.addListener(
-			messageData => {
-				switch (messageData.type) {
-					case 'extensionInstallationChanged':
-						const serializedEvent = messageData.data as SerializedExtensionInstallationEvent;
-						let data: ExtensionInstallationEvent;
-						switch (serializedEvent.type) {
-							case 'installed':
-								data = {
-									...serializedEvent,
-									version: new SemanticVersion(serializedEvent.version)
-								};
-								break;
-							case 'uninstalled':
-								data = serializedEvent;
-								break;
-						}
-						this.emitEvent(messageData.type, data);
-						break;
-					case 'updateAvailable':
-						this.emitEvent(messageData.type, new SemanticVersion(messageData.data));
-						break;
-					default:
-						this.emitEvent(messageData.type, messageData.data);
-				}
+		this._messenger.addListener((messageData) => {
+			switch (messageData.type) {
+				case 'extensionInstallationChanged':
+					const serializedEvent =
+						messageData.data as SerializedExtensionInstallationEvent;
+					let data: ExtensionInstallationEvent;
+					switch (serializedEvent.type) {
+						case 'installed':
+							data = {
+								...serializedEvent,
+								version: new SemanticVersion(serializedEvent.version),
+							};
+							break;
+						case 'uninstalled':
+							data = serializedEvent;
+							break;
+					}
+					this.emitEvent(messageData.type, data);
+					break;
+				case 'updateAvailable':
+					this.emitEvent(
+						messageData.type,
+						new SemanticVersion(messageData.data)
+					);
+					break;
+				default:
+					this.emitEvent(messageData.type, messageData.data);
 			}
-		);
+		});
 	}
 	private broadcastUpdate(type: string, data?: {}) {
 		this._messenger.postMessage({ type, data });
@@ -124,7 +121,7 @@ export default class BrowserApi extends BrowserApiBase {
 			case 'installed':
 				data = {
 					...event,
-					version: event.version.toString()
+					version: event.version.toString(),
 				};
 				break;
 			case 'uninstalled':
@@ -144,13 +141,10 @@ export default class BrowserApi extends BrowserApiBase {
 	}
 	public userSignedIn(profile: WebAppUserProfile) {
 		// support legacy api for the initial release
-		this.broadcastUpdate(
-			'userSignedIn',
-			{
-				...profile.userAccount,
-				...profile
-			}
-		);
+		this.broadcastUpdate('userSignedIn', {
+			...profile.userAccount,
+			...profile,
+		});
 	}
 	public userSignedOut() {
 		this.broadcastUpdate('userSignedOut');

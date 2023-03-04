@@ -75,9 +75,9 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $control-background-color,
-				"border-color": $control-border-color,
-				"box-shadow": 0px 1px 3px 1px
+				'background-color': $control-background-color,
+				'border-color': $control-border-color,
+				'box-shadow': 0px 1px 3px 1px,
 			)
 		);
 	}
@@ -99,7 +99,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"outline-color": $intent-primary-color
+				'outline-color': $intent-primary-color,
 			)
 		);
 	}
