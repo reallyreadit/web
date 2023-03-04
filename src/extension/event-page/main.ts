@@ -12,6 +12,11 @@ import {
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import UserAccount from '../../common/models/UserAccount';
 import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
+import {
+	ExtensionOptionKey,
+	ExtensionOptions,
+	extensionOptionsStorageQuery,
+} from '../options-page/ExtensionOptions';
 
 // browser action icon
 function setIcon(state: {
@@ -223,7 +228,11 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 	});
 }
 
-async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
+async function openReaderInTab(
+	tab: chrome.tabs.Tab,
+	articleUrl: string,
+	star: boolean = false
+) {
 	// TODO: sending the displayPreference became less important again, since trying
 	// out the reader.html / dark-reader solution
 	// maybe it's cleaner to just request these extra params via the eventPageApi like before
@@ -238,6 +247,7 @@ async function openReaderInTab(tab: chrome.tabs.Tab, articleUrl: string) {
 	const searchParams = new URLSearchParams({
 		url: articleUrl,
 		displayPreference: JSON.stringify(displayPreference),
+		star: star.toString(),
 	});
 	const readerUrl = `${baseURL}?${searchParams}`;
 	chrome.tabs.update(tab.id, { url: readerUrl });
@@ -412,8 +422,17 @@ chrome.browserAction.onClicked.addListener(async (tab) => {
 		return;
 	}
 
-	// open article
-	await openReaderInTab(tab, tab.url);
+	// open article, starring if that is the setting
+	chrome.storage.local.get(
+		extensionOptionsStorageQuery,
+		async (options: ExtensionOptions) => {
+			await openReaderInTab(
+				tab,
+				tab.url,
+				options[ExtensionOptionKey.StarOnSave]
+			);
+		}
+	);
 });
 chrome.runtime.onMessage.addListener((message, sender) => {
 	if (

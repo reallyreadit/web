@@ -18,5 +18,5 @@ export interface ExtensionOptions {
 
 // When querying the Storage API using key/value pairs default values can be specified.
 export const extensionOptionsStorageQuery = {
-	[ExtensionOptionKey.StarOnSave]: true,
+	[ExtensionOptionKey.StarOnSave]: false,
 };

@@ -55,9 +55,13 @@ import { createUrl } from '../../../common/HttpEndpoint';
 // our case is similar to
 // ensure the rest also respects this documentLocation
 
-const { url, displayPreference: queryDisplayPreference } = parseQueryString(
-	window.location.search
-);
+const {
+	url,
+	displayPreference: queryDisplayPreference,
+	star,
+} = parseQueryString(window.location.search);
+
+const starOnOpen = star === 'true';
 
 let documentLocation: ParserDocumentLocation = new URL(url);
 
@@ -802,6 +806,14 @@ async function initialize() {
 	article = result.userArticle;
 	userPage = result.userPage;
 	user = result.user;
+
+	// star the article if auto-starring is on
+	if (starOnOpen) {
+		eventPageApi.setStarred({
+			articleId: article.id,
+			isStarred: true,
+		});
+	}
 
 	// update the title and byline
 	updateArticleHeader({

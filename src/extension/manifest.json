@@ -3,7 +3,6 @@
 	"name": "Readup",
 	"description": "The best way to read online.",
 	"author": "reallyread.it, inc.",
-
 	"icons": {
 		"16": "./icons/icon-16.png",
 		"24": "./icons/icon-24.png",
@@ -32,9 +31,17 @@
 	"content_scripts": [
 		{
 			"matches": [],
-			"js": ["./content-scripts/web-app/bundle.js"]
+			"js": [
+				"./content-scripts/web-app/bundle.js"
+			]
 		}
 	],
+	"options_ui": {
+		"page": "options-page/index.html",
+		"open_in_tab": true,
+		"browser_style": true,
+		"chrome_style": true
+	},
 	"permissions": [
 		"activeTab",
 		"cookies",
@@ -55,6 +62,7 @@
 		"content-scripts/ui/fonts/museo-sans-700.ttf",
 		"content-scripts/ui/fonts/museo-sans-900.ttf",
 		"content-scripts/ui/images/logo.svg",
-		"content-scripts/ui/images/logo-white.svg"
+		"content-scripts/ui/images/logo-white.svg",
+		"options-page/bundle.css"
 	]
 }
