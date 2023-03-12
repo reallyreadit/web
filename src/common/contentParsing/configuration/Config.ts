@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import UniversalConfig from './UniversalConfig';
@@ -33,17 +33,25 @@ export default class Config {
 	private readonly _transpositions: TranspositionRule[];
 	private readonly _wordCountTraversalPathSearchLimitMultiplier: number;
 	private readonly _imageStrategy: LazyImageStrategy | null;
-	constructor(universal: UniversalConfig, publisher: PublisherConfig | null, contentSearchRootElement: Element) {
+	constructor(
+		universal: UniversalConfig,
+		publisher: PublisherConfig | null,
+		contentSearchRootElement: Element
+	) {
 		this._textContainerFilter = universal.textContainerFilter;
 		this._imageContainerMetadata = universal.imageContainerMetadata;
 		this._imageContainerContent = universal.imageContainerContent;
 		this._textContainerSelection = universal.textContainerSelection;
-		this._wordCountTraversalPathSearchLimitMultiplier = universal.wordCountTraversalPathSearchLimitMultiplier;
+		this._wordCountTraversalPathSearchLimitMultiplier =
+			universal.wordCountTraversalPathSearchLimitMultiplier;
 		if (publisher) {
 			if (publisher.textContainerSearch) {
 				this._textContainerSearch = {
 					...universal.textContainerSearch,
-					selectorBlacklist: universal.textContainerSearch.selectorBlacklist.concat(publisher.textContainerSearch.selectorBlacklist || [])
+					selectorBlacklist:
+						universal.textContainerSearch.selectorBlacklist.concat(
+							publisher.textContainerSearch.selectorBlacklist || []
+						),
 				};
 			} else {
 				this._textContainerSearch = universal.textContainerSearch;
@@ -51,20 +59,30 @@ export default class Config {
 			if (publisher.textContainerFilter) {
 				this._textContainerFilter = {
 					...universal.textContainerFilter,
-					attributeFullWordBlacklist: universal.textContainerFilter.attributeFullWordBlacklist.concat(publisher.textContainerFilter.attributeFullWordBlacklist || []),
-					attributeFullWordWhitelist: publisher.textContainerFilter.attributeFullWordWhitelist || [],
-					blacklistSelectors: universal.textContainerFilter.blacklistSelectors.concat(publisher.textContainerFilter.blacklistSelectors || [])
+					attributeFullWordBlacklist:
+						universal.textContainerFilter.attributeFullWordBlacklist.concat(
+							publisher.textContainerFilter.attributeFullWordBlacklist || []
+						),
+					attributeFullWordWhitelist:
+						publisher.textContainerFilter.attributeFullWordWhitelist || [],
+					blacklistSelectors:
+						universal.textContainerFilter.blacklistSelectors.concat(
+							publisher.textContainerFilter.blacklistSelectors || []
+						),
 				};
 			} else {
 				this._textContainerFilter = {
 					...universal.textContainerFilter,
-					attributeFullWordWhitelist: []
+					attributeFullWordWhitelist: [],
 				};
 			}
 			if (publisher.imageContainerSearch) {
 				this._imageContainerSearch = {
 					...universal.imageContainerSearch,
-					selectorBlacklist: universal.imageContainerSearch.selectorBlacklist.concat(publisher.imageContainerSearch.selectorBlacklist || [])
+					selectorBlacklist:
+						universal.imageContainerSearch.selectorBlacklist.concat(
+							publisher.imageContainerSearch.selectorBlacklist || []
+						),
 				};
 			} else {
 				this._imageContainerSearch = universal.imageContainerSearch;
@@ -72,41 +90,51 @@ export default class Config {
 			if (publisher.imageContainerFilter) {
 				this._imageContainerFilter = {
 					...universal.imageContainerFilter,
-					attributeFullWordBlacklist: universal.imageContainerFilter.attributeFullWordBlacklist.concat(publisher.imageContainerFilter.attributeFullWordBlacklist || []),
-					attributeFullWordWhitelist: publisher.imageContainerFilter.attributeFullWordWhitelist || [],
-					blacklistSelectors: universal.imageContainerFilter.blacklistSelectors.concat(publisher.imageContainerFilter.blacklistSelectors || [])
+					attributeFullWordBlacklist:
+						universal.imageContainerFilter.attributeFullWordBlacklist.concat(
+							publisher.imageContainerFilter.attributeFullWordBlacklist || []
+						),
+					attributeFullWordWhitelist:
+						publisher.imageContainerFilter.attributeFullWordWhitelist || [],
+					blacklistSelectors:
+						universal.imageContainerFilter.blacklistSelectors.concat(
+							publisher.imageContainerFilter.blacklistSelectors || []
+						),
 				};
 			} else {
 				this._imageContainerFilter = {
 					...universal.imageContainerFilter,
-					attributeFullWordWhitelist: []
+					attributeFullWordWhitelist: [],
 				};
 			}
-			this._contentSearchRootElementSelector = publisher.contentSearchRootElementSelector;
+			this._contentSearchRootElementSelector =
+				publisher.contentSearchRootElementSelector;
 			if (publisher.transpositions) {
 				this._transpositions = publisher.transpositions
-					.map(
-						rule => {
-							const
-								parentElement = document.querySelector(rule.parentElementSelector) as Element,
-								elements = rule.elementSelectors.reduce<Element[]>(
-									(elements, selector) => elements.concat(Array.from(document.querySelectorAll(selector))),
-									[]
-								);
-							if (parentElement && elements.length) {
-								return {
-									elements,
-									lineage: buildLineage({
-										ancestor: contentSearchRootElement,
-										descendant: parentElement
-									})
-								};
-							} else {
-								return null;
-							}
+					.map((rule) => {
+						const parentElement = document.querySelector(
+								rule.parentElementSelector
+							) as Element,
+							elements = rule.elementSelectors.reduce<Element[]>(
+								(elements, selector) =>
+									elements.concat(
+										Array.from(document.querySelectorAll(selector))
+									),
+								[]
+							);
+						if (parentElement && elements.length) {
+							return {
+								elements,
+								lineage: buildLineage({
+									ancestor: contentSearchRootElement,
+									descendant: parentElement,
+								}),
+							};
+						} else {
+							return null;
 						}
-					)
-					.filter(rule => !!rule);
+					})
+					.filter((rule) => !!rule);
 			} else {
 				this._transpositions = [];
 			}
@@ -115,12 +143,12 @@ export default class Config {
 			this._textContainerSearch = universal.textContainerSearch;
 			this._textContainerFilter = {
 				...universal.textContainerFilter,
-				attributeFullWordWhitelist: []
+				attributeFullWordWhitelist: [],
 			};
 			this._imageContainerSearch = universal.imageContainerSearch;
 			this._imageContainerFilter = {
 				...universal.imageContainerFilter,
-				attributeFullWordWhitelist: []
+				attributeFullWordWhitelist: [],
 			};
 			this._transpositions = [];
 		}

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -17,56 +17,59 @@ import ConversionsReportRow from '../../../../common/models/analytics/Conversion
 import * as classNames from 'classnames';
 
 interface Props {
-	onGetConversions: FetchFunctionWithParams<DateRangeQuery, ConversionsReportRow[]>
+	onGetConversions: FetchFunctionWithParams<
+		DateRangeQuery,
+		ConversionsReportRow[]
+	>;
 }
 function getHeaders() {
 	return [
 		[
 			{
-				name: ''
+				name: '',
 			},
 			{
-				name: ''
+				name: '',
 			},
 			{
 				name: 'Account Creations',
-				colSpan: 2
+				colSpan: 2,
 			},
 			{
 				name: 'First Time Viewers',
-				colSpan: 2
+				colSpan: 2,
 			},
 			{
 				name: 'First Time Readers',
-				colSpan: 2
-			}
+				colSpan: 2,
+			},
 		],
 		[
 			{
-				name: 'Week'
+				name: 'Week',
 			},
 			{
-				name: 'Visitors'
+				name: 'Visitors',
 			},
 			{
-				name: 'Count'
+				name: 'Count',
 			},
 			{
-				name: 'Conversion'
+				name: 'Conversion',
 			},
 			{
-				name: 'Count'
+				name: 'Count',
 			},
 			{
-				name: 'Conversion'
+				name: 'Conversion',
 			},
 			{
-				name: 'Count'
+				name: 'Count',
 			},
 			{
-				name: 'Conversion'
-			}
-		]
+				name: 'Conversion',
+			},
+		],
 	];
 }
 function renderBody(data: ConversionsReportRow[]) {
@@ -75,20 +78,18 @@ function renderBody(data: ConversionsReportRow[]) {
 	}
 	return (
 		<tbody>
-			{data.map(
-				row => (
-					<tr key={row.week}>
-						<td className="align-center">{row.week.replace(/T00:00:00$/, '')}</td>
-						{renderCell(row.visitorCount)}
-						{renderCell(row.signupCount)}
-						{renderCell(row.signupConversion, formatConversion)}
-						{renderCell(row.articleViewerCount)}
-						{renderCell(row.articleViewerConversion, formatConversion)}
-						{renderCell(row.articleReaderCount)}
-						{renderCell(row.articleReaderConversion, formatConversion)}
-					</tr>
-				)
-			)}
+			{data.map((row) => (
+				<tr key={row.week}>
+					<td className="align-center">{row.week.replace(/T00:00:00$/, '')}</td>
+					{renderCell(row.visitorCount)}
+					{renderCell(row.signupCount)}
+					{renderCell(row.signupConversion, formatConversion)}
+					{renderCell(row.articleViewerCount)}
+					{renderCell(row.articleViewerConversion, formatConversion)}
+					{renderCell(row.articleReaderCount)}
+					{renderCell(row.articleReaderConversion, formatConversion)}
+				</tr>
+			))}
 		</tbody>
 	);
 }
@@ -97,10 +98,8 @@ function formatConversion(value: number) {
 }
 function renderCell(value: number, map?: (value: number) => string) {
 	return (
-		<td className={classNames('align-right', { 'null': value === 0 })}>
-			{map ?
-				map(value) :
-				value}
+		<td className={classNames('align-right', { null: value === 0 })}>
+			{map ? map(value) : value}
 		</td>
 	);
 }
@@ -109,30 +108,28 @@ export class ConversionsReport extends React.Component<Props> {
 	private readonly _initialEndDate: string;
 	constructor(props: Props) {
 		super(props);
-		const
-			localNow = DateTime.local(),
-			localNowDate = DateTime
-				.fromObject({
-					year: localNow.year,
-					month: localNow.month,
-					day: localNow.day,
-					zone: 'utc'
-				});
+		const localNow = DateTime.local(),
+			localNowDate = DateTime.fromObject({
+				year: localNow.year,
+				month: localNow.month,
+				day: localNow.day,
+				zone: 'utc',
+			});
 		this._initialStartDate = localNowDate
 			.minus({
-				days: localNowDate.weekday + (7 * 11)
+				days: localNowDate.weekday + 7 * 11,
 			})
 			.toISO({
 				suppressMilliseconds: true,
-				includeOffset: false
+				includeOffset: false,
 			});
 		this._initialEndDate = localNowDate
 			.minus({
-				days: localNowDate.weekday
+				days: localNowDate.weekday,
 			})
 			.toISO({
 				suppressMilliseconds: true,
-				includeOffset: false
+				includeOffset: false,
 			});
 	}
 	public render() {

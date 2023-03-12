@@ -1,0 +1,33 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/GetStartedButton
+	cssComponentId: get-started-button_z950ea
+*/
+@import '../../../../common/styles/colors';
+
+.get-started-button_z950ea {
+	display: inline-block;
+	text-align: center;
+}
+.get-started-button_z950ea > .ios > img {
+	display: block;
+	margin: 0 auto;
+	height: 65px;
+}
+.get-started-button_z950ea > .android > .coming-soon {
+	font-family: 'Museo Sans (700)';
+	font-size: 16pt;
+}
+.get-started-button_z950ea > .android > .button_ovrlmi {
+	margin: 15px 0;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .get-started-button_z950ea > .android > .platforms {
+		@include theme-colors(
+			$scheme,
+			(
+				'color': $text-muted-color,
+			)
+		);
+	}
+}

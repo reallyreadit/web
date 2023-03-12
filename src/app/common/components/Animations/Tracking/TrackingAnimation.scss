@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -29,7 +29,8 @@
 	transform: translateX(-100%);
 }
 .tracking-animation_s8r7bq.playing > .viewport > .articles-frame {
-	animation: tracking-animation_s8r7bq-translate-articles-frame 1.5s forwards 15s;
+	animation: tracking-animation_s8r7bq-translate-articles-frame 1.5s forwards
+		15s;
 }
 .tracking-animation_s8r7bq.finished > .viewport > .articles-frame {
 	transform: translateX(0);
@@ -45,15 +46,28 @@
 .tracking-animation_s8r7bq > .viewport > .articles-frame > .articles {
 	margin: 0.75em 1.25em;
 }
-.tracking-animation_s8r7bq > .viewport > .articles-frame > .articles > .article-details_brocy1 {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .articles-frame
+	> .articles
+	> .article-details_brocy1 {
 	margin-top: 0.5em;
 }
-.tracking-animation_s8r7bq > .viewport > .articles-frame > .articles > .article-details_brocy1.n-3 > .children {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .articles-frame
+	> .articles
+	> .article-details_brocy1.n-3
+	> .children {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.tracking-animation_s8r7bq > .viewport > .articles-frame > .articles > .separator {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .articles-frame
+	> .articles
+	> .separator {
 	margin: 0.5em auto;
 	width: 70%;
 	height: 1px;
@@ -90,13 +104,29 @@
 .tracking-animation_s8r7bq > .viewport > .readers-frame > .readers > .row {
 	display: flex;
 }
-.tracking-animation_s8r7bq > .viewport > .readers-frame > .readers > .row + .row {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .readers-frame
+	> .readers
+	> .row
+	+ .row {
 	margin-top: 2em;
 }
-.tracking-animation_s8r7bq > .viewport > .readers-frame > .readers > .row > .reader_s9p6xn {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .readers-frame
+	> .readers
+	> .row
+	> .reader_s9p6xn {
 	flex: 0 0 auto;
 }
-.tracking-animation_s8r7bq > .viewport > .readers-frame > .readers > .row > .reader_s9p6xn + .reader_s9p6xn {
+.tracking-animation_s8r7bq
+	> .viewport
+	> .readers-frame
+	> .readers
+	> .row
+	> .reader_s9p6xn
+	+ .reader_s9p6xn {
 	margin-left: 3.5em;
 }
 
@@ -118,42 +148,72 @@
 	top: 4px;
 	left: 71px;
 }
-.tracking-animation_s8r7bq.playing > .viewport > .highlighters > .highlighter.n-1 {
+.tracking-animation_s8r7bq.playing
+	> .viewport
+	> .highlighters
+	> .highlighter.n-1 {
 	animation: tracking-animation_s8r7bq-highlighter-1 6.5s forwards 14s;
 }
 .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter.n-2 {
 	top: 4px;
 	left: 157px;
 }
-.tracking-animation_s8r7bq.playing > .viewport > .highlighters > .highlighter.n-2 {
+.tracking-animation_s8r7bq.playing
+	> .viewport
+	> .highlighters
+	> .highlighter.n-2 {
 	animation: tracking-animation_s8r7bq-highlighter-2 6.5s forwards 14s;
 }
 .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter.n-3 {
 	top: 100px;
 	left: 157px;
 }
-.tracking-animation_s8r7bq.playing > .viewport > .highlighters > .highlighter.n-3 {
+.tracking-animation_s8r7bq.playing
+	> .viewport
+	> .highlighters
+	> .highlighter.n-3 {
 	animation: tracking-animation_s8r7bq-highlighter-3 6.5s forwards 14s;
 }
 .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter.n-4 {
 	top: 100px;
 	left: 243px;
 }
-.tracking-animation_s8r7bq.playing > .viewport > .highlighters > .highlighter.n-4 {
+.tracking-animation_s8r7bq.playing
+	> .viewport
+	> .highlighters
+	> .highlighter.n-4 {
 	animation: tracking-animation_s8r7bq-highlighter-4 6.5s forwards 14s;
 }
 .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter.n-5 {
 	top: 198px;
 	left: 71px;
 }
-.tracking-animation_s8r7bq.playing > .viewport > .highlighters > .highlighter.n-5 {
+.tracking-animation_s8r7bq.playing
+	> .viewport
+	> .highlighters
+	> .highlighter.n-5 {
 	animation: tracking-animation_s8r7bq-highlighter-5 6.5s forwards 14s;
 }
-.tracking-animation_s8r7bq.finished > .viewport > .highlighters > .highlighter.n-1,
-.tracking-animation_s8r7bq.finished > .viewport > .highlighters > .highlighter.n-2,
-.tracking-animation_s8r7bq.finished > .viewport > .highlighters > .highlighter.n-3,
-.tracking-animation_s8r7bq.finished > .viewport > .highlighters > .highlighter.n-4,
-.tracking-animation_s8r7bq.finished > .viewport > .highlighters > .highlighter.n-5 {
+.tracking-animation_s8r7bq.finished
+	> .viewport
+	> .highlighters
+	> .highlighter.n-1,
+.tracking-animation_s8r7bq.finished
+	> .viewport
+	> .highlighters
+	> .highlighter.n-2,
+.tracking-animation_s8r7bq.finished
+	> .viewport
+	> .highlighters
+	> .highlighter.n-3,
+.tracking-animation_s8r7bq.finished
+	> .viewport
+	> .highlighters
+	> .highlighter.n-4,
+.tracking-animation_s8r7bq.finished
+	> .viewport
+	> .highlighters
+	> .highlighter.n-5 {
 	top: 177px;
 	left: 21px;
 	width: 248px;
@@ -169,7 +229,7 @@
 }
 .tracking-animation_s8r7bq > .viewport > .play-button::before,
 .tracking-animation_s8r7bq > .viewport > .play-button::after {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -211,10 +271,14 @@
 	box-sizing: border-box;
 	opacity: 0;
 }
-.tracking-animation_s8r7bq.unstarted:not(.auto-play) > .captions > .caption:nth-child(1) {
+.tracking-animation_s8r7bq.unstarted:not(.auto-play)
+	> .captions
+	> .caption:nth-child(1) {
 	opacity: 1;
 }
-.tracking-animation_s8r7bq.playing.initial:not(.auto-play) > .captions > .caption:nth-child(1) {
+.tracking-animation_s8r7bq.playing.initial:not(.auto-play)
+	> .captions
+	> .caption:nth-child(1) {
 	animation: tracking-animation_s8r7bq-caption-first 0.5s forwards linear 0s;
 }
 .tracking-animation_s8r7bq.playing > .captions > .caption:nth-child(2) {
@@ -511,19 +575,28 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .tracking-animation_s8r7bq > .viewport > .articles-frame > .articles > .separator {
+	#{$root}
+		.tracking-animation_s8r7bq
+		> .viewport
+		> .articles-frame
+		> .articles
+		> .separator {
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-divider-color
+				'background-color': $content-divider-color,
 			)
 		);
 	}
-	#{$root} .tracking-animation_s8r7bq > .viewport > .highlighters > .highlighter {
+	#{$root}
+		.tracking-animation_s8r7bq
+		> .viewport
+		> .highlighters
+		> .highlighter {
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $progress-complete-color
+				'border-color': $progress-complete-color,
 			)
 		);
 	}
@@ -531,7 +604,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $overlay-color
+				'background-color': $overlay-color,
 			)
 		);
 	}
@@ -539,15 +612,18 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-left-color": $intent-neutral-color
+				'border-left-color': $intent-neutral-color,
 			)
 		);
 	}
-	#{$root} .tracking-animation_s8r7bq.unstarted > .viewport > .play-button::after {
+	#{$root}
+		.tracking-animation_s8r7bq.unstarted
+		> .viewport
+		> .play-button::after {
 		@include theme-colors(
 			$scheme,
 			(
-				"border-left-color": $intent-success-color
+				'border-left-color': $intent-success-color,
 			)
 		);
 	}

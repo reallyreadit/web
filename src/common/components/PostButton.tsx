@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -16,10 +16,10 @@ import { formatTimestamp } from '../format';
 import Link from './Link';
 
 interface Props {
-	article: UserArticle,
-	menuPosition: MenuPosition,
-	onPost: (article: UserArticle) => void,
-	stopPropagation?: boolean
+	article: UserArticle;
+	menuPosition: MenuPosition;
+	onPost: (article: UserArticle) => void;
+	stopPropagation?: boolean;
 }
 export default class PostButton extends React.PureComponent<
 	Props,
@@ -52,11 +52,9 @@ export default class PostButton extends React.PureComponent<
 					menuChildren={
 						<div className="content">
 							<ol>
-								{this.props.article.datesPosted.map(
-									date => (
-										<li key={date}>Posted on {formatTimestamp(date)}</li>
-									)
-								)}
+								{this.props.article.datesPosted.map((date) => (
+									<li key={date}>Posted on {formatTimestamp(date)}</li>
+								))}
 							</ol>
 							<Link
 								text="Post again"

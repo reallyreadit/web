@@ -1,0 +1,38 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/NavBar
+	cssComponentId: nav-bar_yh8orf
+*/
+@import '../../../../common/styles/colors';
+
+.nav-bar_yh8orf {
+	flex: 0 0 auto;
+	display: flex;
+	flex-flow: column;
+	border-right-width: 1px;
+	border-right-style: solid;
+}
+.nav-bar_yh8orf > ol {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+}
+.nav-bar_yh8orf > .footer {
+	flex: 0 0 auto;
+	flex-direction: column;
+	display: flex;
+	text-align: center;
+	gap: 0.6rem;
+	padding: 20px;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .nav-bar_yh8orf {
+		@include theme-colors(
+			$scheme,
+			(
+				'border-right-color': $nav-border-color,
+				'background-color': $nav-background-color,
+			)
+		);
+	}
+}

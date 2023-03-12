@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -28,87 +28,92 @@ import CommunityReadsQuery from '../../../../common/models/articles/CommunityRea
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import { Screen, NavOptions, NavReference, SharedState } from '../Root';
-import {DeviceType} from '../../../../common/DeviceType';
-import MarketingBanner from '../BrowserRoot/MarketingBanner';
-import {variants} from '../../marketingTesting';
+import { DeviceType } from '../../../../common/DeviceType';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 export interface Props {
-	deviceType: DeviceType,
-	location: RouteLocation,
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void,
-	onCopyTextToClipboard: (text: string, successMessage: string) => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateStaticContentUrl: (path: string) => string,
-	onGetCommunityReads: FetchFunctionWithParams<CommunityReadsQuery, CommunityReads>,
-	onNavTo: (ref: NavReference, options?: NavOptions) => boolean,
-	onPostArticle: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	title?: string,
-	user: UserAccount | null
+	deviceType: DeviceType;
+	location: RouteLocation;
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
+	onCopyTextToClipboard: (text: string, successMessage: string) => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onCreateStaticContentUrl: (path: string) => string;
+	onGetCommunityReads: FetchFunctionWithParams<
+		CommunityReadsQuery,
+		CommunityReads
+	>;
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
+	onPostArticle: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onReadArticle: (
+		article: UserArticle,
+		e: React.MouseEvent<HTMLElement>
+	) => void;
+	onRegisterArticleChangeHandler: (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => Function;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleArticleStar: (article: UserArticle) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	title?: string;
+	user: UserAccount | null;
 }
 interface State {
-	communityReads: Fetchable<CommunityReads>,
-	isScreenLoading: boolean,
-	maxLength: number | null,
-	minLength: number | null
+	communityReads: Fetchable<CommunityReads>;
+	isScreenLoading: boolean;
+	maxLength: number | null;
+	minLength: number | null;
 }
 export class BestEverScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
 			communityReads: {
-				isLoading: true
-			}
+				isLoading: true,
+			},
 		});
 		this.fetchArticles(pageNumber, this.state.minLength, this.state.maxLength);
 	};
 	constructor(props: Props) {
 		super(props);
-		const
-			minLength: number | null = null,
+		const minLength: number | null = null,
 			maxLength: number | null = null,
 			communityReads = this.fetchArticles(1, minLength, maxLength);
 		this.state = {
 			communityReads: communityReads as Fetchable<CommunityReads>,
 			isScreenLoading: communityReads.isLoading,
 			maxLength,
-			minLength
+			minLength,
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(
-				event => {
-					if (
-						this.state.communityReads.value &&
-						this.state.communityReads.value.articles.items.some(article => article.id === event.article.id)
-					) {
-						this.setState(produce((prevState: State) => {
-							prevState.communityReads.value.articles.items.forEach((article, index, articles) => {
-								if (article.id === event.article.id) {
-									// merge objects in case the new object is missing properties due to outdated iOS client
-									articles.splice(
-										articles.indexOf(article),
-										1,
-										{
+			props.onRegisterArticleChangeHandler((event) => {
+				if (
+					this.state.communityReads.value &&
+					this.state.communityReads.value.articles.items.some(
+						(article) => article.id === event.article.id
+					)
+				) {
+					this.setState(
+						produce((prevState: State) => {
+							prevState.communityReads.value.articles.items.forEach(
+								(article, index, articles) => {
+									if (article.id === event.article.id) {
+										// merge objects in case the new object is missing properties due to outdated iOS client
+										articles.splice(articles.indexOf(article), 1, {
 											...article,
 											...event.article,
-											dateStarred: event.article.dateStarred
-										}
-									);
+											dateStarred: event.article.dateStarred,
+										});
+									}
 								}
-							});
-						}));
-					}
+							);
+						})
+					);
 				}
-			)
+			})
 		);
 	}
 
@@ -123,18 +128,15 @@ export class BestEverScreen extends React.Component<Props, State> {
 				minLength,
 				pageNumber,
 				pageSize: 40,
-				sort: CommunityReadSort.Top
+				sort: CommunityReadSort.Top,
 			},
-			this._asyncTracker.addCallback(
-				communityReads => {
-					this.setState({
-						communityReads,
-						isScreenLoading: false
-					});
-				}
-			)
+			this._asyncTracker.addCallback((communityReads) => {
+				this.setState({
+					communityReads,
+					isScreenLoading: false,
+				});
+			})
 		);
-
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
@@ -142,28 +144,18 @@ export class BestEverScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<ScreenContainer className="best-ever-screen_bmdeo1">
-				{this.state.isScreenLoading ?
-					<LoadingOverlay position="static" /> :
+				{this.state.isScreenLoading ? (
+					<LoadingOverlay position="static" />
+				) : (
 					<>
-						{!this.props.user ?
-							<MarketingBanner
-							analyticsAction="CommentsScreen"
-							deviceType={this.props.deviceType}
-							marketingVariant={variants[0]}
-							location={this.props.location}
-							onNavTo={this.props.onNavTo}
-							onCopyAppReferrerTextToClipboard={this.props.onCopyAppReferrerTextToClipboard}
-							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-						/> : null}
-						{this.props.title ?
-							<h1>{this.props.title}</h1> :
-							null}
-						{this.state.communityReads.isLoading ?
-							<LoadingOverlay position="static" /> :
+						{this.props.title ? <h1>{this.props.title}</h1> : null}
+						{this.state.communityReads.isLoading ? (
+							<LoadingOverlay position="static" />
+						) : (
 							<>
 								<List>
 									{this.state.communityReads.value.articles.items.map(
-										article => (
+										(article) => (
 											<li key={article.id}>
 												<ArticleDetails
 													article={article}
@@ -185,34 +177,40 @@ export class BestEverScreen extends React.Component<Props, State> {
 									)}
 								</List>
 								<PageSelector
-									pageNumber={this.state.communityReads.value.articles.pageNumber}
+									pageNumber={
+										this.state.communityReads.value.articles.pageNumber
+									}
 									pageCount={this.state.communityReads.value.articles.pageCount}
 									onChange={this._changePageNumber}
 								/>
-							</>}
-					</>}
+							</>
+						)}
+					</>
+				)}
 			</ScreenContainer>
 		);
 	}
 }
-
 
 export default function createBestEverScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: Pick<Props, Exclude<keyof Props, 'location' | 'user'>>
 ) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Top of all time' }),
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: 'Top of all time',
+		}),
 		render: (state: Screen, sharedState: SharedState) => (
 			<BestEverScreen
-				{
-					...{
-						...deps,
-						location: state.location,
-						user: sharedState.user
-					}
-				}
+				{...{
+					...deps,
+					location: state.location,
+					user: sharedState.user,
+				}}
 			/>
-		)
+		),
 	};
 }

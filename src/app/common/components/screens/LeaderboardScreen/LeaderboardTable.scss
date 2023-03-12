@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -23,7 +23,7 @@
 	height: 165px;
 }
 .leaderboard-table_2664hr.fixed-height.overflowing::after {
-	content: "";
+	content: '';
 	display: block;
 	position: -webkit-sticky;
 	position: sticky;
@@ -56,7 +56,13 @@
 	display: block;
 	position: relative;
 }
-.leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner > .overflow-container {
+.leaderboard-table_2664hr
+	> table
+	> tbody
+	> tr
+	> td
+	> .cell-liner
+	> .overflow-container {
 	position: absolute;
 	max-width: 100%;
 	overflow: hidden;
@@ -64,7 +70,14 @@
 	white-space: nowrap;
 	transform: translateY(-50%);
 }
-.leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner > .overflow-container > .link {
+.leaderboard-table_2664hr
+	> table
+	> tbody
+	> tr
+	> td
+	> .cell-liner
+	> .overflow-container
+	> .link {
 	display: inline-block;
 	text-decoration: none;
 	border-bottom-width: 1px;
@@ -75,16 +88,32 @@
 @include theme using ($root, $scheme) {
 	#{$root} .leaderboard-table_2664hr.fixed-height.overflowing::after {
 		@if $scheme == light {
-			background-image: linear-gradient(to bottom, transparent, map-get($light-theme, $content-background-color));
+			background-image: linear-gradient(
+				to bottom,
+				transparent,
+				map-get($light-theme, $content-background-color)
+			);
 		} @else {
-			background-image: linear-gradient(to bottom, transparent, map-get($dark-theme, $content-background-color));
+			background-image: linear-gradient(
+				to bottom,
+				transparent,
+				map-get($dark-theme, $content-background-color)
+			);
 		}
 	}
-	#{$root} .leaderboard-table_2664hr > table > tbody > tr > td > .cell-liner > .overflow-container > .link {
+	#{$root}
+		.leaderboard-table_2664hr
+		> table
+		> tbody
+		> tr
+		> td
+		> .cell-liner
+		> .overflow-container
+		> .link {
 		@include theme-colors(
 			$scheme,
 			(
-				"border-bottom-color": $content-divider-color
+				'border-bottom-color': $content-divider-color,
 			)
 		);
 	}

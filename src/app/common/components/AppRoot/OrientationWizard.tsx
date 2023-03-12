@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -17,22 +17,22 @@ import ImportStep from './OrientationWizard/ImportStep';
 import { AppPlatform } from '../../../../common/AppPlatform';
 
 interface Props {
-	appPlatform: AppPlatform,
-	onComplete: () => void,
-	onCreateStaticContentUrl: (path: string) => string
-	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>
+	appPlatform: AppPlatform;
+	onComplete: () => void;
+	onCreateStaticContentUrl: (path: string) => string;
+	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>;
 }
 enum Step {
 	Tracking,
 	Import,
-	Notifications
+	Notifications,
 }
 export default class OrientationWizard extends React.PureComponent<
 	Props,
 	{
-		isAdvancingStep: boolean,
-		isClosing: boolean,
-		step: Step
+		isAdvancingStep: boolean;
+		isClosing: boolean;
+		step: Step;
 	}
 > {
 	private readonly _continue = () => {
@@ -43,7 +43,9 @@ export default class OrientationWizard extends React.PureComponent<
 			this.props.onComplete();
 		}
 	};
-	private readonly _handleContainerAnimationEnd = (event: React.AnimationEvent) => {
+	private readonly _handleContainerAnimationEnd = (
+		event: React.AnimationEvent
+	) => {
 		if (event.animationName === 'orientation-wizard_3wn522-fade-out') {
 			event.stopPropagation();
 			let nextStep: Step | null;
@@ -67,11 +69,11 @@ export default class OrientationWizard extends React.PureComponent<
 			if (nextStep != null) {
 				this.setState({
 					isAdvancingStep: false,
-					step: nextStep
+					step: nextStep,
 				});
 			} else {
 				this.setState({
-					isClosing: true
+					isClosing: true,
 				});
 			}
 		}
@@ -84,10 +86,7 @@ export default class OrientationWizard extends React.PureComponent<
 	};
 	private readonly _stepMap = {
 		[Step.Tracking]: (
-			<TrackingStep
-				onContinue={this._continue}
-				onSkip={this._continue}
-			/>
+			<TrackingStep onContinue={this._continue} onSkip={this._continue} />
 		),
 		[Step.Import]: (
 			<ImportStep
@@ -100,38 +99,37 @@ export default class OrientationWizard extends React.PureComponent<
 				onRequestAuthorization={this._requestNotificationAuthorization}
 				onSkip={this._continue}
 			/>
-		)
+		),
 	};
 	constructor(props: Props) {
 		super(props);
 		this.state = {
 			isAdvancingStep: false,
 			isClosing: false,
-			step: Step.Tracking
+			step: Step.Tracking,
 		};
 	}
 	private advance() {
 		this.setState({
-			isAdvancingStep: true
+			isAdvancingStep: true,
 		});
 	}
 	public render() {
 		return (
 			<div
-				className={classNames('orientation-wizard_3wn522', { 'closing': this.state.isClosing })}
+				className={classNames('orientation-wizard_3wn522', {
+					closing: this.state.isClosing,
+				})}
 				onAnimationEnd={this._handleAnimationEnd}
 			>
 				<div
-					className={
-						classNames(
-							'container',
-							{
-								'advancing': this.state.isAdvancingStep,
-								'advanced': !this.state.isAdvancingStep && this.state.step !== Step.Tracking,
-								'initial': !this.state.isAdvancingStep && this.state.step === Step.Tracking
-							}
-						)
-					}
+					className={classNames('container', {
+						advancing: this.state.isAdvancingStep,
+						advanced:
+							!this.state.isAdvancingStep && this.state.step !== Step.Tracking,
+						initial:
+							!this.state.isAdvancingStep && this.state.step === Step.Tracking,
+					})}
 					onAnimationEnd={this._handleContainerAnimationEnd}
 				>
 					{this._stepMap[this.state.step]}

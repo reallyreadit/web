@@ -1,104 +1,205 @@
-// Copyright (C) 2022 reallyread.it, inc.
-// 
-// This file is part of Readup.
-// 
-// Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
-// Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
-// You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
-
-import ObjectStore from '../../common/webStorage/ObjectStore';
+import CommentThread from '../../common/models/CommentThread';
+import ArticleUpdatedEvent from '../../common/models/ArticleUpdatedEvent';
+import Post from '../../common/models/social/Post';
+import UserAccount from '../../common/models/UserAccount';
 import { Message } from '../../common/MessagingContext';
+import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import { ReadArticleReference } from '../../app/common/components/Root';
+import AsyncObjectStore from '../common/storage/AsyncObjectStore';
 
+/**
+ * An API for the event page to communicate with Readup's web app tabs, if any are running.
+ */
 export default class WebAppApi {
-	private readonly _tabs = new ObjectStore<number[]>('webAppTabs', [], 'localStorage');
-	constructor() {
-		// listen for messages from content script
-		chrome.runtime.onMessage.addListener(
-			(message, sender) => {
-				if (message.to === 'eventPage' && message.from === 'webAppContentScript') {
-					console.log(`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`);
-					switch (message.type) {
-						case 'registerPage':
-							this.addTab(sender.tab.id);
-							break;
-						case 'unregisterPage':
-							// sender.tab.id is undefined in Firefox
-							// tab won't be removed until a messaging error occurs
-							this.removeTab(sender.tab.id);
-							break;
-					}
-				}
-				return false;
-			}
-		);
+	private readonly _tabs = new AsyncObjectStore<number[]>(
+		'webAppTabs',
+		[],
+		'local'
+	);
+	/**
+	 * @deprecated
+	 */
+	public async initializeAsyncStores(): Promise<void> {
+		await this._tabs.initialized();
 	}
-	private addTab(id: number) {
-		const tabs = this._tabs.get();
+
+	constructor(handlers: {
+		onArticleUpdated: (event: ArticleUpdatedEvent) => void;
+		onAuthServiceLinkCompleted: (
+			response: AuthServiceBrowserLinkResponse
+		) => void;
+		onCommentPosted: (comment: CommentThread) => void;
+		onCommentUpdated: (comment: CommentThread) => void;
+		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+		onReadArticle: (article: ReadArticleReference) => void;
+		onUserSignedIn: (profile: WebAppUserProfile) => void;
+		onUserSignedOut: () => void;
+		onUserUpdated: (user: UserAccount) => void;
+	}) {
+		// listen for messages from content script
+		chrome.runtime.onMessage.addListener((message, sender) => {
+			if (
+				message.to === 'eventPage' &&
+				message.from === 'webAppContentScript'
+			) {
+				console.log(
+					`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`
+				);
+				switch (message.type) {
+					case 'articleUpdated':
+						handlers.onArticleUpdated(message.data);
+						break;
+					case 'authServiceLinkCompleted':
+						handlers.onAuthServiceLinkCompleted(message.data);
+						break;
+					case 'commentPosted':
+						handlers.onCommentPosted(message.data);
+						break;
+					case 'commentUpdated':
+						handlers.onCommentUpdated(message.data);
+						break;
+					case 'displayPreferenceChanged':
+						handlers.onDisplayPreferenceChanged(message.data);
+						break;
+					case 'registerPage':
+						this.addTab(sender.tab.id);
+						break;
+					case 'readArticle':
+						handlers.onReadArticle(message.data);
+						break;
+					case 'unregisterPage':
+						// sender.tab is undefined in Firefox
+						// tab won't be removed until a messaging error occurs
+						this.removeTab(sender?.tab?.id);
+						break;
+					case 'userSignedIn':
+						handlers.onUserSignedIn(message.data);
+						break;
+					case 'userSignedOut':
+						handlers.onUserSignedOut();
+						break;
+					case 'userUpdated':
+						handlers.onUserUpdated(message.data);
+						break;
+				}
+			}
+			return false;
+		});
+	}
+	private async addTab(id: number) {
+		const tabs = await this._tabs.get();
 		if (!tabs.includes(id)) {
 			tabs.push(id);
-			this._tabs.set(tabs);
+			await this._tabs.set(tabs);
 		}
 	}
-	private removeTab(id: number) {
-		const tabs = this._tabs.get();
+	private async broadcastMessage<T>(message: Message) {
+		(await this._tabs.get()).forEach((tabId) => {
+			console.log(
+				`[WebAppApi] sending ${message.type} message to tab # ${tabId}`
+			);
+			chrome.tabs.sendMessage(tabId, message, () => {
+				if (chrome.runtime.lastError) {
+					console.log(
+						`[WebAppApi] error sending message to tab # ${tabId}, message: ${chrome.runtime.lastError.message}`
+					);
+					this.removeTab(tabId);
+				}
+			});
+		});
+	}
+	private async removeTab(id: number) {
+		const tabs = await this._tabs.get();
 		if (tabs.includes(id)) {
 			tabs.splice(tabs.indexOf(id), 1);
-			this._tabs.set(tabs);
+			await this._tabs.set(tabs);
 		}
 	}
-	public broadcastMessage<T>(message: Message) {
-		this._tabs
-			.get()
-			.forEach(
-				tabId => {
-					console.log(`[WebAppApi] sending ${message.type} message to tab # ${tabId}`);
-					chrome.tabs.sendMessage(
-						tabId,
-						message,
-						() => {
-							if (chrome.runtime.lastError) {
-								console.log(`[WebAppApi] error sending message to tab # ${tabId}, message: ${chrome.runtime.lastError.message}`);
-								this.removeTab(tabId);
-							}
-						}
-					);
-				}
-			);
+	public articlePosted(post: Post) {
+		this.broadcastMessage({
+			type: 'articlePosted',
+			data: post,
+		});
+	}
+	public articleUpdated(event: ArticleUpdatedEvent) {
+		this.broadcastMessage({
+			type: 'articleUpdated',
+			data: event,
+		});
 	}
 	public clearTabs() {
 		this._tabs.clear();
 	}
+	public commentPosted(comment: CommentThread) {
+		this.broadcastMessage({
+			type: 'commentPosted',
+			data: comment,
+		});
+	}
+	public commentUpdated(comment: CommentThread) {
+		this.broadcastMessage({
+			type: 'commentUpdated',
+			data: comment,
+		});
+	}
+	public displayPreferenceChanged(preference: DisplayPreference) {
+		this.broadcastMessage({
+			type: 'displayPreferenceChanged',
+			data: preference,
+		});
+	}
+
+	/**
+	 * Inject the content scripts in any running Readup web app tabs that will allow this event page to
+	 * communicate with the web app.
+	 */
 	public injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
-		const webAppBaseUrl = window.reallyreadit.extension.config.webServer.protocol + '://' + window.reallyreadit.extension.config.webServer.host + '/';
+		const webAppBaseUrl =
+			window.reallyreadit.extension.config.webServer.protocol +
+			'://' +
+			window.reallyreadit.extension.config.webServer.host +
+			'/';
 		chrome.tabs.query(
 			{
 				url: webAppBaseUrl + '*',
-				status: 'complete'
+				status: 'complete',
 			},
-			tabs => {
+			(tabs) => {
 				if (chrome.runtime.lastError) {
 					console.log('[WebAppApi] error querying tabs');
 					return;
 				}
-				tabs.forEach(
-					tab => {
-						// safari allows querying but returns all tabs with the url set to empty strings
-						if (!tab.url?.startsWith(webAppBaseUrl)) {
-							return;
-						}
-						console.log('[WebAppApi] injecting content script into tab # ' + tab.id);
-						chrome.tabs.executeScript(
-							tab.id,
-							{
-								file: '/content-scripts/web-app/bundle.js'
-							}
-						);
+				tabs.forEach((tab) => {
+					// safari allows querying but returns all tabs with the url set to empty strings
+					if (!tab.url?.startsWith(webAppBaseUrl)) {
+						return;
 					}
-				);
+					console.log(
+						'[WebAppApi] injecting content script into tab # ' + tab.id
+					);
+					const scriptPath = '/content-scripts/web-app/bundle.js';
+					const manifestVersion = chrome.runtime.getManifest().manifest_version;
+					if (manifestVersion > 2) {
+						chrome.scripting.executeScript({
+							target: { tabId: tab.id },
+							files: [scriptPath],
+						});
+					} else {
+						chrome.tabs.executeScript(tab.id, {
+							file: scriptPath,
+						});
+					}
+				});
 			}
 		);
+	}
+	public userUpdated(user: UserAccount) {
+		this.broadcastMessage({
+			type: 'userUpdated',
+			data: user,
+		});
 	}
 }

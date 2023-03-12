@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -17,34 +17,34 @@ import Link from '../Link';
 import MarkdownDialog from '../MarkdownDialog';
 
 interface Props {
-	comment: CommentThread,
-	onClose: () => void,
-	onCloseDialog: () => void,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onPostAddendum: (form: CommentAddendumForm) => Promise<CommentThread>
+	comment: CommentThread;
+	onClose: () => void;
+	onCloseDialog: () => void;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onPostAddendum: (form: CommentAddendumForm) => Promise<CommentThread>;
 }
 export default class CommentAddendumComposer extends React.PureComponent<
 	Props,
 	{
-		isPosting: boolean,
-		text: string
+		isPosting: boolean;
+		text: string;
 	}
 > {
-	private readonly _changeText = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+	private readonly _changeText = (
+		event: React.ChangeEvent<HTMLTextAreaElement>
+	) => {
 		this.setState({ text: event.currentTarget.value });
 	};
 	private readonly _openMarkdownDialog = () => {
 		this.props.onOpenDialog(
-			<MarkdownDialog
-				onClose={this.props.onCloseDialog}
-			/>
+			<MarkdownDialog onClose={this.props.onCloseDialog} />
 		);
 	};
 	private readonly _postAddendum = () => {
 		this.setState({ isPosting: true });
 		this.props.onPostAddendum({
 			commentId: this.props.comment.id,
-			text: this.state.text
+			text: this.state.text,
 		});
 	};
 	private readonly _updateDate: string;
@@ -53,7 +53,7 @@ export default class CommentAddendumComposer extends React.PureComponent<
 		this._updateDate = DateTime.local().toLocaleString(DateTime.DATE_SHORT);
 		this.state = {
 			isPosting: false,
-			text: ''
+			text: '',
 		};
 	}
 	public render() {
@@ -74,22 +74,18 @@ export default class CommentAddendumComposer extends React.PureComponent<
 					<div className="buttons">
 						<Button
 							text="Cancel"
-							state={
-								this.state.isPosting ?
-									'disabled' :
-									'normal'
-							}
+							state={this.state.isPosting ? 'disabled' : 'normal'}
 							onClick={this.props.onClose}
 						/>
 						<Button
 							text="Post Update"
 							style="preferred"
 							state={
-								this.state.isPosting ?
-									'busy' :
-									this.state.text.trim() ?
-										'normal' :
-										'disabled'
+								this.state.isPosting
+									? 'busy'
+									: this.state.text.trim()
+									? 'normal'
+									: 'disabled'
 							}
 							onClick={this._postAddendum}
 						/>

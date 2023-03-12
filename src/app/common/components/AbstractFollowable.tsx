@@ -1,62 +1,71 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-import * as React from "react";
-import AsyncTracker from "../../../common/AsyncTracker";
-import Fetchable from "../../../common/Fetchable";
-import {formatCountable } from "../../../common/format";
+import * as React from 'react';
+import AsyncTracker from '../../../common/AsyncTracker';
+import Fetchable from '../../../common/Fetchable';
+import { formatCountable } from '../../../common/format';
 import { Screen } from '../../common/components/Root';
-import Alert from "../../../common/models/notifications/Alert";
-import Following from "../../../common/models/social/Following";
-import Profile from "../../../common/models/social/Profile";
-import UserNameForm from "../../../common/models/social/UserNameForm";
-import UserNameQuery from "../../../common/models/social/UserNameQuery";
-import UserAccount from "../../../common/models/UserAccount";
-import {ShareChannelData} from "../../../common/sharing/ShareData";
-import {ShareEvent} from "../../../common/sharing/ShareEvent";
-import ShareResponse from "../../../common/sharing/ShareResponse";
-import {FetchFunction, FetchFunctionWithParams} from "../serverApi/ServerApi";
-import FollowingListDialog from "./FollowingListDialog";
-import GetFollowersDialog from "./screens/ProfileScreen/GetFollowersDialog";
-import produce from "immer";
-import FolloweeCountChange from "../../../common/models/social/FolloweeCountChange";
+import Alert from '../../../common/models/notifications/Alert';
+import Following from '../../../common/models/social/Following';
+import Profile from '../../../common/models/social/Profile';
+import UserNameForm from '../../../common/models/social/UserNameForm';
+import UserNameQuery from '../../../common/models/social/UserNameQuery';
+import UserAccount from '../../../common/models/UserAccount';
+import { ShareChannelData } from '../../../common/sharing/ShareData';
+import { ShareEvent } from '../../../common/sharing/ShareEvent';
+import ShareResponse from '../../../common/sharing/ShareResponse';
+import { FetchFunction, FetchFunctionWithParams } from '../serverApi/ServerApi';
+import FollowingListDialog from './FollowingListDialog';
+import GetFollowersDialog from './screens/ProfileScreen/GetFollowersDialog';
+import produce from 'immer';
+import FolloweeCountChange from '../../../common/models/social/FolloweeCountChange';
 
 type AbstractProps = {
-	onClearAlerts: (alert: Alert) => void,
-	onCloseDialog: () => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onFollowUser: (form: UserNameForm) => Promise<void>,
-	onGetFollowees: FetchFunction<Following[]>,
-	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>,
-	onOpenDialog: (dialog: React.ReactNode) => void,
-	onRegisterFolloweeCountChangedHandler: (handler: (change: FolloweeCountChange) => void) => Function,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onUnfollowUser: (form: UserNameForm) => Promise<void>,
-	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void,
-	onViewProfile: (userName: string) => void,
-	onReloadProfile: (screenId: number, userName: string, user: UserAccount | null) => Promise<Profile>,
-	profile: Fetchable<Profile>,
-	screenId: number,
+	onClearAlerts: (alert: Alert) => void;
+	onCloseDialog: () => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onFollowUser: (form: UserNameForm) => Promise<void>;
+	onGetFollowees: FetchFunction<Following[]>;
+	onGetFollowers: FetchFunctionWithParams<UserNameQuery, Following[]>;
+	onOpenDialog: (dialog: React.ReactNode) => void;
+	onRegisterFolloweeCountChangedHandler: (
+		handler: (change: FolloweeCountChange) => void
+	) => Function;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onUnfollowUser: (form: UserNameForm) => Promise<void>;
+	onUpdateProfile: (screenId: number, newValues: Partial<Profile>) => void;
+	onViewProfile: (userName: string) => void;
+	onReloadProfile: (
+		screenId: number,
+		userName: string,
+		user: UserAccount | null
+	) => Promise<Profile>;
+	profile: Fetchable<Profile>;
+	screenId: number;
 	/** account of currently logged-in user */
-	userAccount: UserAccount | null,
+	userAccount: UserAccount | null;
 	/** username of the user whose profile should be shown */
-	userName: string
-}
+	userName: string;
+};
 
-type AbstractState = {}
+type AbstractState = {};
 
 /**
  * Superclass to share code for classes that allow following and unfollowing of user
-*/
-export default abstract class AbstractFollowable<Props extends AbstractProps, State extends AbstractState> extends React.Component<Props, State> {
+ */
+export default abstract class AbstractFollowable<
+	Props extends AbstractProps,
+	State extends AbstractState
+> extends React.Component<Props, State> {
 	protected readonly _asyncTracker = new AsyncTracker();
 
 	protected readonly _openGetFollowersDialog = () => {
@@ -96,67 +105,56 @@ export default abstract class AbstractFollowable<Props extends AbstractProps, St
 				onCloseDialog={this.props.onCloseDialog}
 				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
 				onFollowUser={this._followUser}
-				onGetFollowings={
-					(callback: (value: Fetchable<Following[]>) => void) => this.props.onGetFollowers({ userName: this.props.userName }, callback)
+				onGetFollowings={(callback: (value: Fetchable<Following[]>) => void) =>
+					this.props.onGetFollowers({ userName: this.props.userName }, callback)
 				}
 				onUnfollowUser={this._unfollowUser}
 				onViewProfile={this.props.onViewProfile}
-				title={
-					isOwnProfile ?
-						"Followers" :
-						`Following ${this.props.userName}`
-				}
+				title={isOwnProfile ? 'Followers' : `Following ${this.props.userName}`}
 				userAccount={this.props.userAccount}
 			/>
 		);
 	};
 
 	protected readonly _followUser = (form: UserNameForm) => {
-		return this.props
-			.onFollowUser(form)
-			.then(
-				() => {
-					if (form.userName === this.props.userName) {
-						this.setIsFollowed();
-					}
-				}
-			);
+		return this.props.onFollowUser(form).then(() => {
+			if (form.userName === this.props.userName) {
+				this.setIsFollowed();
+			}
+		});
 	};
 
 	protected readonly _unfollowUser = (form: UserNameForm) => {
-		return this.props
-			.onUnfollowUser(form)
-			.then(
-				() => {
-					if (form.userName === this.props.userName) {
-						this.props.onUpdateProfile(
-							this.props.screenId,
-							{
-								isFollowed: false,
-								followerCount: this.props.profile.value.followerCount - 1
-							}
-						);
-					}
-				}
-			);
+		return this.props.onUnfollowUser(form).then(() => {
+			if (form.userName === this.props.userName) {
+				this.props.onUpdateProfile(this.props.screenId, {
+					isFollowed: false,
+					followerCount: this.props.profile.value.followerCount - 1,
+				});
+			}
+		});
 	};
 
 	protected isOwnProfile() {
-		return this.props.userAccount && this.props.userAccount.name === this.props.userName;
-	}
-
-	protected setIsFollowed() {
-		this.props.onUpdateProfile(
-			this.props.screenId,
-			{
-				isFollowed: true,
-				followerCount: this.props.profile.value.followerCount + 1
-			}
+		return (
+			this.props.userAccount &&
+			this.props.userAccount.name === this.props.userName
 		);
 	}
 
+	protected setIsFollowed() {
+		this.props.onUpdateProfile(this.props.screenId, {
+			isFollowed: true,
+			followerCount: this.props.profile.value.followerCount + 1,
+		});
+	}
+
 	protected _getFollowersText() {
-		return this.props.profile.value.followerCount + ' ' + formatCountable(this.props.profile.value.followerCount, 'follower');
+		return (
+			this.props.profile.value.followerCount +
+			' ' +
+			formatCountable(this.props.profile.value.followerCount, 'follower')
+		);
 	}
 
 	protected _getFolloweesText() {
@@ -175,95 +173,98 @@ export default abstract class AbstractFollowable<Props extends AbstractProps, St
 		 * 5. Now move a screen back to My Profile.
 		 * You'd have expected your followee count to decrement by 1, this handler does just that update.
 		 *	Note: when going back from the screen of 3. to the screen of 1., the dialog opened in 2. will be closed
-			*	(so you need to reopen = reload its contents) */
+		 *	(so you need to reopen = reload its contents) */
 		this._asyncTracker.addCancellationDelegate(
-			this.props.onRegisterFolloweeCountChangedHandler(
-				change => {
-					if (this.props.profile.value && this.isOwnProfile()) {
-						this.props.onUpdateProfile(
-							this.props.screenId,
-							{
-								followeeCount: Math.max(
-									this.props.profile.value.followeeCount + (
-										change === FolloweeCountChange.Increment ?
-											1 :
-											-1
-									),
-									0
-								)
-							}
-						);
-					}
+			this.props.onRegisterFolloweeCountChangedHandler((change) => {
+				if (this.props.profile.value && this.isOwnProfile()) {
+					this.props.onUpdateProfile(this.props.screenId, {
+						followeeCount: Math.max(
+							this.props.profile.value.followeeCount +
+								(change === FolloweeCountChange.Increment ? 1 : -1),
+							0
+						),
+					});
 				}
-			)
+			})
 		);
 	}
 
 	protected _profileUserChangedOrUserChanged(prevProps: Props) {
 		return (
 			this.props.userName !== prevProps.userName ||
-			(
-				this.props.userAccount ?
-					!prevProps.userAccount || prevProps.userAccount.id !== this.props.userAccount.id :
-					!!prevProps.userAccount
-			)
+			(this.props.userAccount
+				? !prevProps.userAccount ||
+				  prevProps.userAccount.id !== this.props.userAccount.id
+				: !!prevProps.userAccount)
 		);
 	}
 
 	public componentDidUpdate(prevProps: Props) {
 		// reload the profile if the profile user has changed or the user has signed in or out
 		if (this._profileUserChangedOrUserChanged(prevProps)) {
-			this.props.onReloadProfile(this.props.screenId, this.props.userName, this.props.userAccount);
+			this.props.onReloadProfile(
+				this.props.screenId,
+				this.props.userName,
+				this.props.userAccount
+			);
 		}
 	}
 }
 
 // helper methods for factories of AbstractFollowable screen-subclasses
 
-export const noop = () => { }
+export const noop = () => {};
 interface Deps {
-	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>,
-	onSetScreenState: (id: number, getNextState: (currentState: Readonly<Screen>) => Partial<Screen>) => void,
-	createNewScreenState: (result: Fetchable<Profile>, user: UserAccount | null) => ((currentState: Readonly<Screen>) => Partial<Screen>)
+	onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>;
+	onSetScreenState: (
+		id: number,
+		getNextState: (currentState: Readonly<Screen>) => Partial<Screen>
+	) => void;
+	createNewScreenState: (
+		result: Fetchable<Profile>,
+		user: UserAccount | null
+	) => (currentState: Readonly<Screen>) => Partial<Screen>;
 }
 
-export const reloadProfile = (deps: Deps, screenId: number, userName: string, user: UserAccount | null) => {
-			deps.onSetScreenState(
-				screenId,
-				deps.createNewScreenState(
-					{
-						isLoading: true
-					},
-					user
-				)
-			);
-			return new Promise<Profile>(
-				(resolve, reject) => {
-					deps.onGetProfile(
-						{ userName },
-						result => {
-							deps.onSetScreenState(screenId, deps.createNewScreenState(result, user));
-							if (result.value) {
-								resolve(result.value);
-							} else {
-								reject(result.errors);
-							}
-						}
-					);
-				}
-			);
-		};
+export const reloadProfile = (
+	deps: Deps,
+	screenId: number,
+	userName: string,
+	user: UserAccount | null
+) => {
+	deps.onSetScreenState(
+		screenId,
+		deps.createNewScreenState(
+			{
+				isLoading: true,
+			},
+			user
+		)
+	);
+	return new Promise<Profile>((resolve, reject) => {
+		deps.onGetProfile({ userName }, (result) => {
+			deps.onSetScreenState(screenId, deps.createNewScreenState(result, user));
+			if (result.value) {
+				resolve(result.value);
+			} else {
+				reject(result.errors);
+			}
+		});
+	});
+};
 
-export const updateProfile = (deps: Deps, screenId: number, newValues: Partial<Profile>) => {
-			deps.onSetScreenState(
-				screenId,
-				produce(
-					(currentState: Screen<Fetchable<Profile>>) => {
-						currentState.componentState.value = {
-							...currentState.componentState.value,
-							...newValues
-						};
-					}
-				)
-			)
-		};
+export const updateProfile = (
+	deps: Deps,
+	screenId: number,
+	newValues: Partial<Profile>
+) => {
+	deps.onSetScreenState(
+		screenId,
+		produce((currentState: Screen<Fetchable<Profile>>) => {
+			currentState.componentState.value = {
+				...currentState.componentState.value,
+				...newValues,
+			};
+		})
+	);
+};

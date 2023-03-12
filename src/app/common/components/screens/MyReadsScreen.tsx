@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -36,7 +36,7 @@ import UserAccount from '../../../../common/models/UserAccount';
 import CenteringContainer from '../../../../common/components/CenteringContainer';
 import StickyNote from '../../../../common/components/StickyNote';
 import FormDialog from '../../../../common/components/FormDialog';
-import {DeviceType} from '../../../../common/DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import { ArticleStarredEvent } from '../../AppApi';
 import { AppPlatform } from '../../../../common/AppPlatform';
@@ -44,47 +44,57 @@ import Link from '../../../../common/components/Link';
 
 enum View {
 	History = 'History',
-	Starred = 'Starred'
+	Starred = 'Starred',
 }
-type ArticleFetchFunction = FetchFunctionWithParams<{ pageNumber: number, minLength?: number, maxLength?: number }, PageResult<UserArticle>>;
+type ArticleFetchFunction = FetchFunctionWithParams<
+	{ pageNumber: number; minLength?: number; maxLength?: number },
+	PageResult<UserArticle>
+>;
 interface Props {
-	appPlatform: AppPlatform,
-	deviceType: DeviceType,
-	view: View,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onCreateStaticContentUrl: (path: string) => string
-	onGetStarredArticles: ArticleFetchFunction,
-	onGetUserArticleHistory: ArticleFetchFunction,
-	onOpenDialog: (element: React.ReactNode) => void,
-	onCloseDialog: () => void,
-	onNavTo: (ref: NavReference) => void,
-	onPostArticle: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onRegisterArticleStarredHandler: (handler: (event: ArticleStarredEvent) => void) => Function,
-	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function,
-	onSetScreenState: (id: number, nextState: (prevState: Screen) => Partial<Screen>) => void,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	screenId: number,
-	user: UserAccount
+	appPlatform: AppPlatform;
+	deviceType: DeviceType;
+	view: View;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onCreateStaticContentUrl: (path: string) => string;
+	onGetStarredArticles: ArticleFetchFunction;
+	onGetUserArticleHistory: ArticleFetchFunction;
+	onOpenDialog: (element: React.ReactNode) => void;
+	onCloseDialog: () => void;
+	onNavTo: (ref: NavReference) => void;
+	onPostArticle: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onReadArticle: (
+		article: UserArticle,
+		e: React.MouseEvent<HTMLElement>
+	) => void;
+	onRegisterArticleChangeHandler: (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => Function;
+	onRegisterArticleStarredHandler: (
+		handler: (event: ArticleStarredEvent) => void
+	) => Function;
+	onRegisterNewStarsHandler?: (handler: (count: number) => void) => Function;
+	onSetScreenState: (
+		id: number,
+		nextState: (prevState: Screen) => Partial<Screen>
+	) => void;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleArticleStar: (article: UserArticle) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	screenId: number;
+	user: UserAccount;
 }
 interface State {
-	articles: Fetchable<PageResult<UserArticle>>,
-	isChangingList: boolean,
-	isScreenLoading: boolean,
-	maxLength: number | null,
-	minLength: number | null,
-	newStarsCount: number
+	articles: Fetchable<PageResult<UserArticle>>;
+	isChangingList: boolean;
+	isScreenLoading: boolean;
+	maxLength: number | null;
+	minLength: number | null;
+	newStarsCount: number;
 }
-const headerSelectorItems = [
-	{ value: View.Starred },
-	{ value: View.History }
-];
+const headerSelectorItems = [{ value: View.Starred }, { value: View.History }];
 class MyReadsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeList = (value: string) => {
@@ -92,28 +102,28 @@ class MyReadsScreen extends React.Component<Props, State> {
 		if (view !== this.props.view) {
 			this.setState({
 				articles: {
-					isLoading: true
+					isLoading: true,
 				},
-				isChangingList: true
+				isChangingList: true,
 			});
-			this.props.onSetScreenState(
-				this.props.screenId,
-				() => ({
-					location: {
-						path: view === View.Starred ?
-							'/starred' :
-							'/history'
-					}
-				})
-			);
+			this.props.onSetScreenState(this.props.screenId, () => ({
+				location: {
+					path: view === View.Starred ? '/starred' : '/history',
+				},
+			}));
 			this.fetchArticles(view, 1, this.state.minLength, this.state.maxLength);
 		}
 	};
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
-			articles: { isLoading: true }
+			articles: { isLoading: true },
 		});
-		this.fetchArticles(this.props.view, pageNumber, this.state.minLength, this.state.maxLength);
+		this.fetchArticles(
+			this.props.view,
+			pageNumber,
+			this.state.minLength,
+			this.state.maxLength
+		);
 	};
 	private readonly _openImportDialog = () => {
 		this.props.onOpenDialog(
@@ -122,14 +132,19 @@ class MyReadsScreen extends React.Component<Props, State> {
 				size="small"
 				title="Save Articles to Readup"
 			>
-				<img src={this.props.onCreateStaticContentUrl('/app/images/import-screenshot.png')} alt="Save Screenshot" style={{ maxWidth: '100%' }} />
+				<img
+					src={this.props.onCreateStaticContentUrl(
+						'/app/images/import-screenshot.png'
+					)}
+					alt="Save Screenshot"
+					style={{ maxWidth: '100%' }}
+				/>
 			</FormDialog>
 		);
 	};
 	constructor(props: Props) {
 		super(props);
-		const
-			minLength: number | null = null,
+		const minLength: number | null = null,
 			maxLength: number | null = null,
 			articles = this.fetchArticles(props.view, 1, minLength, maxLength);
 		this.state = {
@@ -138,80 +153,74 @@ class MyReadsScreen extends React.Component<Props, State> {
 			isScreenLoading: articles.isLoading,
 			maxLength,
 			minLength,
-			newStarsCount: 0
+			newStarsCount: 0,
 		};
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler(
-				event => {
-					if (
-						this.state.articles.value &&
-						this.state.articles.value.items.some(article => article.id === event.article.id)
-					) {
-						this.setState(produce((prevState: State) => {
-							prevState.articles.value.items.forEach((article, index, articles) => {
-								if (article.id === event.article.id) {
-									// merge objects in case the new object is missing properties due to outdated iOS client
-									articles.splice(
-										articles.indexOf(article),
-										1,
-										{
+			props.onRegisterArticleChangeHandler((event) => {
+				if (
+					this.state.articles.value &&
+					this.state.articles.value.items.some(
+						(article) => article.id === event.article.id
+					)
+				) {
+					this.setState(
+						produce((prevState: State) => {
+							prevState.articles.value.items.forEach(
+								(article, index, articles) => {
+									if (article.id === event.article.id) {
+										// merge objects in case the new object is missing properties due to outdated iOS client
+										articles.splice(articles.indexOf(article), 1, {
 											...article,
 											...event.article,
-											dateStarred: event.article.dateStarred
-										}
-									);
+											dateStarred: event.article.dateStarred,
+										});
+									}
 								}
-							});
-						}));
-					}
-				}
-			)
-		);
-		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleStarredHandler(
-				event => {
-					if (!this.state.articles.value) {
-						return;
-					}
-					this.setState(
-						produce(
-							(prevState: State) => {
-								const
-									articles = prevState.articles.value.items,
-									existingIndex = articles.findIndex(
-										article => article.id === event.article.id
-									);
-								// Remove either the existing article or the last article if we have a full list.
-								// TODO: List length should not be hard-coded on the API server.
-								const spliceIndex = existingIndex !== -1 ?
-									existingIndex :
-									articles.length === 40 ?
-										articles.length - 1 :
-										null;
-								if (spliceIndex != null) {
-									articles.splice(spliceIndex, 1);
-								}
-								// Add the starred article to the beginning of the list.
-								articles.unshift(event.article);
-							}
-						)
+							);
+						})
 					);
 				}
-			)
+			})
+		);
+		this._asyncTracker.addCancellationDelegate(
+			props.onRegisterArticleStarredHandler((event) => {
+				if (!this.state.articles.value) {
+					return;
+				}
+				this.setState(
+					produce((prevState: State) => {
+						const articles = prevState.articles.value.items,
+							existingIndex = articles.findIndex(
+								(article) => article.id === event.article.id
+							);
+						// Remove either the existing article or the last article if we have a full list.
+						// TODO: List length should not be hard-coded on the API server.
+						const spliceIndex =
+							existingIndex !== -1
+								? existingIndex
+								: articles.length === 40
+								? articles.length - 1
+								: null;
+						if (spliceIndex != null) {
+							articles.splice(spliceIndex, 1);
+						}
+						// Add the starred article to the beginning of the list.
+						articles.unshift(event.article);
+					})
+				);
+			})
 		);
 		if (props.onRegisterNewStarsHandler) {
-			props.onRegisterNewStarsHandler(
-				newStarsCount => {
-					if (this.props.view === View.Starred) {
-						this.setState({
-							minLength: null,
-							maxLength: null,
-							newStarsCount
-						});
-						this.fetchArticles(this.props.view, 1, null, null);
-					}
+			props.onRegisterNewStarsHandler((newStarsCount) => {
+				if (this.props.view === View.Starred) {
+					this.setState({
+						minLength: null,
+						maxLength: null,
+						newStarsCount,
+					});
+					this.fetchArticles(this.props.view, 1, null, null);
 				}
-			)
+			});
 		}
 	}
 	private fetchArticles(
@@ -231,32 +240,50 @@ class MyReadsScreen extends React.Component<Props, State> {
 		}
 		return fetchFunction(
 			{ pageNumber, minLength, maxLength },
-			this._asyncTracker.addCallback(
-				articles => {
-					this.setState({
-						articles,
-						isChangingList: false,
-						isScreenLoading: false,
-						newStarsCount: 0
-					});
-				}
-			)
+			this._asyncTracker.addCallback((articles) => {
+				this.setState({
+					articles,
+					isChangingList: false,
+					isScreenLoading: false,
+					newStarsCount: 0,
+				});
+			})
 		);
 	}
 	private renderStickyNote() {
 		return (
 			<StickyNote>
-				{this.props.view === View.Starred ?
+				{this.props.view === View.Starred ? (
 					<>
 						<strong>Star the articles you want to read.</strong>
-						{this.props.appPlatform === AppPlatform.Ios ?
-							<span>Pro tip: Save articles from other apps using the Readup share extension. <span onClick={this._openImportDialog} style={{ textDecoration: 'underline', cursor: 'pointer' }}>Learn more.</span></span> :
-							<span>Pro tip: Save articles from your web browser with one click using the Readup <Link screen={ScreenKey.Download} onClick={this.props.onNavTo}>browser extensions</Link>.</span>}
-					</> :
+						{this.props.appPlatform === AppPlatform.Ios ? (
+							<span>
+								Pro tip: Save articles from other apps using the Readup share
+								extension.{' '}
+								<span
+									onClick={this._openImportDialog}
+									style={{ textDecoration: 'underline', cursor: 'pointer' }}
+								>
+									Learn more.
+								</span>
+							</span>
+						) : (
+							<span>
+								Pro tip: Save articles from your web browser with one click
+								using the Readup{' '}
+								<Link screen={ScreenKey.Download} onClick={this.props.onNavTo}>
+									browser extensions
+								</Link>
+								.
+							</span>
+						)}
+					</>
+				) : (
 					<>
 						<strong>Your reading history is private.</strong>
 						<span>You choose what you want to post.</span>
-					</>}
+					</>
+				)}
 			</StickyNote>
 		);
 	}
@@ -266,15 +293,18 @@ class MyReadsScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<ScreenContainer className="my-reads-screen_56ihtk">
-				{this.state.isScreenLoading ?
-					<LoadingOverlay position="static" /> :
+				{this.state.isScreenLoading ? (
+					<LoadingOverlay position="static" />
+				) : (
 					<>
-						{this.state.newStarsCount ?
+						{this.state.newStarsCount ? (
 							<UpdateBanner
 								isBusy
-								text={`Loading ${this.state.newStarsCount} new ${formatCountable(this.state.newStarsCount, 'article')}`}
-							/> :
-							null}
+								text={`Loading ${
+									this.state.newStarsCount
+								} new ${formatCountable(this.state.newStarsCount, 'article')}`}
+							/>
+						) : null}
 						<div className="controls">
 							<HeaderSelector
 								disabled={this.state.articles.isLoading}
@@ -283,46 +313,45 @@ class MyReadsScreen extends React.Component<Props, State> {
 								value={this.props.view}
 							/>
 						</div>
-						{this.state.articles.isLoading ?
-							<LoadingOverlay position="static" /> :
-							this.state.articles.value.items.length ?
-								<>
-									<List>
-										{this.state.articles.value.items.map(
-											article => (
-												<li key={article.id}>
-													<ArticleDetails
-														article={article}
-														deviceType={this.props.deviceType}
-														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-														onNavTo={this.props.onNavTo}
-														onPost={this.props.onPostArticle}
-														onRateArticle={this.props.onRateArticle}
-														onRead={this.props.onReadArticle}
-														onShare={this.props.onShare}
-														onShareViaChannel={this.props.onShareViaChannel}
-														onToggleStar={this.props.onToggleArticleStar}
-														onViewComments={this.props.onViewComments}
-														onViewProfile={this.props.onViewProfile}
-														user={this.props.user}
-													/>
-												</li>
-											)
-										)}
-									</List>
-									{this.state.articles.value.pageNumber < 2 ?
-										this.renderStickyNote() :
-										null}
-									<PageSelector
-										pageNumber={this.state.articles.value.pageNumber}
-										pageCount={this.state.articles.value.pageCount}
-										onChange={this._changePageNumber}
-									/>
-								</> :
-								<CenteringContainer>
-									{this.renderStickyNote()}
-								</CenteringContainer>}
-					</>}
+						{this.state.articles.isLoading ? (
+							<LoadingOverlay position="static" />
+						) : this.state.articles.value.items.length ? (
+							<>
+								<List>
+									{this.state.articles.value.items.map((article) => (
+										<li key={article.id}>
+											<ArticleDetails
+												article={article}
+												deviceType={this.props.deviceType}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onNavTo={this.props.onNavTo}
+												onPost={this.props.onPostArticle}
+												onRateArticle={this.props.onRateArticle}
+												onRead={this.props.onReadArticle}
+												onShare={this.props.onShare}
+												onShareViaChannel={this.props.onShareViaChannel}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+												onViewProfile={this.props.onViewProfile}
+												user={this.props.user}
+											/>
+										</li>
+									))}
+								</List>
+								{this.state.articles.value.pageNumber < 2
+									? this.renderStickyNote()
+									: null}
+								<PageSelector
+									pageNumber={this.state.articles.value.pageNumber}
+									pageCount={this.state.articles.value.pageCount}
+									onChange={this._changePageNumber}
+								/>
+							</>
+						) : (
+							<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
+						)}
+					</>
+				)}
 			</ScreenContainer>
 		);
 	}
@@ -333,18 +362,24 @@ export default function createScreenFactory<TScreenKey>(
 ) {
 	const route = findRouteByKey(routes, ScreenKey.MyReads);
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'My Reads' }),
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: 'My Reads',
+		}),
 		render: (screen: Screen, sharedState: SharedState) => (
-			<MyReadsScreen {
-				...{
+			<MyReadsScreen
+				{...{
 					...deps,
-					view: route.getPathParams(screen.location.path)['view'] === 'starred' ?
-						View.Starred :
-						View.History,
+					view:
+						route.getPathParams(screen.location.path)['view'] === 'starred'
+							? View.Starred
+							: View.History,
 					screenId: screen.id,
-					user: sharedState.user
-				}
-			} />
-		)
+					user: sharedState.user,
+				}}
+			/>
+		),
 	};
 }

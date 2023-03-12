@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -96,8 +96,6 @@ $header-height: 41px;
 	.header_q3p9go > .right-content > .menu-button:not(:last-child) {
 		margin-right: $right-icon-margin;
 	}
-
-
 }
 
 @include theme using ($root, $scheme) {
@@ -105,18 +103,22 @@ $header-height: 41px;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-top-color": $nav-background-color,
-				"border-bottom-color": $nav-border-color,
-				"background-color": $nav-background-color,
-				"color": $text-muted-color
+				'border-top-color': $nav-background-color,
+				'border-bottom-color': $nav-border-color,
+				'background-color': $nav-background-color,
+				'color': $text-muted-color,
 			)
 		);
 	}
-	#{$root} .header_q3p9go > .left-content > .notification-icon-wrapper.selected > .icon_rour3d {
+	#{$root}
+		.header_q3p9go
+		> .left-content
+		> .notification-icon-wrapper.selected
+		> .icon_rour3d {
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $text-color
+				'color': $text-color,
 			)
 		);
 	}

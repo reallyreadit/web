@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 // theming functions
@@ -17,35 +17,34 @@
 // The root selector needs to be injectable into :host-context() for components
 // in a shadow dom
 @mixin theme {
-	@content(":root[data-com_readup_theme]", light);
-	@content(":root[data-com_readup_theme=dark]", dark);
+	@content (":root[data-com_readup_theme]", light);
+	@content (":root[data-com_readup_theme=dark]", dark);
 	@media (prefers-color-scheme: dark) {
-		@content(":root:not([data-com_readup_theme=light])", dark);
+		@content (":root:not([data-com_readup_theme=light])", dark);
 	}
 }
 
 // only activate the given styles (content) for a given theme (scheme)
 @mixin theme-only($scheme) {
 	@if $scheme == dark {
-		:root[data-com_readup_theme=dark] {
+		:root[data-com_readup_theme='dark'] {
 			@content;
 		}
 		@media (prefers-color-scheme: dark) {
-			:root:not([data-com_readup_theme=light]) {
+			:root:not([data-com_readup_theme='light']) {
 				@content;
 			}
 		}
 	} @else {
-		:root[data-com_readup_theme=light] {
+		:root[data-com_readup_theme='light'] {
 			@content;
 		}
 		@media (prefers-color-scheme: light) {
-			:root:not([data-com_readup_theme=dark]) {
+			:root:not([data-com_readup_theme='dark']) {
 				@content;
 			}
 		}
 	}
-
 }
 
 // takes a scheme (light | dark) and a list of declarations
@@ -60,9 +59,9 @@
 		$theme: $dark-theme;
 	}
 	@each $property, $value in $declarations {
-		@if $property == "animation-name" {
+		@if $property == 'animation-name' {
 			animation-name: unquote($value) - $scheme;
-		} @else if $property == "box-shadow" {
+		} @else if $property == 'box-shadow' {
 			box-shadow: $value map-get($theme, $box-shadow-color);
 		} @else {
 			#{$property}: map-get($theme, $value);
@@ -71,230 +70,230 @@
 }
 
 // color variables
-$app-background-color:					"app-background";
-$app-background-alt-color:				"app-background-alt";
+$app-background-color: 'app-background';
+$app-background-alt-color: 'app-background-alt';
 
-$apple-button-background-color:		"apple-button-background";
-$apple-button-text-color:				"apple-button-text";
+$apple-button-background-color: 'apple-button-background';
+$apple-button-text-color: 'apple-button-text';
 
-$box-shadow-color:						"box-shadow";
+$box-shadow-color: 'box-shadow';
 
-$button-selected-background-color:	"button-selected-background";
-$button-selected-text-color:			"button-selected-text";
+$button-selected-background-color: 'button-selected-background';
+$button-selected-text-color: 'button-selected-text';
 
-$callout-arrow-color:					"callout-arrow";
+$callout-arrow-color: 'callout-arrow';
 
-$chart-1-background-color:				"chart-1-background";
-$chart-1-border-color:					"chart-1-border";
-$chart-2-background-color:				"chart-2-background";
-$chart-2-border-color:					"chart-2-border";
+$chart-1-background-color: 'chart-1-background';
+$chart-1-border-color: 'chart-1-border';
+$chart-2-background-color: 'chart-2-background';
+$chart-2-border-color: 'chart-2-border';
 
-$content-background-color:				"content-background";
-$content-border-color:					"content-border";
-$content-divider-color:					"content-divider";
-$content-highlight-color:				"content-highlight";
+$content-background-color: 'content-background';
+$content-border-color: 'content-border';
+$content-divider-color: 'content-divider';
+$content-highlight-color: 'content-highlight';
 
-$control-background-color:				"control-background";
-$control-border-color:					"control-border";
-$control-disabled-color:				"control-disabled";
+$control-background-color: 'control-background';
+$control-border-color: 'control-border';
+$control-disabled-color: 'control-disabled';
 
-$embed-progress-background-color:	"embed-progress-background";
-$embed-progress-complete-color:		"embed-progress-complete";
-$embed-progress-fill-color:			"embed-progress-fill";
+$embed-progress-background-color: 'embed-progress-background';
+$embed-progress-complete-color: 'embed-progress-complete';
+$embed-progress-fill-color: 'embed-progress-fill';
 
-$intent-alert-color:						"intent-alert";
-$intent-danger-color:					"intent-danger";
-$intent-neutral-color:					"intent-neutral";
-$intent-primary-color:					"intent-primary";
-$intent-success-color:					"intent-success";
-$intent-text-color:						"intent-text";
-$intent-warning-color:					"intent-warning";
+$intent-alert-color: 'intent-alert';
+$intent-danger-color: 'intent-danger';
+$intent-neutral-color: 'intent-neutral';
+$intent-primary-color: 'intent-primary';
+$intent-success-color: 'intent-success';
+$intent-text-color: 'intent-text';
+$intent-warning-color: 'intent-warning';
 
-$loud-background-color:					"loud-background";
-$loud-text-color:							"loud-text";
+$loud-background-color: 'loud-background';
+$loud-text-color: 'loud-text';
 
-$leaderboards-article-background-color: "leaderboards-article-background-color";
+$leaderboards-article-background-color: 'leaderboards-article-background-color';
 
-$markdown-block-background-color:	"markdown-block-background";
-$markdown-block-border-color:			"markdown-block-border";
+$markdown-block-background-color: 'markdown-block-background';
+$markdown-block-border-color: 'markdown-block-border';
 
-$nav-background-color:					"nav-background";
-$nav-border-color:						"nav-border";
+$nav-background-color: 'nav-background';
+$nav-border-color: 'nav-border';
 
-$overlay-color:							"overlay";
+$overlay-color: 'overlay';
 
-$progress-complete-color:				"progress-complete";
-$progress-incomplete-color:			"progress-incomplete";
+$progress-complete-color: 'progress-complete';
+$progress-incomplete-color: 'progress-incomplete';
 
-$rating-seal-text-color:				"rating-seal-text";
+$rating-seal-text-color: 'rating-seal-text';
 
-$reader-header-background-color:		"reader-header-background";
-$reader-header-border-color:			"reader-header-border";
-$reader-header-text-color:				"reader-header-text";
+$reader-header-background-color: 'reader-header-background';
+$reader-header-border-color: 'reader-header-border';
+$reader-header-text-color: 'reader-header-text';
 
-$star-starred-background-color:		"star-starred-background";
-$star-starred-border-color:			"star-starred-border";
+$star-starred-background-color: 'star-starred-background';
+$star-starred-border-color: 'star-starred-border';
 
-$sticky-note-gradient-start-color:	"sticky-note-gradient-start";
-$sticky-note-gradient-stop-color:	"sticky-note-gradient-stop";
-$sticky-note-text-color:				"sticky-note-text";
+$sticky-note-gradient-start-color: 'sticky-note-gradient-start';
+$sticky-note-gradient-stop-color: 'sticky-note-gradient-stop';
+$sticky-note-text-color: 'sticky-note-text';
 
-$text-color:								"text";
-$text-muted-color:						"text-muted";
+$text-color: 'text';
+$text-muted-color: 'text-muted';
 
-$twitter-button-background-color:	"twitter-button-background";
-$twitter-button-text-color:			"twitter-button-text";
+$twitter-button-background-color: 'twitter-button-background';
+$twitter-button-text-color: 'twitter-button-text';
 
 // light theme
 $light-theme: (
-	$app-background-color:					#f7f6f5,
-	$app-background-alt-color:				#efefef,
+	$app-background-color: #f7f6f5,
+	$app-background-alt-color: #efefef,
 
-	$apple-button-background-color:		#000000,
-	$apple-button-text-color:				#ffffff,
+	$apple-button-background-color: #000000,
+	$apple-button-text-color: #ffffff,
 
-	$box-shadow-color:						#a0a0a080,
+	$box-shadow-color: #a0a0a080,
 
-	$button-selected-background-color:	#555555,
-	$button-selected-text-color:			#ffffff,
+	$button-selected-background-color: #555555,
+	$button-selected-text-color: #ffffff,
 
-	$callout-arrow-color:					#ff000080,
+	$callout-arrow-color: #ff000080,
 
-	$chart-1-background-color:				#c3d7ef,
-	$chart-1-border-color:					#9bbde4,
-	$chart-2-background-color:				#73a3d9,
-	$chart-2-border-color:					#4b88ce,
+	$chart-1-background-color: #c3d7ef,
+	$chart-1-border-color: #9bbde4,
+	$chart-2-background-color: #73a3d9,
+	$chart-2-border-color: #4b88ce,
 
-	$content-background-color:				#ffffff,
-	$content-border-color:					#e0e0e0,
-	$content-divider-color:					#a9a9a9,
-	$content-highlight-color:				#fff599,
+	$content-background-color: #ffffff,
+	$content-border-color: #e0e0e0,
+	$content-divider-color: #a9a9a9,
+	$content-highlight-color: #fff599,
 
-	$control-background-color:				#ffffff,
-	$control-border-color:					#999999,
-	$control-disabled-color:				#cccccc,
+	$control-background-color: #ffffff,
+	$control-border-color: #999999,
+	$control-disabled-color: #cccccc,
 
-	$embed-progress-background-color:	#cccccc,
-	$embed-progress-complete-color:		#32cd32,
-	$embed-progress-fill-color:			#999999,
+	$embed-progress-background-color: #cccccc,
+	$embed-progress-complete-color: #32cd32,
+	$embed-progress-fill-color: #999999,
 
-	$intent-alert-color:						#ff0000,
-	$intent-danger-color:					#8b0000,
-	$intent-neutral-color:					#999999,
-	$intent-primary-color:					#73a3d9,
-	$intent-success-color:					#32cd32,
-	$intent-text-color:						#ffffff,
-	$intent-warning-color:					#ffa500,
+	$intent-alert-color: #ff0000,
+	$intent-danger-color: #8b0000,
+	$intent-neutral-color: #999999,
+	$intent-primary-color: #73a3d9,
+	$intent-success-color: #32cd32,
+	$intent-text-color: #ffffff,
+	$intent-warning-color: #ffa500,
 
-	$loud-background-color:					#2a2326,
-	$loud-text-color:							#f7f6f5,
+	$loud-background-color: #2a2326,
+	$loud-text-color: #f7f6f5,
 
 	$leaderboards-article-background-color: #f0f0f0,
 
-	$markdown-block-background-color:	#fafafa,
-	$markdown-block-border-color:			#dddddd,
+	$markdown-block-background-color: #fafafa,
+	$markdown-block-border-color: #dddddd,
 
-	$nav-background-color:					#eaeaea,
-	$nav-border-color:						#cccccc,
+	$nav-background-color: #eaeaea,
+	$nav-border-color: #cccccc,
 
-	$overlay-color:							#8080804d,
+	$overlay-color: #8080804d,
 
-	$progress-complete-color:				#98fb98,
-	$progress-incomplete-color:			#ffc0cb,
+	$progress-complete-color: #98fb98,
+	$progress-incomplete-color: #ffc0cb,
 
-	$rating-seal-text-color:				#ffffff,
+	$rating-seal-text-color: #ffffff,
 
-	$reader-header-background-color:		#f7f6f5,
-	$reader-header-border-color:			#e0e0e0,
-	$reader-header-text-color:				#666666,
+	$reader-header-background-color: #f7f6f5,
+	$reader-header-border-color: #e0e0e0,
+	$reader-header-text-color: #666666,
 
-	$star-starred-background-color:		#ffd700,
-	$star-starred-border-color:			#b8860b,
+	$star-starred-background-color: #ffd700,
+	$star-starred-border-color: #b8860b,
 
-	$sticky-note-gradient-start-color:	#ffff88,
-	$sticky-note-gradient-stop-color:	#ffffc6,
-	$sticky-note-text-color:				#2a2326,
+	$sticky-note-gradient-start-color: #ffff88,
+	$sticky-note-gradient-stop-color: #ffffc6,
+	$sticky-note-text-color: #2a2326,
 
-	$text-color:								#2a2326,
-	$text-muted-color:						#666666,
+	$text-color: #2a2326,
+	$text-muted-color: #666666,
 
-	$twitter-button-background-color:	#1da1f2,
-	$twitter-button-text-color:			#ffffff
+	$twitter-button-background-color: #1da1f2,
+	$twitter-button-text-color: #ffffff,
 );
 
 // dark theme
 $dark-theme: (
-	$app-background-color:					#2a2326,
-	$app-background-alt-color:				#241e21,
+	$app-background-color: #2a2326,
+	$app-background-alt-color: #241e21,
 
-	$apple-button-background-color:		#000000,
-	$apple-button-text-color:				#ffffff,
+	$apple-button-background-color: #000000,
+	$apple-button-text-color: #ffffff,
 
-	$box-shadow-color:						#60606080,
+	$box-shadow-color: #60606080,
 
-	$button-selected-background-color:	#555555,
-	$button-selected-text-color:			#c7c6c5,
+	$button-selected-background-color: #555555,
+	$button-selected-text-color: #c7c6c5,
 
-	$callout-arrow-color:					#ff000080,
+	$callout-arrow-color: #ff000080,
 
-	$chart-1-background-color:				#c3d7ef,
-	$chart-1-border-color:					#9bbde4,
-	$chart-2-background-color:				#73a3d9,
-	$chart-2-border-color:					#4b88ce,
+	$chart-1-background-color: #c3d7ef,
+	$chart-1-border-color: #9bbde4,
+	$chart-2-background-color: #73a3d9,
+	$chart-2-border-color: #4b88ce,
 
-	$content-background-color:				#2e2e2e,
-	$content-border-color:					#383838,
-	$content-divider-color:					#737373,
-	$content-highlight-color:				#ab9f30,
+	$content-background-color: #2e2e2e,
+	$content-border-color: #383838,
+	$content-divider-color: #737373,
+	$content-highlight-color: #ab9f30,
 
-	$control-background-color:				#2e2e2e,
-	$control-border-color:					#999999,
-	$control-disabled-color:				#666666,
+	$control-background-color: #2e2e2e,
+	$control-border-color: #999999,
+	$control-disabled-color: #666666,
 
-	$embed-progress-background-color:	#555555,
-	$embed-progress-complete-color:		#3cb43c,
-	$embed-progress-fill-color:			#999999,
+	$embed-progress-background-color: #555555,
+	$embed-progress-complete-color: #3cb43c,
+	$embed-progress-fill-color: #999999,
 
-	$intent-alert-color:						#cc0000,
-	$intent-danger-color:					#8b0000,
-	$intent-neutral-color:					#555555,
-	$intent-primary-color:					#4b88ce,
-	$intent-success-color:					#28a428,
-	$intent-text-color:						#c7c6c5,
-	$intent-warning-color:					#cc8500,
+	$intent-alert-color: #cc0000,
+	$intent-danger-color: #8b0000,
+	$intent-neutral-color: #555555,
+	$intent-primary-color: #4b88ce,
+	$intent-success-color: #28a428,
+	$intent-text-color: #c7c6c5,
+	$intent-warning-color: #cc8500,
 
-	$loud-background-color:					#c7c6c5,
-	$loud-text-color:							#2a2326,
+	$loud-background-color: #c7c6c5,
+	$loud-text-color: #2a2326,
 
 	$leaderboards-article-background-color: #232323,
 
-	$markdown-block-background-color:	#2c2c2c,
-	$markdown-block-border-color:			#404040,
+	$markdown-block-background-color: #2c2c2c,
+	$markdown-block-border-color: #404040,
 
-	$nav-background-color:					#1f1f1f,
-	$nav-border-color:						#383838,
+	$nav-background-color: #1f1f1f,
+	$nav-border-color: #383838,
 
-	$overlay-color:							#00000080,
+	$overlay-color: #00000080,
 
-	$progress-complete-color:				#3cb43c,
-	$progress-incomplete-color:			#b43c3c,
+	$progress-complete-color: #3cb43c,
+	$progress-incomplete-color: #b43c3c,
 
-	$rating-seal-text-color:				#2a2326,
+	$rating-seal-text-color: #2a2326,
 
-	$reader-header-background-color:		#2e2e2e,
-	$reader-header-border-color:			#444444,
-	$reader-header-text-color:				#c7c6c5,
+	$reader-header-background-color: #2e2e2e,
+	$reader-header-border-color: #444444,
+	$reader-header-text-color: #c7c6c5,
 
-	$star-starred-background-color:		#ffd700,
-	$star-starred-border-color:			#b8860b,
+	$star-starred-background-color: #ffd700,
+	$star-starred-border-color: #b8860b,
 
-	$sticky-note-gradient-start-color:	#e2cf6e,
-	$sticky-note-gradient-stop-color:	#ece0a1,
-	$sticky-note-text-color:				#2a2326,
+	$sticky-note-gradient-start-color: #e2cf6e,
+	$sticky-note-gradient-stop-color: #ece0a1,
+	$sticky-note-text-color: #2a2326,
 
-	$text-color:								#c7c6c5,
-	$text-muted-color:						#888888,
+	$text-color: #c7c6c5,
+	$text-muted-color: #888888,
 
-	$twitter-button-background-color:	#1da1f2,
-	$twitter-button-text-color:			#ffffff
+	$twitter-button-background-color: #1da1f2,
+	$twitter-button-text-color: #ffffff,
 );

@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -30,6 +30,7 @@
 	width: 114px;
 	height: 60px;
 	background-size: contain;
+	background-repeat: no-repeat;
 }
 .header_cvm3v7 > .menu-container {
 	display: flex;
@@ -64,16 +65,22 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-bottom-color": $nav-border-color,
-				"background-color": $nav-background-color
+				'border-bottom-color': $nav-border-color,
+				'background-color': $nav-background-color,
 			)
 		);
 	}
 	#{$root} .header_cvm3v7 > .logo {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo-white.svg'
+			));
 		}
 	}
 }

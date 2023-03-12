@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -66,23 +66,41 @@
 @include theme using ($root, $scheme) {
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.readup {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/logo-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/logo-white.svg'
+			));
 		}
 	}
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.apple {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/apple.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/apple-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/apple-white.svg'
+			));
 		}
 	}
 	#{$root} .distribution-chart_n97yi3 > .active-info > .logo.stripe {
 		@if $scheme == light {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/stripe.svg'
+			));
 		} @else {
-			background-image: url(create-url(map-get($readup-config, 'static-server'), '/app/images/stripe-white.svg'));
+			background-image: url(create-url(
+				map-get($readup-config, 'static-server'),
+				'/app/images/stripe-white.svg'
+			));
 		}
 	}
 }

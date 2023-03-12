@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -25,22 +25,22 @@ import UpdateBanner from '../../../common/components/UpdateBanner';
 import { formatCountable } from '../../../common/format';
 
 interface Props {
-	clearFollowersAlerts?: boolean,
-	highlightedUser?: string,
-	onClearAlerts: (alert: Alert) => void,
-	onCloseDialog: () => void,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onFollowUser: (form: UserNameForm) => Promise<void>,
-	onGetFollowings: FetchFunction<Following[]>,
-	onUnfollowUser: (form: UserNameForm) => Promise<void>,
-	onViewProfile: (userName: string) => void,
-	title: string,
-	userAccount: UserAccount | null,
+	clearFollowersAlerts?: boolean;
+	highlightedUser?: string;
+	onClearAlerts: (alert: Alert) => void;
+	onCloseDialog: () => void;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onFollowUser: (form: UserNameForm) => Promise<void>;
+	onGetFollowings: FetchFunction<Following[]>;
+	onUnfollowUser: (form: UserNameForm) => Promise<void>;
+	onViewProfile: (userName: string) => void;
+	title: string;
+	userAccount: UserAccount | null;
 }
 interface State {
-	followings: Fetchable<Following[]>,
-	isLoadingNewItems: boolean,
-	newItemCount: number
+	followings: Fetchable<Following[]>;
+	isLoadingNewItems: boolean;
+	newItemCount: number;
 }
 /**
  * A dialog intended to either show a list of followees or a list of followers (collectively called "followings")
@@ -48,52 +48,46 @@ interface State {
 export default class FollowingListDialog extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _followUser = (form: UserNameForm) => {
-		return this.props
-			.onFollowUser(form)
-			.then(
-				() => {
-					const followings = this.state.followings.value.slice();
-					followings.find(following => following.userName === form.userName).isFollowed = true;
-					this.setState({
-						followings: {
-							...this.state.followings,
-							value: followings
-						}
-					});
-				}
-			);
+		return this.props.onFollowUser(form).then(() => {
+			const followings = this.state.followings.value.slice();
+			followings.find(
+				(following) => following.userName === form.userName
+			).isFollowed = true;
+			this.setState({
+				followings: {
+					...this.state.followings,
+					value: followings,
+				},
+			});
+		});
 	};
 	private _hasClearedAlerts = false;
 	private readonly _loadNewItems = () => {
 		this.setState({ isLoadingNewItems: true });
 		this.props.onGetFollowings(
-			this._asyncTracker.addCallback(
-				followings => {
-					this.setState({
-						followings,
-						isLoadingNewItems: false,
-						newItemCount: 0
-					});
-					this.clearAlertsIfNeeded();
-				}
-			)
+			this._asyncTracker.addCallback((followings) => {
+				this.setState({
+					followings,
+					isLoadingNewItems: false,
+					newItemCount: 0,
+				});
+				this.clearAlertsIfNeeded();
+			})
 		);
 	};
 	private readonly _unfollowUser = (form: UserNameForm) => {
-		return this.props
-			.onUnfollowUser(form)
-			.then(
-				() => {
-					const followings = this.state.followings.value.slice();
-					followings.find(following => following.userName === form.userName).isFollowed = false;
-					this.setState({
-						followings: {
-							...this.state.followings,
-							value: followings
-						}
-					});
-				}
-			);
+		return this.props.onUnfollowUser(form).then(() => {
+			const followings = this.state.followings.value.slice();
+			followings.find(
+				(following) => following.userName === form.userName
+			).isFollowed = false;
+			this.setState({
+				followings: {
+					...this.state.followings,
+					value: followings,
+				},
+			});
+		});
 	};
 	private readonly _viewProfile = (userName: string) => {
 		this.props.onViewProfile(userName);
@@ -103,15 +97,13 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			followings: props.onGetFollowings(
-				this._asyncTracker.addCallback(
-					followings => {
-						this.setState({ followings });
-						this.clearAlertsIfNeeded();
-					}
-				)
+				this._asyncTracker.addCallback((followings) => {
+					this.setState({ followings });
+					this.clearAlertsIfNeeded();
+				})
 			),
 			isLoadingNewItems: false,
-			newItemCount: 0
+			newItemCount: 0,
 		};
 	}
 	private clearAlertsIfNeeded() {
@@ -130,8 +122,16 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 		}
 	}
 	public componentDidUpdate(prevProps: Props) {
-		if (this.props.clearFollowersAlerts && this.props.userAccount && prevProps.userAccount) {
-			const newItemCount = Math.max(0, this.props.userAccount.followerAlertCount - prevProps.userAccount.followerAlertCount);
+		if (
+			this.props.clearFollowersAlerts &&
+			this.props.userAccount &&
+			prevProps.userAccount
+		) {
+			const newItemCount = Math.max(
+				0,
+				this.props.userAccount.followerAlertCount -
+					prevProps.userAccount.followerAlertCount
+			);
 			if (newItemCount) {
 				this.setState({ newItemCount });
 				this._hasClearedAlerts = false;
@@ -149,53 +149,56 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 				onClose={this.props.onCloseDialog}
 				title={this.props.title}
 			>
-				{this.state.followings.isLoading ?
-					<LoadingOverlay position="static" /> :
+				{this.state.followings.isLoading ? (
+					<LoadingOverlay position="static" />
+				) : (
 					<>
-						{this.state.newItemCount ?
+						{this.state.newItemCount ? (
 							<UpdateBanner
 								isBusy={this.state.isLoadingNewItems}
 								onClick={this._loadNewItems}
-								text={`Show ${this.state.newItemCount} new ${formatCountable(this.state.newItemCount, 'follower')}`}
-							/> :
-							null}
+								text={`Show ${this.state.newItemCount} new ${formatCountable(
+									this.state.newItemCount,
+									'follower'
+								)}`}
+							/>
+						) : null}
 						<ol className="followings">
-							{this.state.followings.value.map(
-								following => (
-									<li
-										className="following"
-										key={following.userName}
-									>
-										{this.props.userAccount && this.props.userAccount.name !== following.userName ?
-											<Highlighter
-												className="content"
-												highlight={
-													following.hasAlert ||
-													this.props.highlightedUser === following.userName
-												}
-											>
-												<ProfileLink
-													className="user-name"
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onViewProfile={this._viewProfile}
-													userName={following.userName}
+							{this.state.followings.value.map((following) => (
+								<li className="following" key={following.userName}>
+									{this.props.userAccount &&
+									this.props.userAccount.name !== following.userName ? (
+										<Highlighter
+											className="content"
+											highlight={
+												following.hasAlert ||
+												this.props.highlightedUser === following.userName
+											}
+										>
+											<ProfileLink
+												className="user-name"
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onViewProfile={this._viewProfile}
+												userName={following.userName}
+											/>
+											<div className="button">
+												<FollowButton
+													following={following}
+													onFollow={this._followUser}
+													onUnfollow={this._unfollowUser}
 												/>
-												<div className="button">
-													<FollowButton
-														following={following}
-														onFollow={this._followUser}
-														onUnfollow={this._unfollowUser}
-													/>
-												</div>
-											</Highlighter> :
-											<div className="content">
-												<span className="user-name">{following.userName}</span>
-											</div>}
-									</li>
-								)
-							)}
+											</div>
+										</Highlighter>
+									) : (
+										<div className="content">
+											<span className="user-name">{following.userName}</span>
+										</div>
+									)}
+								</li>
+							))}
 						</ol>
-					</>}
+					</>
+				)}
 			</FormDialog>
 		);
 	}

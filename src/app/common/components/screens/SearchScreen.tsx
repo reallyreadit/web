@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -31,35 +31,40 @@ import ContentBox from '../../../../common/components/ContentBox';
 import ArticleLengthFilter from './SearchScreen/ArticleLengthFilter';
 import List from '../controls/List';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
-import {DeviceType} from '../../../../common/DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
 
 interface Props {
-	deviceType: DeviceType,
-	onCreateAbsoluteUrl: (path: string) => string,
-	onGetSearchOptions: FetchFunction<SearchOptions>,
-	onNavTo: (url: string) => boolean,
-	onPostArticle: (article: UserArticle) => void,
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>,
-	onReadArticle: (article: UserArticle, e: React.MouseEvent<HTMLElement>) => void,
-	onRegisterArticleChangeHandler: (handler: (event: ArticleUpdatedEvent) => void) => Function,
-	onSearchArticles: (query: SearchQuery) => Promise<PageResult<UserArticle>>,
-	onShare: (data: ShareEvent) => ShareResponse,
-	onShareViaChannel: (data: ShareChannelData) => void,
-	onToggleArticleStar: (article: UserArticle) => Promise<void>,
-	onViewComments: (article: UserArticle) => void,
-	onViewProfile: (userName: string) => void,
-	onViewThread: (comment: CommentThread) => void,
-	user: UserAccount
+	deviceType: DeviceType;
+	onCreateAbsoluteUrl: (path: string) => string;
+	onGetSearchOptions: FetchFunction<SearchOptions>;
+	onNavTo: (url: string) => boolean;
+	onPostArticle: (article: UserArticle) => void;
+	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
+	onReadArticle: (
+		article: UserArticle,
+		e: React.MouseEvent<HTMLElement>
+	) => void;
+	onRegisterArticleChangeHandler: (
+		handler: (event: ArticleUpdatedEvent) => void
+	) => Function;
+	onSearchArticles: (query: SearchQuery) => Promise<PageResult<UserArticle>>;
+	onShare: (data: ShareEvent) => ShareResponse;
+	onShareViaChannel: (data: ShareChannelData) => void;
+	onToggleArticleStar: (article: UserArticle) => Promise<void>;
+	onViewComments: (article: UserArticle) => void;
+	onViewProfile: (userName: string) => void;
+	onViewThread: (comment: CommentThread) => void;
+	user: UserAccount;
 }
 interface State {
-	articles: Fetchable<PageResult<UserArticle>>,
-	authors: string[],
-	maxLength: number | null,
-	minLength: number | null,
-	options: Fetchable<SearchOptions>,
-	sources: string[],
-	tags: string[]
+	articles: Fetchable<PageResult<UserArticle>>;
+	authors: string[];
+	maxLength: number | null;
+	minLength: number | null;
+	options: Fetchable<SearchOptions>;
+	sources: string[];
+	tags: string[];
 }
 const searchPromiseTag = 'search';
 
@@ -68,16 +73,19 @@ class SearchScreen extends React.Component<Props, State> {
 	private readonly _changeAuthors = (authors: string[]) => {
 		this.setState(
 			{
-				authors
+				authors,
 			},
 			this._search
 		);
 	};
-	private readonly _changeLength = (minLength: number | null, maxLength: number | null) => {
+	private readonly _changeLength = (
+		minLength: number | null,
+		maxLength: number | null
+	) => {
 		this.setState(
 			{
 				maxLength,
-				minLength
+				minLength,
 			},
 			this._search
 		);
@@ -85,7 +93,7 @@ class SearchScreen extends React.Component<Props, State> {
 	private readonly _changeSources = (sources: string[]) => {
 		this.setState(
 			{
-				sources
+				sources,
 			},
 			this._search
 		);
@@ -93,7 +101,7 @@ class SearchScreen extends React.Component<Props, State> {
 	private readonly _changeTags = (tags: string[]) => {
 		this.setState(
 			{
-				tags
+				tags,
 			},
 			this._search
 		);
@@ -107,8 +115,8 @@ class SearchScreen extends React.Component<Props, State> {
 			this.setState({
 				articles: {
 					isLoading: false,
-					value: null
-				}
+					value: null,
+				},
 			});
 			return;
 		}
@@ -116,8 +124,8 @@ class SearchScreen extends React.Component<Props, State> {
 		this.setState(
 			{
 				articles: {
-					isLoading: true
-				}
+					isLoading: true,
+				},
 			},
 			() => {
 				this._asyncTracker
@@ -127,20 +135,18 @@ class SearchScreen extends React.Component<Props, State> {
 							maxLength: this.state.maxLength,
 							minLength: this.state.minLength,
 							sources: this.state.sources,
-							tags: this.state.tags
+							tags: this.state.tags,
 						}),
 						searchPromiseTag
 					)
-					.then(
-						articles => {
-							this.setState({
-								articles: {
-									isLoading: false,
-									value: articles
-								}
-							});
-						}
-					);
+					.then((articles) => {
+						this.setState({
+							articles: {
+								isLoading: false,
+								value: articles,
+							},
+						});
+					});
 			}
 		);
 	};
@@ -149,51 +155,41 @@ class SearchScreen extends React.Component<Props, State> {
 		this.state = {
 			articles: {
 				isLoading: false,
-				value: null
+				value: null,
 			},
 			authors: [],
 			maxLength: null,
 			minLength: null,
 			options: props.onGetSearchOptions(
-				this._asyncTracker.addCallback(
-					options => {
-						this.setState({
-							options
-						});
-					}
-				)
+				this._asyncTracker.addCallback((options) => {
+					this.setState({
+						options,
+					});
+				})
 			),
 			sources: [],
-			tags: []
+			tags: [],
 		};
 		this._asyncTracker.addCancellationDelegate(
-			this.props.onRegisterArticleChangeHandler(
-				event => {
-					const articles = this.state.articles.value?.items;
-					if (
-						!articles?.some(
-							article => article.id === event.article.id
-						)
-					) {
-						return;
-					}
-					this.setState({
-						articles: {
-							isLoading: false,
-							value: {
-								...this.state.articles.value,
-								items: articles
-									.slice()
-									.map(
-										article => event.article.id === article.id ?
-											event.article :
-											article
-									)
-							}
-						}
-					});
+			this.props.onRegisterArticleChangeHandler((event) => {
+				const articles = this.state.articles.value?.items;
+				if (!articles?.some((article) => article.id === event.article.id)) {
+					return;
 				}
-			)
+				this.setState({
+					articles: {
+						isLoading: false,
+						value: {
+							...this.state.articles.value,
+							items: articles
+								.slice()
+								.map((article) =>
+									event.article.id === article.id ? event.article : article
+								),
+						},
+					},
+				});
+			})
 		);
 	}
 	public componentWillUnmount() {
@@ -202,8 +198,9 @@ class SearchScreen extends React.Component<Props, State> {
 	public render() {
 		return (
 			<ScreenContainer className="search-screen_cdqndl">
-				{this.state.options.isLoading ?
-					<LoadingOverlay position="absolute" /> :
+				{this.state.options.isLoading ? (
+					<LoadingOverlay position="absolute" />
+				) : (
 					<>
 						<ContentBox className="filters">
 							<MultiSelectFilter
@@ -230,36 +227,37 @@ class SearchScreen extends React.Component<Props, State> {
 								onChange={this._changeLength}
 							/>
 						</ContentBox>
-						{this.state.articles.isLoading ?
-							<LoadingOverlay position="static" /> :
-							this.state.articles.value ?
-								this.state.articles.value.items.length ?
-									<List>
-										{this.state.articles.value.items.map(
-											article => (
-												<li key={article.id}>
-													<ArticleDetails
-														article={article}
-														deviceType={this.props.deviceType}
-														onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-														onNavTo={this.props.onNavTo}
-														onPost={this.props.onPostArticle}
-														onRateArticle={this.props.onRateArticle}
-														onRead={this.props.onReadArticle}
-														onShare={this.props.onShare}
-														onShareViaChannel={this.props.onShareViaChannel}
-														onToggleStar={this.props.onToggleArticleStar}
-														onViewComments={this.props.onViewComments}
-														onViewProfile={this.props.onViewProfile}
-														user={this.props.user}
-													/>
-												</li>
-											)
-										)}
-									</List> :
-									<div className="no-results">No articles found.</div> :
-								null}
-					</>}
+						{this.state.articles.isLoading ? (
+							<LoadingOverlay position="static" />
+						) : this.state.articles.value ? (
+							this.state.articles.value.items.length ? (
+								<List>
+									{this.state.articles.value.items.map((article) => (
+										<li key={article.id}>
+											<ArticleDetails
+												article={article}
+												deviceType={this.props.deviceType}
+												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+												onNavTo={this.props.onNavTo}
+												onPost={this.props.onPostArticle}
+												onRateArticle={this.props.onRateArticle}
+												onRead={this.props.onReadArticle}
+												onShare={this.props.onShare}
+												onShareViaChannel={this.props.onShareViaChannel}
+												onToggleStar={this.props.onToggleArticleStar}
+												onViewComments={this.props.onViewComments}
+												onViewProfile={this.props.onViewProfile}
+												user={this.props.user}
+											/>
+										</li>
+									))}
+								</List>
+							) : (
+								<div className="no-results">No articles found.</div>
+							)
+						) : null}
+					</>
+				)}
 			</ScreenContainer>
 		);
 	}
@@ -274,7 +272,7 @@ export default function createSearchScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Search'
+			title: 'Search',
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<SearchScreen
@@ -295,6 +293,6 @@ export default function createSearchScreenFactory<TScreenKey>(
 				onViewThread={services.onViewThread}
 				user={sharedState.user}
 			/>
-		)
+		),
 	};
 }

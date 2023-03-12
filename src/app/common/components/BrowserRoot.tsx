@@ -10,23 +10,54 @@
 
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
-import Root, { Props as RootProps, State as RootState, SharedState as RootSharedState, TemplateSection, Screen, Events, NavMethod, NavOptions, NavReference, parseNavReference, ReadArticleReference } from './Root';
+import NavBar from './BrowserRoot/NavBar';
+import Root, {
+	Props as RootProps,
+	State as RootState,
+	SharedState as RootSharedState,
+	TemplateSection,
+	Screen,
+	Events,
+	NavMethod,
+	NavOptions,
+	NavReference,
+	parseNavReference,
+	ReadArticleReference,
+} from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
-import UserAccount, { areEqual as areUsersEqual } from '../../../common/models/UserAccount';
+import UserAccount, {
+	areEqual as areUsersEqual,
+} from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
+import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
+import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
-import { findRouteByKey, findRouteByLocation } from '../../../common/routing/Route';
+import {
+	findRouteByKey,
+	findRouteByLocation,
+} from '../../../common/routing/Route';
 import routes from '../../../common/routing/routes';
 import EventSource from '../EventSource';
+import UpdateToast from './UpdateToast';
 import CommentThread from '../../../common/models/CommentThread';
 import createReadScreenFactory from './BrowserRoot/ReadScreen';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, unroutableQueryStringKeys, messageQueryStringKey, extensionInstalledQueryStringKey, createQueryString, appReferralQueryStringKey } from '../../../common/routing/queryString';
+import {
+	parseQueryString,
+	unroutableQueryStringKeys,
+	messageQueryStringKey,
+	authServiceTokenQueryStringKey,
+	extensionInstalledQueryStringKey,
+	extensionAuthQueryStringKey,
+	createQueryString,
+	appReferralQueryStringKey,
+	subscribeQueryStringKey,
+} from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
@@ -36,84 +67,121 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import { DeviceType } from '../../../common/DeviceType';
+import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
-import ExtensionReminderDialog from './BrowserRoot/ExtensionReminderDialog';
-import OnboardingFlow, { Props as OnboardingProps, Step as OnboardingStep } from './BrowserRoot/OnboardingFlow';
+import OnboardingFlow, {
+	Props as OnboardingProps,
+	Step as OnboardingStep,
+} from './BrowserRoot/OnboardingFlow';
 import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
-import { AuthServiceBrowserLinkResponse, isAuthServiceBrowserLinkSuccessResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
+import {
+	AuthServiceBrowserLinkResponse,
+	isAuthServiceBrowserLinkSuccessResponse,
+} from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import AuthenticationError from '../../../common/models/auth/AuthenticationError';
 import createAuthorScreenFactory from './screens/AuthorScreen';
 import createNotificationsScreenFactory from './screens/NotificationsScreen';
 import createSearchScreenFactory from './screens/SearchScreen';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
-import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, {
+	getClientDefaultDisplayPreference,
+} from '../../../common/models/userAccounts/DisplayPreference';
 import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
 import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
+import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBlogScreenFactory from './BrowserRoot/BlogScreen';
-import { TweetWebIntentParams, openTweetComposerBrowserWindow } from '../../../common/sharing/twitter';
+import {
+	TweetWebIntentParams,
+	openTweetComposerBrowserWindow,
+} from '../../../common/sharing/twitter';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
-import SemanticVersion from '../../../common/SemanticVersion';
+import Header from './BrowserRoot/Header';
 
 interface Props extends RootProps {
-	browserApi: BrowserApiBase,
-	deviceType: DeviceType,
-	extensionApi: ExtensionApi
+	browserApi: BrowserApiBase;
+	deviceType: DeviceType;
+	extensionApi: ExtensionApi;
 }
-type OnboardingState = Pick<OnboardingProps, 'analyticsAction' | 'authServiceToken' | 'initialAuthenticationStep' | 'passwordResetEmail' | 'passwordResetToken'>;
+type OnboardingState = Pick<
+	OnboardingProps,
+	| 'analyticsAction'
+	| 'authServiceToken'
+	| 'initialAuthenticationStep'
+	| 'passwordResetEmail'
+	| 'passwordResetToken'
+>;
 interface State extends RootState {
-	isExtensionInstalled: boolean,
-	onboarding: OnboardingState | null,
-	welcomeMessage: WelcomeMessage | null
+	isExtensionInstalled: boolean;
+	menuState: MenuState;
+	onboarding: OnboardingState | null;
+	welcomeMessage: WelcomeMessage | null;
 }
+type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
 	AppleIdInvalidSession = 'AppleInvalidSessionId',
 	Rebrand = 'rebrand',
+	StripeOnboardingFailed = 'StripeOnboardingFailed',
 	TwitterEmailAddressRequired = 'TwitterEmailAddressRequired',
-	TwitterVerificationFailed = 'TwitterInvalidAuthToken'
+	TwitterVerificationFailed = 'TwitterInvalidAuthToken',
 }
 const welcomeMessages = {
-	[WelcomeMessage.AppleIdInvalidJwt]: 'We were unable to validate the ID token.',
-	[WelcomeMessage.AppleIdInvalidSession]: 'We were unable to validate your session ID.',
-	[WelcomeMessage.Rebrand]: 'Heads up, we changed our name. reallyread.it is now Readup!',
-	[WelcomeMessage.TwitterEmailAddressRequired]: 'Your Twitter account must have a verified email address.',
-	[WelcomeMessage.TwitterVerificationFailed]: 'We were unable to validate your Twitter credentials.'
+	[WelcomeMessage.AppleIdInvalidJwt]:
+		'We were unable to validate the ID token.',
+	[WelcomeMessage.AppleIdInvalidSession]:
+		'We were unable to validate your session ID.',
+	[WelcomeMessage.Rebrand]:
+		'Heads up, we changed our name. reallyread.it is now Readup!',
+	[WelcomeMessage.StripeOnboardingFailed]:
+		'We were unable to connect your Stripe account. Please contact support.',
+	[WelcomeMessage.TwitterEmailAddressRequired]:
+		'Your Twitter account must have a verified email address.',
+	[WelcomeMessage.TwitterVerificationFailed]:
+		'We were unable to validate your Twitter credentials.',
 };
 export default class extends Root<Props, State, SharedState, Events> {
 	private _hasBroadcastInitialUser = false;
+	private _isUpdateAvailable: boolean = false;
 	private _updateCheckInterval: number | null = null;
 
 	// app
-	private readonly _copyAppReferrerTextToClipboard = (analyticsAction: string) => {
+	private readonly _copyAppReferrerTextToClipboard = (
+		analyticsAction: string
+	) => {
 		this._clipboard.copyText(
-			createUrl(
-				this.props.webServerEndpoint,
-				'/',
-				{
-					[appReferralQueryStringKey]: JSON.stringify({
-						action: analyticsAction,
-						currentPath: window.location.pathname,
-						initialPath: this.props.initialLocation.path,
-						referrerUrl: window.document.referrer,
-						timestamp: Date.now()
-					})
-				}
-			)
+			createUrl(this.props.webServerEndpoint, '/', {
+				[appReferralQueryStringKey]: JSON.stringify({
+					action: analyticsAction,
+					currentPath: window.location.pathname,
+					initialPath: this.props.initialLocation.path,
+					referrerUrl: window.document.referrer,
+					timestamp: Date.now(),
+				}),
+			})
 		);
+	};
+
+	// menu
+	private readonly _closeMenu = () => {
+		this.setState({ menuState: 'closing' });
+	};
+	private readonly _hideMenu = () => {
+		this.setState({ menuState: 'closed' });
+	};
+	private readonly _openMenu = () => {
+		this.setState({ menuState: 'opened' });
 	};
 
 	// welcome message
@@ -122,38 +190,89 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// screens
-	private readonly _createAuthorScreenTitle = (profile: Fetchable<AuthorProfile>) => formatFetchable(
-		profile,
-		profile => `${profile.name} • Readup`,
-		'Loading...',
-		'Author not found'
-	);
+	private readonly _createAuthorScreenTitle = (
+		profile: Fetchable<AuthorProfile>
+	) =>
+		formatFetchable(
+			profile,
+			(profile) => `${profile.name} • Readup`,
+			'Loading...',
+			'Author not found'
+		);
 	private readonly _createFaqScreenTitle = () => 'Frequently Asked Questions';
+	private readonly _viewAdminPage = () => {
+		this.setScreenState({
+			key: ScreenKey.Admin,
+			method: NavMethod.ReplaceAll,
+		});
+	};
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
-			method: NavMethod.Push
+			method: NavMethod.Push,
 		});
 	};
 	private readonly _viewAuthor = (slug: string, name?: string) => {
 		this.setScreenState({
 			key: ScreenKey.Author,
 			urlParams: {
-				slug
+				slug,
 			},
-			method: NavMethod.Push
+			method: NavMethod.Push,
+		});
+	};
+	private readonly _viewFaq = () => {
+		this.setScreenState({
+			key: ScreenKey.Faq,
+			method: NavMethod.ReplaceAll,
 		});
 	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
-			method: NavMethod.ReplaceAll
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewNotifications = () => {
+		this.setScreenState({
+			key: ScreenKey.Notifications,
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewLeaderboards = () => {
+		this.setScreenState({
+			key: ScreenKey.Leaderboards,
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewMyReads = () => {
+		this.setScreenState({
+			key: ScreenKey.MyReads,
+			method: NavMethod.ReplaceAll,
 		});
 	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
-			method: NavMethod.ReplaceAll
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewSearch = () => {
+		this.setScreenState({
+			key: ScreenKey.Search,
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewSettings = () => {
+		this.setScreenState({
+			key: ScreenKey.Settings,
+			method: NavMethod.ReplaceAll,
+		});
+	};
+	private readonly _viewStats = () => {
+		this.setScreenState({
+			key: ScreenKey.Stats,
+			method: NavMethod.ReplaceAll,
 		});
 	};
 
@@ -166,8 +285,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 			case ShareChannel.Email:
 				window.open(
 					`mailto:${createQueryString({
-						'body': data.body,
-						'subject': data.subject
+						body: data.body,
+						subject: data.subject,
 					})}`,
 					'_blank'
 				);
@@ -182,11 +301,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			channels: [
 				ShareChannel.Clipboard,
 				ShareChannel.Email,
-				ShareChannel.Twitter
+				ShareChannel.Twitter,
 			],
-			completionHandler: (data: ShareForm) => {
-
-			}
+			completionHandler: (data: ShareForm) => {},
 		};
 	};
 	private readonly _openTweetComposer = (params: TweetWebIntentParams) => {
@@ -198,8 +315,16 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.setState({
 			onboarding: {
 				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.CreateAccount
-			}
+				initialAuthenticationStep: OnboardingStep.CreateAccount,
+			},
+		});
+	};
+	private readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
+		this.setState({
+			onboarding: {
+				analyticsAction,
+				initialAuthenticationStep: OnboardingStep.SignIn,
+			},
 		});
 	};
 	private readonly _endOnboarding = (reason: OnboardingExitReason) => {
@@ -208,158 +333,151 @@ export default class extends Root<Props, State, SharedState, Events> {
 			reason === OnboardingExitReason.Completed &&
 			!this.state.user.dateOrientationCompleted
 		) {
-			this.props.serverApi
-				.registerOrientationCompletion()
-				.catch(
-					() => {
-						// ignore. non-critical error path. orientation will just be repeated
-					}
-				);
+			this.props.serverApi.registerOrientationCompletion().catch(() => {
+				// ignore. non-critical error path. orientation will just be repeated
+			});
 			// Onboarding will be closed in onUserUpdated when dateOrientationCompleted is first assigned a value.
 			this.onUserUpdated(
 				{
 					...this.state.user,
 					dateOrientationCompleted: formatIsoDateAsDotNet(
-						new Date()
-							.toISOString()
-					)
+						new Date().toISOString()
+					),
 				},
 				EventSource.Local
 			);
 		} else {
 			// Close onboarding directly.
 			this.setState({
-				onboarding: null
+				onboarding: null,
 			});
 		}
 	};
-	protected readonly _linkAuthServiceAccount = (provider: AuthServiceProvider) => {
+	protected readonly _linkAuthServiceAccount = (
+		provider: AuthServiceProvider
+	) => {
 		// open window synchronously to avoid being blocked by popup blockers
 		const popup = window.open(
 			'',
 			'_blank',
 			'height=300,location=0,menubar=0,toolbar=0,width=400'
 		);
-		return new Promise<AuthServiceAccountAssociation>(
-			(resolve, reject) => {
-				this.props.serverApi
-					.requestTwitterBrowserLinkRequestToken()
-					.catch(
-						error => {
+		return new Promise<AuthServiceAccountAssociation>((resolve, reject) => {
+			this.props.serverApi
+				.requestTwitterBrowserLinkRequestToken()
+				.catch((error) => {
+					popup.close();
+					this._toaster.addToast('Error Requesting Token', Intent.Danger);
+					reject(error);
+				})
+				.then((token) => {
+					if (!token) {
+						return;
+					}
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token', token.value);
+					popup.location.href = url.href;
+					const completionHandler = (
+						response: AuthServiceBrowserLinkResponse
+					) => {
+						if (response.requestToken === token.value) {
+							cleanupEventHandlers();
 							popup.close();
-							this._toaster.addToast('Error Requesting Token', Intent.Danger);
-							reject(error);
-						}
-					)
-					.then(
-						token => {
-							if (!token) {
-								return;
-							}
-							const url = new URL('https://api.twitter.com/oauth/authorize');
-							url.searchParams.set('oauth_token', token.value);
-							popup.location.href = url.href;
-							const completionHandler = (response: AuthServiceBrowserLinkResponse) => {
-								if (response.requestToken === token.value) {
-									cleanupEventHandlers();
-									popup.close();
-									if (isAuthServiceBrowserLinkSuccessResponse(response)) {
-										resolve(response.association);
-									} else {
-										let errorMessage: string;
-										switch (response.error) {
-											case AuthenticationError.Cancelled:
-												errorMessage = 'Cancelled';
-												break;
-										}
-										reject(new Error(errorMessage));
-									}
+							if (isAuthServiceBrowserLinkSuccessResponse(response)) {
+								resolve(response.association);
+							} else {
+								let errorMessage: string;
+								switch (response.error) {
+									case AuthenticationError.Cancelled:
+										errorMessage = 'Cancelled';
+										break;
 								}
-							};
-							this.props.browserApi.addListener('authServiceLinkCompleted', completionHandler);
-							const popupClosePollingInterval = window.setInterval(
-								() => {
-									if (popup.closed) {
-										cleanupEventHandlers();
-										reject(new Error('Cancelled'));
-									}
-								},
-								1000
-							);
-							const cleanupEventHandlers = () => {
-								this.props.browserApi.removeListener('authServiceLinkCompleted', completionHandler);
-								window.clearInterval(popupClosePollingInterval);
-							};
+								reject(new Error(errorMessage));
+							}
 						}
-					)
-					.catch(reject);
-			}
-		);
+					};
+					this.props.browserApi.addListener(
+						'authServiceLinkCompleted',
+						completionHandler
+					);
+					const popupClosePollingInterval = window.setInterval(() => {
+						if (popup.closed) {
+							cleanupEventHandlers();
+							reject(new Error('Cancelled'));
+						}
+					}, 1000);
+					const cleanupEventHandlers = () => {
+						this.props.browserApi.removeListener(
+							'authServiceLinkCompleted',
+							completionHandler
+						);
+						window.clearInterval(popupClosePollingInterval);
+					};
+				})
+				.catch(reject);
+		});
 	};
 	protected readonly _resetPassword = (token: string, password: string) => {
 		return this.props.serverApi
 			.resetPassword({
 				token,
 				password,
-				pushDevice: this.getPushDeviceForm()
+				pushDevice: this.getPushDeviceForm(),
 			})
-			.then(
-				() => {
-					this._toaster.addToast('Password reset successfully.', Intent.Success);
-				}
-			);
+			.then(() => {
+				this._toaster.addToast('Password reset successfully.', Intent.Success);
+			});
 	};
 	private readonly _signInWithApple = (action: string) => {
 		// can't use URLSearchParams here because apple requires spaces be
 		// encoded as %20 (which encodeURIComponent does) instead of +
 		const queryString = createQueryString({
-			'client_id': 'com.readup.webapp',
-			'redirect_uri': 'https://api.readup.org/Auth/AppleWeb',
-			'response_type': 'code id_token',
-			'scope': 'email',
-			'response_mode': 'form_post',
-			'state': JSON.stringify({
+			client_id: 'com.readup.webapp',
+			redirect_uri: 'https://api.readup.org/Auth/AppleWeb',
+			response_type: 'code id_token',
+			scope: 'email',
+			response_mode: 'form_post',
+			state: JSON.stringify({
 				client: this.props.serverApi.getClientHeaderValue(),
-				...(this.getSignUpAnalyticsForm(action))
-			})
+				...this.getSignUpAnalyticsForm(action),
+			}),
 		});
-		window.location.href = 'https://appleid.apple.com/auth/authorize' + queryString;
-		return new Promise<BrowserPopupResponseResponse>(
-			() => {
-				// leave the promise unresolved as the browser navigates
-			}
-		);
+		window.location.href =
+			'https://appleid.apple.com/auth/authorize' + queryString;
+		return new Promise<BrowserPopupResponseResponse>(() => {
+			// leave the promise unresolved as the browser navigates
+		});
 	};
 	private readonly _signInWithTwitter = (action: string) => {
-		return new Promise<BrowserPopupResponseResponse>(
-			(resolve, reject) => {
-				this.props.serverApi
-					.requestTwitterBrowserAuthRequestToken({
-						redirectPath: window.location.pathname,
-						signUpAnalytics: this.getSignUpAnalyticsForm(action)
-					})
-					.then(
-						token => {
-							const url = new URL('https://api.twitter.com/oauth/authorize');
-							url.searchParams.set('oauth_token', token.value);
-							window.location.href = url.href;
-						}
-					)
-					.catch(
-						() => {
-							reject(
-								new Error('Error Requesting Token')
-							);
-						}
-					);
-				// leave the promise unresolved as the browser navigates
-			}
-		);
+		return new Promise<BrowserPopupResponseResponse>((resolve, reject) => {
+			this.props.serverApi
+				.requestTwitterBrowserAuthRequestToken({
+					redirectPath: window.location.pathname,
+					signUpAnalytics: this.getSignUpAnalyticsForm(action),
+				})
+				.then((token) => {
+					const url = new URL('https://api.twitter.com/oauth/authorize');
+					url.searchParams.set('oauth_token', token.value);
+					window.location.href = url.href;
+				})
+				.catch(() => {
+					reject(new Error('Error Requesting Token'));
+				});
+			// leave the promise unresolved as the browser navigates
+		});
 	};
 
 	// window
 	private readonly _handleHistoryPopState = () => {
 		this.setScreenState({ method: NavMethod.Pop });
+	};
+	private readonly _handleVisibilityChange = () => {
+		if (!window.document.hidden) {
+			this.checkForUpdate();
+			this.startUpdateCheckInterval();
+		} else {
+			this.stopUpdateCheckInterval();
+		}
 	};
 
 	constructor(props: Props) {
@@ -373,7 +491,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					deviceType: this.props.deviceType,
 					onCopyTextToClipboard: this._clipboard.copyText,
-					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
+					onCopyAppReferrerTextToClipboard:
+						this._copyAppReferrerTextToClipboard,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
 					onGetAotdHistory: this.props.serverApi.getAotdHistory,
@@ -382,57 +501,61 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterArticleChangeHandler:
+						this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile
+					onViewProfile: this._viewProfile,
 				}
 			),
-			[ScreenKey.Author]: createAuthorScreenFactory(
-				ScreenKey.Author,
-				{
-					deviceType: this.props.deviceType,
-					onBeginOnboarding: this._beginOnboarding,
-					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onCreateTitle: profile => this._createAuthorScreenTitle(profile),
-					onNavTo: this._navTo,
-					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-					onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
-					onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onSetScreenState: this._setScreenState,
-					onShare: this._handleShareRequest,
-					onShareViaChannel: this._handleShareChannelRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile
-				}
-			),
-			[ScreenKey.Blog]: createBlogScreenFactory(
-				ScreenKey.Blog,
-				{
-					deviceType: this.props.deviceType,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
-					onNavTo: this._navTo,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onShare: this._handleShareRequest,
-					onShareViaChannel: this._handleShareChannelRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile
-				}
-			),
+			[ScreenKey.Author]: createAuthorScreenFactory(ScreenKey.Author, {
+				deviceType: this.props.deviceType,
+				onBeginOnboarding: this._beginOnboarding,
+				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onCreateTitle: (profile) => this._createAuthorScreenTitle(profile),
+				onNavTo: this._navTo,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
+				onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
+				onGetAuthorProfile: this.props.serverApi.getAuthorProfile,
+				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onSetScreenState: this._setScreenState,
+				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
+			}),
+			[ScreenKey.Download]: createDownloadPageFactory(ScreenKey.Download, {
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onOpenDialog: this._dialog.openDialog,
+				onCloseDialog: this._dialog.closeDialog,
+				onNavTo: this._navTo,
+			}),
+			[ScreenKey.Blog]: createBlogScreenFactory(ScreenKey.Blog, {
+				deviceType: this.props.deviceType,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+				onNavTo: this._navTo,
+				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
+			}),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				deviceType: this.props.deviceType,
 				onBeginOnboarding: this._beginOnboarding,
@@ -445,7 +568,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetComments: this.props.serverApi.getComments,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
 				onPostCommentAddendum: this._postCommentAddendum,
@@ -454,19 +578,21 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
-				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
+				onRegisterCommentUpdatedHandler:
+					this._registerCommentUpdatedEventHandler,
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
-				onViewProfile: this._viewProfile
+				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
 				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
-				onCreateStaticContentUrl: this._createStaticContentUrl
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
@@ -479,7 +605,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
@@ -491,7 +618,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
-				onViewProfile: this._viewProfile
+				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Notifications]: createNotificationsScreenFactory(
 				ScreenKey.Notifications,
@@ -507,13 +634,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onPostArticle: this._openPostDialog,
 					onRateArticle: this._rateArticle,
 					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterArticleChangeHandler:
+						this._registerArticleChangeEventHandler,
 					onShare: this._handleShareRequest,
 					onShareViaChannel: this._handleShareChannelRequest,
 					onToggleArticleStar: this._toggleArticleStar,
 					onViewComments: this._viewComments,
 					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
+					onViewThread: this._viewThread,
 				}
 			),
 			[ScreenKey.Leaderboards]: createLeaderboardsScreenFactory(
@@ -521,35 +649,53 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{
 					deviceType: this.props.deviceType,
 					onBeginOnboarding: this._beginOnboarding,
-					onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
+					onCopyAppReferrerTextToClipboard:
+						this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onGetAuthorsEarningsReport: this.props.serverApi.getAuthorsEarningsReport,
-					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+					onGetAuthorsEarningsReport:
+						this.props.serverApi.getAuthorsEarningsReport,
+					onOpenNewPlatformNotificationRequestDialog:
+						this._openNewPlatformNotificationRequestDialog,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+					onRegisterArticleChangeHandler:
+						this._registerArticleChangeEventHandler,
 					onSetScreenState: this._setScreenState,
 					onViewAuthor: this._viewAuthor,
-					onViewProfile: this._viewProfile
+					onViewProfile: this._viewProfile,
 				}
 			),
-			[ScreenKey.MyImpact]: createMyImpactScreenFactory(
-				ScreenKey.MyImpact,
-				{
-					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onGetSubscriptionDistributionSummary: this._getSubscriptionDistributionSummary,
-					onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
-					onNavTo: this.navTo,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onViewAuthor: this._viewAuthor,
-					onShowToast: this._toaster.addToast,
-					// dummy
-					onOpenTweetComposerWithCompletionHandler: (param) => Promise.reject()
-				}
-			),
+			[ScreenKey.MyFeed]: createMyFeedScreenFactory(ScreenKey.MyFeed, {
+				deviceType: DeviceType.Ios,
+				onClearAlerts: this._clearAlerts,
+				onCloseDialog: this._dialog.closeDialog,
+				onCopyTextToClipboard: this._clipboard.copyText,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onFollowUser: this._followUser,
+				onGetFollowees: this.props.serverApi.getFollowees,
+				onGetFollowers: this.props.serverApi.getFollowers,
+				onGetProfile: this.props.serverApi.getProfile,
+				onGetNotificationPosts: this.props.serverApi.getNotificationPosts,
+				onNavTo: this._navTo,
+				onOpenDialog: this._dialog.openDialog,
+				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterFolloweeCountChangedHandler:
+					this._registerFolloweeCountChangedEventHandler,
+				onSetScreenState: this._setScreenState,
+				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onUnfollowUser: this._unfollowUser,
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
+				onViewThread: this._viewThread,
+			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				/*
 					This isn't inaccurate but it doesn't matter since viewing My Reads in the browser is deprecated.
@@ -567,13 +713,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onRegisterArticleStarredHandler: this._registerArticleStarredEventHandler,
+				onRegisterArticleStarredHandler:
+					this._registerArticleStarredEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
-				onViewProfile: this._viewProfile
+				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				deviceType: this.props.deviceType,
@@ -591,14 +738,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onGetProfile: this.props.serverApi.getProfile,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 				onRegisterArticlePostedHandler: this._registerArticlePostedEventHandler,
-				onRegisterCommentUpdatedHandler: this._registerCommentUpdatedEventHandler,
-				onRegisterFolloweeCountChangedHandler: this._registerFolloweeCountChangedEventHandler,
+				onRegisterCommentUpdatedHandler:
+					this._registerCommentUpdatedEventHandler,
+				onRegisterFolloweeCountChangedHandler:
+					this._registerFolloweeCountChangedEventHandler,
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
@@ -606,7 +756,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onUnfollowUser: this._unfollowUser,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
-				onViewThread: this._viewThread
+				onViewThread: this._viewThread,
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
@@ -616,166 +766,191 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
 				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
 				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState
+				onSetScreenState: this._setScreenState,
 			}),
-			[ScreenKey.Search]: createSearchScreenFactory(
-				ScreenKey.Search,
-				{
-					deviceType: this.props.deviceType,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
-					onNavTo: this._navTo,
-					onPostArticle: this._openPostDialog,
-					onRateArticle: this._rateArticle,
-					onReadArticle: this._readArticle,
-					onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-					onSearchArticles: this.props.serverApi.searchArticles,
-					onShare: this._handleShareRequest,
-					onShareViaChannel: this._handleShareChannelRequest,
-					onToggleArticleStar: this._toggleArticleStar,
-					onViewComments: this._viewComments,
-					onViewProfile: this._viewProfile,
-					onViewThread: this._viewThread
-				}
-			),
-			[ScreenKey.Settings]: createSettingsScreenFactory(
-				ScreenKey.Settings,
-				{
-					onCloseDialog: this._dialog.closeDialog,
-					onChangeDisplayPreference: this._changeDisplayPreference,
-					onChangeEmailAddress: this._changeEmailAddress,
-					onChangeNotificationPreference: this._changeNotificationPreference,
-					onChangePassword: this._changePassword,
-					onChangeTimeZone: this._changeTimeZone,
-					onCreateAbsoluteUrl: this._createAbsoluteUrl,
-					onDeleteAccount: this._deleteAccount,
-					onGetSettings: this._getSettings,
-					onGetTimeZones: this.props.serverApi.getTimeZones,
-					onLinkAuthServiceAccount: this._linkAuthServiceAccount,
-					onNavTo: this._navTo,
-					onOpenDialog: this._dialog.openDialog,
-					onOpenTweetComposer: this._openTweetComposer,
-					onRegisterNotificationPreferenceChangedEventHandler: this._registerNotificationPreferenceChangedEventHandler,
-					onResendConfirmationEmail: this._resendConfirmationEmail,
-					onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
-					onShowToast: this._toaster.addToast,
-					onSignOut: this._signOut,
-					onSubmitAuthorEmailVerificationRequest: this._submitAuthorEmailVerificationRequest,
-					onViewPrivacyPolicy: this._viewPrivacyPolicy
-				}
-			)
+			[ScreenKey.Search]: createSearchScreenFactory(ScreenKey.Search, {
+				deviceType: this.props.deviceType,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onGetSearchOptions: this.props.serverApi.getArticleSearchOptions,
+				onNavTo: this._navTo,
+				onPostArticle: this._openPostDialog,
+				onRateArticle: this._rateArticle,
+				onReadArticle: this._readArticle,
+				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onSearchArticles: this.props.serverApi.searchArticles,
+				onShare: this._handleShareRequest,
+				onShareViaChannel: this._handleShareChannelRequest,
+				onToggleArticleStar: this._toggleArticleStar,
+				onViewComments: this._viewComments,
+				onViewProfile: this._viewProfile,
+				onViewThread: this._viewThread,
+			}),
+			[ScreenKey.Settings]: createSettingsScreenFactory(ScreenKey.Settings, {
+				onCloseDialog: this._dialog.closeDialog,
+				onChangeDisplayPreference: this._changeDisplayPreference,
+				onChangeEmailAddress: this._changeEmailAddress,
+				onChangeNotificationPreference: this._changeNotificationPreference,
+				onChangePassword: this._changePassword,
+				onChangeTimeZone: this._changeTimeZone,
+				onCreateAbsoluteUrl: this._createAbsoluteUrl,
+				onDeleteAccount: this._deleteAccount,
+				onGetSettings: this._getSettings,
+				onGetTimeZones: this.props.serverApi.getTimeZones,
+				onLinkAuthServiceAccount: this._linkAuthServiceAccount,
+				onOpenDialog: this._dialog.openDialog,
+				onNavTo: this._navTo,
+				onOpenTweetComposer: this._openTweetComposer,
+				onRegisterNotificationPreferenceChangedEventHandler:
+					this._registerNotificationPreferenceChangedEventHandler,
+				onResendConfirmationEmail: this._resendConfirmationEmail,
+				onSendPasswordCreationEmail: this._sendPasswordCreationEmail,
+				onShowToast: this._toaster.addToast,
+				onSignOut: this._signOut,
+				onSubmitAuthorEmailVerificationRequest:
+					this._submitAuthorEmailVerificationRequest,
+				onViewPrivacyPolicy: this._viewPrivacyPolicy,
+			}),
 		};
 
 		// route state
-		const locationState = this.getLocationDependentState(props.initialLocation);
+		const route = findRouteByLocation(
+				routes,
+				props.initialLocation,
+				unroutableQueryStringKeys
+			),
+			locationState = this.getLocationDependentState(props.initialLocation);
 
 		// query string state
-		const
-			queryStringParams = parseQueryString(props.initialLocation.queryString),
-			welcomeMessage = queryStringParams[messageQueryStringKey] as WelcomeMessage;
+		const queryStringParams = parseQueryString(
+				props.initialLocation.queryString
+			),
+			welcomeMessage = queryStringParams[
+				messageQueryStringKey
+			] as WelcomeMessage;
 
 		// onboarding state
 		let onboardingState: OnboardingState;
-		if ('reset-password' in queryStringParams) {
+		if (authServiceTokenQueryStringKey in queryStringParams) {
+			onboardingState = {
+				authServiceToken: queryStringParams[authServiceTokenQueryStringKey],
+			};
+		} else if ('reset-password' in queryStringParams) {
 			onboardingState = {
 				passwordResetEmail: queryStringParams['email'],
-				passwordResetToken: queryStringParams['token']
+				passwordResetToken: queryStringParams['token'],
 			};
+		} else if (extensionAuthQueryStringKey in queryStringParams) {
+			onboardingState = {
+				initialAuthenticationStep: OnboardingStep.CreateAccount,
+			};
+		} else if (
+			extensionInstalledQueryStringKey in queryStringParams ||
+			(props.initialUserProfile &&
+				(!props.extensionApi.isInstalled ||
+					!props.initialUserProfile.userAccount.dateOrientationCompleted) &&
+				isCompatibleBrowser(props.deviceType) &&
+				route.screenKey !== ScreenKey.EmailSubscriptions &&
+				route.screenKey !== ScreenKey.ExtensionRemoval &&
+				!(subscribeQueryStringKey in queryStringParams))
+		) {
+			onboardingState = {};
 		}
 
 		this.state = {
 			...this.state,
 			dialogs: [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
+			menuState: 'closed',
 			onboarding: onboardingState,
 			screens: [locationState.screen],
-			welcomeMessage: (
-				welcomeMessage in welcomeMessages ?
-					welcomeMessage :
-					null
-			)
+			welcomeMessage: welcomeMessage in welcomeMessages ? welcomeMessage : null,
 		};
 
 		// BrowserApi
 		props.browserApi.setTitle(locationState.screen.title);
 		props.browserApi
-			.addListener('articleUpdated', event => {
+			.addListener('articleUpdated', (event) => {
 				this.onArticleUpdated(event, EventSource.Remote);
 			})
-			.addListener(
-				'authServiceLinkCompleted',
-				response => {
-					if (
-						isAuthServiceBrowserLinkSuccessResponse(response) &&
-						response.association.provider === AuthServiceProvider.Twitter &&
-						!this.state.user.hasLinkedTwitterAccount
-					) {
-						this.onUserUpdated(
-							{
-								...this.state.user,
-								hasLinkedTwitterAccount: true
-							},
-							EventSource.Remote
-						);
-					}
+			.addListener('authServiceLinkCompleted', (response) => {
+				if (
+					isAuthServiceBrowserLinkSuccessResponse(response) &&
+					response.association.provider === AuthServiceProvider.Twitter &&
+					!this.state.user.hasLinkedTwitterAccount
+				) {
+					this.onUserUpdated(
+						{
+							...this.state.user,
+							hasLinkedTwitterAccount: true,
+						},
+						EventSource.Remote
+					);
 				}
-			)
-			.addListener('articlePosted', post => {
+			})
+			.addListener('articlePosted', (post) => {
 				this.onArticlePosted(post, EventSource.Remote);
 			})
-			.addListener('commentPosted', comment => {
+			.addListener('commentPosted', (comment) => {
 				this.onCommentPosted(comment, EventSource.Remote);
 			})
-			.addListener('commentUpdated', comment => {
+			.addListener('commentUpdated', (comment) => {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
-			.addListener(
-				'displayPreferenceChanged',
-				preference => {
-					this.onDisplayPreferenceChanged(preference, EventSource.Remote);
-				}
-			)
-			.addListener(
-				'extensionInstallationChanged',
-				event => {
-					this.props.extensionApi.extensionInstallationEventReceived(event);
-				}
-			)
-			.addListener('notificationPreferenceChanged', preference => {
+			.addListener('displayPreferenceChanged', (preference) => {
+				this.onDisplayPreferenceChanged(preference, EventSource.Remote);
+			})
+			.addListener('extensionInstallationChanged', (event) => {
+				this.props.extensionApi.extensionInstallationEventReceived(event);
+			})
+			.addListener('notificationPreferenceChanged', (preference) => {
 				this.onNotificationPreferenceChanged(preference, EventSource.Remote);
 			})
-			.addListener('userSignedIn', data => {
+			.addListener('updateAvailable', (version) => {
+				if (
+					!this._isUpdateAvailable &&
+					version.compareTo(this.props.version) > 0
+				) {
+					this.setUpdateAvailable();
+				}
+			})
+			.addListener('userSignedIn', (data) => {
 				let profile: WebAppUserProfile;
 				// check for broadcast from legacy web app instance
 				if ('userAccount' in data) {
 					profile = data;
 				} else {
 					profile = {
-						userAccount: data
+						userAccount: data,
 					};
 					// manually check for display preference before setting default
-					this.props.serverApi.getDisplayPreference(
-						result => {
-							if (result.value) {
-								if (this.state.displayTheme == null) {
-									this.onDisplayPreferenceChanged(result.value, EventSource.Local);
-								}
-							} else {
-								this._changeDisplayPreference(
-									getClientDefaultDisplayPreference()
+					this.props.serverApi.getDisplayPreference((result) => {
+						if (result.value) {
+							if (this.state.displayTheme == null) {
+								this.onDisplayPreferenceChanged(
+									result.value,
+									EventSource.Local
 								);
 							}
+						} else {
+							this._changeDisplayPreference(
+								getClientDefaultDisplayPreference()
+							);
 						}
-					);
+					});
 				}
-				this.onUserSignedIn(profile, SignInEventType.ExistingUser, EventSource.Remote);
+				this.onUserSignedIn(
+					profile,
+					SignInEventType.ExistingUser,
+					EventSource.Remote
+				);
 			})
 			.addListener('userSignedOut', () => {
 				this.onUserSignedOut(EventSource.Remote);
 			})
-			.addListener('userUpdated', user => {
+			.addListener('userUpdated', (user) => {
 				if (!areUsersEqual(this.state.user, user)) {
 					this.onUserUpdated(user, EventSource.Remote);
 				}
@@ -783,79 +958,69 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 		// ExtensionApi
 		props.extensionApi
-			.addListener('articlePosted', post => {
+			.addListener('articlePosted', (post) => {
 				this.onArticlePosted(post, EventSource.Remote);
 			})
-			.addListener('articleUpdated', event => {
+			.addListener('articleUpdated', (event) => {
 				this.onArticleUpdated(event, EventSource.Remote);
 			})
-			.addListener('installationStatusChanged', installedVersion => {
+			.addListener('installationStatusChanged', (installedVersion) => {
 				this.setState({
-					isExtensionInstalled: !!installedVersion
+					isExtensionInstalled: !!installedVersion,
 				});
 			})
-			.addListener('commentPosted', comment => {
+			.addListener('commentPosted', (comment) => {
 				this.onCommentPosted(comment, EventSource.Remote);
 			})
-			.addListener('commentUpdated', comment => {
+			.addListener('commentUpdated', (comment) => {
 				this.onCommentUpdated(comment, EventSource.Remote);
 			})
-			.addListener(
-				'displayPreferenceChanged',
-				preference => {
-					this.onDisplayPreferenceChanged(preference, EventSource.Remote);
-				}
-			)
-			.addListener('userUpdated', user => {
+			.addListener('displayPreferenceChanged', (preference) => {
+				this.onDisplayPreferenceChanged(preference, EventSource.Remote);
+			})
+			.addListener('userUpdated', (user) => {
 				if (!areUsersEqual(this.state.user, user)) {
 					this.onUserUpdated(user, EventSource.Remote);
 				}
 			});
 	}
 	private changeScreen(
-		options: (
-			(
-				{
-					key: ScreenKey,
-					urlParams?: { [key: string]: string },
-					method: NavMethod.Push | NavMethod.ReplaceAll
-				} | {
-					key: ScreenKey,
-					urlParams?: { [key: string]: string },
-					method: NavMethod.Replace,
-					screenIndex: number
-				} | {
-					method: NavMethod.Pop
-				}
-			)
-		)
+		options:
+			| {
+					key: ScreenKey;
+					urlParams?: { [key: string]: string };
+					method: NavMethod.Push | NavMethod.ReplaceAll;
+			  }
+			| {
+					key: ScreenKey;
+					urlParams?: { [key: string]: string };
+					method: NavMethod.Replace;
+					screenIndex: number;
+			  }
+			| {
+					method: NavMethod.Pop;
+			  }
 	) {
 		let screens: Screen[];
 		if (options.method === NavMethod.Pop) {
 			if (this.state.screens.length > 1) {
 				screens = this.state.screens.slice(0, this.state.screens.length - 1);
 			} else {
-				const
-					route = findRouteByLocation(routes, { path: window.location.pathname }),
+				const route = findRouteByLocation(routes, {
+						path: window.location.pathname,
+					}),
 					screen = this.createScreen(
 						route.screenKey,
-						(
-							route.getPathParams ?
-								route.getPathParams(window.location.pathname) :
-								null
-						)
+						route.getPathParams
+							? route.getPathParams(window.location.pathname)
+							: null
 					);
 				screens = [screen];
 			}
 		} else {
-			const
-				screen = this.createScreen(
-					options.key,
-					options.urlParams,
-					{
-						isReplacement: options.method === NavMethod.Replace
-					}
-				),
+			const screen = this.createScreen(options.key, options.urlParams, {
+					isReplacement: options.method === NavMethod.Replace,
+				}),
 				historyUrl = screen.location.path + (screen.location.queryString || '');
 			switch (options.method) {
 				case NavMethod.Push:
@@ -875,35 +1040,44 @@ export default class extends Root<Props, State, SharedState, Events> {
 					break;
 			}
 		}
-		this.props.browserApi.setTitle(
-			screens[screens.length - 1].title
-		);
+		this.props.browserApi.setTitle(screens[screens.length - 1].title);
 		// return the new state object
 		return {
-			screens
+			menuState:
+				this.state.menuState === 'opened' ? 'closing' : ('closed' as MenuState),
+			screens,
 		};
 	}
-	private setScreenState(
-		options: (
-			(
-				{
-					key: ScreenKey,
-					urlParams?: { [key: string]: string },
-					method: NavMethod.Push | NavMethod.ReplaceAll
-				} | {
-					key: ScreenKey,
-					urlParams?: { [key: string]: string },
-					method: NavMethod.Replace,
-					screenId: number
-				} | {
-					method: NavMethod.Pop
+	private checkForUpdate() {
+		if (!this._isUpdateAvailable) {
+			this.fetchUpdateStatus().then((status) => {
+				if (status.isAvailable) {
+					this.setUpdateAvailable();
+					this.props.browserApi.updateAvailable(status.version);
 				}
-			)
-		)
+			});
+		}
+	}
+	private setScreenState(
+		options:
+			| {
+					key: ScreenKey;
+					urlParams?: { [key: string]: string };
+					method: NavMethod.Push | NavMethod.ReplaceAll;
+			  }
+			| {
+					key: ScreenKey;
+					urlParams?: { [key: string]: string };
+					method: NavMethod.Replace;
+					screenId: number;
+			  }
+			| {
+					method: NavMethod.Pop;
+			  }
 	) {
 		if (options.method === NavMethod.Replace) {
 			const screenIndex = this.state.screens.findIndex(
-				screen => screen.id === options.screenId
+				(screen) => screen.id === options.screenId
 			);
 			if (screenIndex === -1) {
 				return;
@@ -913,13 +1087,33 @@ export default class extends Root<Props, State, SharedState, Events> {
 					key: options.key,
 					urlParams: options.urlParams,
 					method: options.method,
-					screenIndex
+					screenIndex,
 				})
 			);
 		} else {
-			this.setState(
-				this.changeScreen(options)
-			);
+			this.setState(this.changeScreen(options));
+		}
+	}
+	private setUpdateAvailable() {
+		this._isUpdateAvailable = true;
+		this.stopUpdateCheckInterval();
+		this._toaster.addToast(
+			<UpdateToast onUpdate={this._reloadWindow} updateAction='reload' />,
+			Intent.Success,
+			false
+		);
+	}
+	private startUpdateCheckInterval() {
+		if (!this._isUpdateAvailable && !this._updateCheckInterval) {
+			this._updateCheckInterval = window.setInterval(() => {
+				this.checkForUpdate();
+			}, 10 * 60 * 1000);
+		}
+	}
+	private stopUpdateCheckInterval() {
+		if (this._updateCheckInterval) {
+			window.clearInterval(this._updateCheckInterval);
+			this._updateCheckInterval = null;
 		}
 	}
 	protected getPushDeviceForm() {
@@ -929,7 +1123,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
-			user: this.state.user
+			user: this.state.user,
 		};
 	}
 	protected getSignUpAnalyticsForm(action: string) {
@@ -937,7 +1131,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			action,
 			currentPath: window.location.pathname,
 			initialPath: this.props.initialLocation.path,
-			referrerUrl: window.document.referrer
+			referrerUrl: window.document.referrer,
 		};
 	}
 	protected navTo(ref: NavReference, options?: NavOptions) {
@@ -946,49 +1140,60 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.setScreenState({
 				key: result.screenKey,
 				urlParams: result.screenParams,
-				...(
-					options ?? {
-						method: NavMethod.Push
-					}
-				)
+				...(options ?? {
+					method: NavMethod.Push,
+				}),
 			});
 			return true;
 		} else if (!result.isInternal && result.url) {
-			const navOptions = options ?? { method: NavMethod.Push };
-			// NavMethod.Replace & NavMethod.ReplaceAll result in the link being opened in the current window
-			window.open(result.url, navOptions.method === NavMethod.Push ? '_blank' : '_self');
+			window.open(result.url, '_blank');
 			return true;
 		}
 		return false;
 	}
-	protected onArticleUpdated(event: ArticleUpdatedEvent, eventSource: EventSource = EventSource.Local) {
+	protected onArticleUpdated(
+		event: ArticleUpdatedEvent,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.articleUpdated(event);
 			this.props.extensionApi.articleUpdated(event);
 		}
 		super.onArticleUpdated(event);
 	}
-	protected onArticlePosted(post: Post, eventSource: EventSource = EventSource.Local) {
+	protected onArticlePosted(
+		post: Post,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.articlePosted(post);
 		}
 		super.onArticlePosted(post);
 	}
-	protected onCommentPosted(comment: CommentThread, eventSource: EventSource = EventSource.Local) {
+	protected onCommentPosted(
+		comment: CommentThread,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.commentPosted(comment);
 			this.props.extensionApi.commentPosted(comment);
 		}
 		super.onCommentPosted(comment);
 	}
-	protected onCommentUpdated(comment: CommentThread, eventSource: EventSource = EventSource.Local) {
+	protected onCommentUpdated(
+		comment: CommentThread,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.commentUpdated(comment);
 			this.props.extensionApi.commentUpdated(comment);
 		}
 		super.onCommentUpdated(comment);
 	}
-	protected onDisplayPreferenceChanged(preference: DisplayPreference, eventSource: EventSource) {
+	protected onDisplayPreferenceChanged(
+		preference: DisplayPreference,
+		eventSource: EventSource
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.displayPreferenceChanged(preference);
 			this.props.extensionApi.displayPreferenceChanged(preference);
@@ -996,16 +1201,15 @@ export default class extends Root<Props, State, SharedState, Events> {
 		super.onDisplayPreferenceChanged(preference, eventSource);
 	}
 	protected onLocationChanged(path: string, title?: string) {
-		window.history.replaceState(
-			null,
-			title || window.document.title,
-			path
-		);
+		window.history.replaceState(null, title || window.document.title, path);
 		if (title) {
 			this.props.browserApi.setTitle(title);
 		}
 	}
-	protected onNotificationPreferenceChanged(preference: NotificationPreference, eventSource: EventSource = EventSource.Local) {
+	protected onNotificationPreferenceChanged(
+		preference: NotificationPreference,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.notificationPreferenceChanged(preference);
 		}
@@ -1014,22 +1218,34 @@ export default class extends Root<Props, State, SharedState, Events> {
 	protected onTitleChanged(title: string) {
 		this.props.browserApi.setTitle(title);
 	}
-	protected onUserSignedIn(profile: WebAppUserProfile, eventType: SignInEventType, eventSource: EventSource) {
+	protected onUserSignedIn(
+		profile: WebAppUserProfile,
+		eventType: SignInEventType,
+		eventSource: EventSource
+	) {
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedIn(profile);
 			this.props.extensionApi.userSignedIn(profile);
 			// legacy compatibility for versions prior to userSignedIn
 			if (profile.displayPreference) {
-				this.props.extensionApi.displayPreferenceChanged(profile.displayPreference);
+				this.props.extensionApi.displayPreferenceChanged(
+					profile.displayPreference
+				);
 			}
 		}
-		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
+		const screenAuthLevel = findRouteByKey(
+			routes,
+			this.state.screens[0].key
+		).authLevel;
 		let supplementaryState: Partial<State>;
-		if (screenAuthLevel != null && profile.userAccount.role !== screenAuthLevel) {
+		if (
+			screenAuthLevel != null &&
+			profile.userAccount.role !== screenAuthLevel
+		) {
 			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
-				method: NavMethod.ReplaceAll
+				method: NavMethod.ReplaceAll,
 			});
 		}
 		// if we're signed in from another tab and onboarding is not null
@@ -1037,28 +1253,41 @@ export default class extends Root<Props, State, SharedState, Events> {
 		if (eventSource === EventSource.Remote && this.state.onboarding) {
 			supplementaryState = {
 				...supplementaryState,
-				onboarding: null
+				onboarding: null,
 			};
 		}
-		return super.onUserSignedIn(profile, eventType, eventSource, supplementaryState);
+		return super.onUserSignedIn(
+			profile,
+			eventType,
+			eventSource,
+			supplementaryState
+		);
 	}
-	protected onUserSignedOut(eventSource: (EventSource | Partial<State>) = EventSource.Local) {
+	protected onUserSignedOut(
+		eventSource: EventSource | Partial<State> = EventSource.Local
+	) {
 		// check the event source to see if we should broadcast a local event
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userSignedOut();
 			this.props.extensionApi.userSignedOut();
 		}
-		const screenAuthLevel = findRouteByKey(routes, this.state.screens[0].key).authLevel;
+		const screenAuthLevel = findRouteByKey(
+			routes,
+			this.state.screens[0].key
+		).authLevel;
 		let supplementaryState: Partial<State>;
 		if (screenAuthLevel != null) {
 			supplementaryState = this.changeScreen({
 				key: ScreenKey.Home,
-				method: NavMethod.ReplaceAll
+				method: NavMethod.ReplaceAll,
 			});
 		}
 		return super.onUserSignedOut(supplementaryState);
 	}
-	protected onUserUpdated(user: UserAccount, eventSource: EventSource = EventSource.Local) {
+	protected onUserUpdated(
+		user: UserAccount,
+		eventSource: EventSource = EventSource.Local
+	) {
 		if (eventSource === EventSource.Local) {
 			this.props.browserApi.userUpdated(user);
 			this.props.extensionApi.userUpdated(user);
@@ -1074,46 +1303,29 @@ export default class extends Root<Props, State, SharedState, Events> {
 			user.dateOrientationCompleted != null
 		) {
 			supplementaryState = {
-				onboarding: null
+				onboarding: null,
 			};
 		}
 		super.onUserUpdated(user, eventSource, supplementaryState);
 	}
 
-	protected readArticle(article: ReadArticleReference, ev?: React.MouseEvent<HTMLElement>) {
+	protected readArticle(
+		article: ReadArticleReference,
+		ev?: React.MouseEvent<HTMLAnchorElement>
+	) {
+		ev?.preventDefault();
 		const [sourceSlug, articleSlug] = article.slug.split('_');
-		if (
-			this.props.extensionApi.isInstalled &&
-			this.props.extensionApi.installedVersion.compareTo(new SemanticVersion('6.0.0')) < 0
-		) {
-			if (
-				!localStorage.getItem('extensionReminderAcknowledged')
-			) {
-				ev?.preventDefault();
-				this._dialog.openDialog(
-					<ExtensionReminderDialog
-						deviceType={this.props.deviceType}
-						onCreateStaticContentUrl={this._createStaticContentUrl}
-						onSubmit={
-							() => {
-								localStorage.setItem('extensionReminderAcknowledged', Date.now().toString());
-								location.href = article.url;
-								return new Promise(
-									resolve => { }
-								);
-							}
-						}
-					/>
-				);
-			} else if (!ev) {
-				location.href = article.url;
-			}
+		if (this.props.extensionApi.isInstalled) {
+			// open extension reader
+			// TODO PROXY EXT: get extension URL/ID ƒrom messaging event page? or config?
+			// location.href = ;
+			this.props.extensionApi.readArticle(article);
 		} else {
 			ev?.preventDefault();
 			this.setScreenState({
 				key: ScreenKey.Read,
 				method: NavMethod.ReplaceAll,
-				urlParams: { sourceSlug, articleSlug }
+				urlParams: { sourceSlug, articleSlug },
 			});
 		}
 	}
@@ -1121,12 +1333,11 @@ export default class extends Root<Props, State, SharedState, Events> {
 		window.location.href = '/';
 	}
 	protected renderBody() {
-		const
-			topScreen = this.state.screens[this.state.screens.length - 1],
+		const topScreen = this.state.screens[this.state.screens.length - 1],
 			sharedState = this.getSharedState();
 		return (
 			<>
-				{this.state.welcomeMessage ?
+				{this.state.welcomeMessage ? (
 					<div className="welcome-message">
 						{welcomeMessages[this.state.welcomeMessage]}
 						<Icon
@@ -1134,58 +1345,104 @@ export default class extends Root<Props, State, SharedState, Events> {
 							name="cancel"
 							onClick={this._dismissWelcomeMessage}
 						/>
-					</div> :
-					null}
-				{
-				(
-					topScreen.templateSection == null ||
-					(topScreen.templateSection & TemplateSection.Header)
-				)
-				 ?
-					<HomeHeader
-						onViewHome={this._viewHome}
-						onNavTo={this._navTo}
-						// navTo uses the Push navigation method, so the current screen is the last one
-						currentScreen={this.state.screens[0]}
-					/> :
-					null}
+					</div>
+				) : null}
+				{topScreen.templateSection == null ||
+				topScreen.templateSection & TemplateSection.Header ? (
+					this.state.user != null ? (
+						<Header
+							deviceType={this.props.deviceType}
+							onBeginOnboarding={this._beginOnboarding}
+							onOpenMenu={this._openMenu}
+							onOpenSignInPrompt={this._beginOnboardingAtSignIn}
+							onViewHome={this._viewHome}
+							onViewNotifications={this._viewNotifications}
+							user={this.state.user}
+						/>
+					) : (
+						<HomeHeader
+							deviceType={this.props.deviceType}
+							onBeginOnboarding={this._beginOnboarding}
+							onCopyAppReferrerTextToClipboard={
+								this._copyAppReferrerTextToClipboard
+							}
+							onCreateStaticContentUrl={this._createStaticContentUrl}
+							onOpenMenu={this._openMenu}
+							onOpenNewPlatformNotificationRequestDialog={
+								this._openNewPlatformNotificationRequestDialog
+							}
+							onOpenSignInPrompt={this._beginOnboardingAtSignIn}
+							onViewHome={this._viewHome}
+							onViewNotifications={this._viewNotifications}
+							onNavTo={this._navTo}
+							// navTo uses the Push navigation method, so the current screen is the last one
+							currentScreen={this.state.screens[0]}
+							user={this.state.user}
+						/>
+					)
+				) : null}
 				<main>
+					{(topScreen.templateSection == null ||
+						topScreen.templateSection & TemplateSection.Navigation) &&
+					this.state.user ? (
+						<NavBar
+							onNavTo={this._navTo}
+							onViewHome={this._viewHome}
+							onViewMyReads={this._viewMyReads}
+							selectedScreen={this.state.screens[0]}
+							user={this.state.user}
+						/>
+					) : null}
 					<ol className="screens">
-						{this.state.screens.map(screen => (
-							<li
-								className="screen"
-								key={screen.id}
-							>
+						{this.state.screens.map((screen) => (
+							<li className="screen" key={screen.id}>
 								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
-								{(
-									(
-										screen.templateSection == null ||
-										(screen.templateSection & TemplateSection.Footer)
-									) &&
-									!this.state.user
-								) ?
+								{(screen.templateSection == null ||
+									screen.templateSection & TemplateSection.Footer) &&
+								!this.state.user ? (
 									<ColumnFooter
 										onNavTo={this._navTo}
+										onOpenDialog={this._dialog.openDialog}
+										onCloseDialog={this._dialog.closeDialog}
+										onCreateStaticContentUrl={this._createStaticContentUrl}
 										showWhatIsReadup={topScreen.key !== ScreenKey.Home}
-									/> :
-									null}
+									/>
+								) : null}
 							</li>
 						))}
 					</ol>
 				</main>
+				{this.state.menuState !== 'closed' ? (
+					<Menu
+						isClosing={this.state.menuState === 'closing'}
+						onClose={this._closeMenu}
+						onClosed={this._hideMenu}
+						onViewAdminPage={this._viewAdminPage}
+						onViewFaq={this._viewFaq}
+						onViewLeaderboards={this._viewLeaderboards}
+						onViewProfile={this._viewProfile}
+						onViewSearch={this._viewSearch}
+						onViewSettings={this._viewSettings}
+						onViewStats={this._viewStats}
+						selectedScreen={this.state.screens[0]}
+						userAccount={this.state.user}
+					/>
+				) : null}
 				<DialogManager
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 					sharedState={this.state}
 				/>
-				{this.state.onboarding ?
+				{this.state.onboarding ? (
 					<OnboardingFlow
 						analyticsAction={this.state.onboarding.analyticsAction}
 						authServiceToken={this.state.onboarding.authServiceToken}
 						captcha={this.props.captcha}
 						deviceType={this.props.deviceType}
-						initialAuthenticationStep={this.state.onboarding.initialAuthenticationStep}
+						initialAuthenticationStep={
+							this.state.onboarding.initialAuthenticationStep
+						}
 						isExtensionInstalled={this.state.isExtensionInstalled}
 						onClose={this._endOnboarding}
 						onCreateAccount={this._createAccount}
@@ -1200,8 +1457,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 						passwordResetEmail={this.state.onboarding.passwordResetEmail}
 						passwordResetToken={this.state.onboarding.passwordResetToken}
 						user={this.state.user}
-					/> :
-					null}
+					/>
+				) : null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}
@@ -1212,7 +1469,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 	public componentDidMount() {
 		super.componentDidMount();
 		// parse query string
-		const queryStringParams = parseQueryString(this.props.initialLocation.queryString);
+		const queryStringParams = parseQueryString(
+			this.props.initialLocation.queryString
+		);
 		// clear query string used to set initial state
 		window.history.replaceState(
 			null,
@@ -1221,6 +1480,14 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 		// add listener for back navigation
 		window.addEventListener('popstate', this._handleHistoryPopState);
+		// add listener for visibility change
+		window.document.addEventListener(
+			'visibilitychange',
+			this._handleVisibilityChange
+		);
+		if (!document.hidden) {
+			this.startUpdateCheckInterval();
+		}
 		// update other tabs with the latest user data
 		// descendent components' mount handlers will fire before this one
 		// and might have cleared an alert and already broadcast a more
@@ -1233,14 +1500,22 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		// broadcast display preference if signed in
 		if (this.props.initialUserProfile?.displayPreference) {
-			this.props.browserApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
-			this.props.extensionApi.displayPreferenceChanged(this.props.initialUserProfile.displayPreference);
+			this.props.browserApi.displayPreferenceChanged(
+				this.props.initialUserProfile.displayPreference
+			);
+			this.props.extensionApi.displayPreferenceChanged(
+				this.props.initialUserProfile.displayPreference
+			);
 		}
 		// broadcast extension installation or removal
-		const initialRoute = findRouteByLocation(routes, this.props.initialLocation, unroutableQueryStringKeys);
+		const initialRoute = findRouteByLocation(
+			routes,
+			this.props.initialLocation,
+			unroutableQueryStringKeys
+		);
 		if (initialRoute.screenKey === ScreenKey.ExtensionRemoval) {
 			this.props.browserApi.extensionInstallationChanged({
-				type: 'uninstalled'
+				type: 'uninstalled',
 			});
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams &&
@@ -1248,22 +1523,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 		) {
 			this.props.browserApi.extensionInstallationChanged({
 				type: 'installed',
-				version: this.props.extensionApi.installedVersion
+				version: this.props.extensionApi.installedVersion,
 			});
 		}
 		// clear extension installation redirect cookie
-		Cookies.remove(
-			extensionInstallationRedirectPathCookieKey,
-			{
-				domain: '.' + this.props.webServerEndpoint.host,
-				sameSite: 'none',
-				secure: this.props.webServerEndpoint.protocol === 'https'
-			}
-		);
+		Cookies.remove(extensionInstallationRedirectPathCookieKey, {
+			domain: '.' + this.props.webServerEndpoint.host,
+			sameSite: 'none',
+			secure: this.props.webServerEndpoint.protocol === 'https',
+		});
 	}
 	public componentWillUnmount() {
 		super.componentWillUnmount();
 		window.removeEventListener('popstate', this._handleHistoryPopState);
+		window.document.removeEventListener(
+			'visibilitychange',
+			this._handleVisibilityChange
+		);
 		if (this._updateCheckInterval) {
 			window.clearInterval(this._updateCheckInterval);
 		}

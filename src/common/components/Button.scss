@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -89,7 +89,7 @@
 }
 /* indicator */
 .button_ovrlmi.indicator::after {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -120,7 +120,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"outline-color": $intent-primary-color
+				'outline-color': $intent-primary-color,
 			)
 		);
 	}
@@ -128,8 +128,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-neutral-color,
-				"color": $intent-text-color
+				'background-color': $intent-neutral-color,
+				'color': $intent-text-color,
 			)
 		);
 	}
@@ -137,8 +137,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $loud-background-color,
-				"color": $loud-text-color
+				'background-color': $loud-background-color,
+				'color': $loud-text-color,
 			)
 		);
 	}
@@ -146,8 +146,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-danger-color,
-				"color": $intent-text-color
+				'background-color': $intent-danger-color,
+				'color': $intent-text-color,
 			)
 		);
 	}
@@ -155,8 +155,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-success-color,
-				"color": $intent-text-color
+				'background-color': $intent-success-color,
+				'color': $intent-text-color,
 			)
 		);
 	}
@@ -166,8 +166,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-primary-color,
-				"color": $apple-button-text-color
+				'background-color': $intent-primary-color,
+				'color': $apple-button-text-color,
 			)
 		);
 	}
@@ -176,7 +176,7 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $control-disabled-color
+				'color': $control-disabled-color,
 			)
 		);
 	}
@@ -184,8 +184,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $button-selected-background-color,
-				"color": $button-selected-text-color
+				'background-color': $button-selected-background-color,
+				'color': $button-selected-text-color,
 			)
 		);
 	}
@@ -193,8 +193,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"border-top-color": $intent-alert-color,
-				"border-right-color": $intent-alert-color
+				'border-top-color': $intent-alert-color,
+				'border-right-color': $intent-alert-color,
 			)
 		);
 	}
@@ -202,8 +202,8 @@
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $intent-neutral-color,
-				"color": $intent-text-color
+				'background-color': $intent-neutral-color,
+				'color': $intent-text-color,
 			)
 		);
 	}

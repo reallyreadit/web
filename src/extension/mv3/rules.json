@@ -1,0 +1,54 @@
+[
+	{
+		"id": 1,
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "Referer",
+					"operation": "set",
+					"value": "https://drudgereport.com/"
+				}
+			]
+		},
+		"condition": {
+			"urlFilter": "www.wsj.com",
+			"resourceTypes": ["xmlhttprequest"]
+		}
+	},
+	{
+		"id": 2,
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "cookie",
+					"operation": "set",
+					"value": "trackingChoice=true;choiceVersion=;dateOfChoice=1670767885754;"
+				}
+			]
+		},
+		"condition": {
+			"urlFilter": "npr.org",
+			"resourceTypes": ["xmlhttprequest"]
+		}
+	},
+	{
+		"id": 3,
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "cookie",
+					"operation": "set",
+					"value": "wp_devicetype=0; wp_gdpr=1; wp_geo=FI||||EEA; wp_ak_osn=1|20221206; wp_ak_v_p=1|20220930; wp_ak_v_ot=1; wp_ak_ot=1|20211012; wp_ak_ot=1|20211012; wp_ak_wab=0|0|0|0|0|20220711"
+				}
+			]
+		},
+		"condition": {
+			"urlFilter": "||washingtonpost.com",
+			"initiatorDomains": ["imomjjeefgkhncpdjginbcjlbgimbgcf"],
+			"resourceTypes": ["xmlhttprequest"]
+		}
+	}
+]

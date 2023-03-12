@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -63,7 +63,7 @@ $progress-bar-width: 0.75em;
 	font-size: 12px;
 }
 .progress-indicator_vgryrl > .handle::after {
-	content: "";
+	content: '';
 	position: absolute;
 	height: calc(100% + 6px);
 	width: 3px;
@@ -90,7 +90,15 @@ $progress-bar-width: 0.75em;
 .progress-indicator_vgryrl > .indicator > .progress {
 	box-sizing: border-box;
 	transform: rotate(210deg);
-	clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 7% 25%);
+	clip-path: polygon(
+		50% 50%,
+		50% 0%,
+		100% 0%,
+		100% 100%,
+		0% 100%,
+		0% 0%,
+		7% 25%
+	);
 }
 .progress-indicator_vgryrl > .indicator.loading > .progress {
 	box-sizing: border-box;
@@ -110,7 +118,10 @@ $progress-bar-width: 0.75em;
 .progress-indicator_vgryrl > .indicator > .logo {
 	width: 42%;
 	height: 42%;
-	background-image: url(create-url(map-get($readup-config, "static-server"), "/common/images/icon.svg"));
+	background-image: url(create-url(
+		map-get($readup-config, 'static-server'),
+		'/common/images/icon.svg'
+	));
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -121,7 +132,7 @@ $progress-bar-width: 0.75em;
 	left: 50%;
 	transform: translateX(-50%);
 	font-size: 1.15em;
-	font-family: "Museo Sans (500)";
+	font-family: 'Museo Sans (500)';
 }
 .progress-indicator_vgryrl > .indicator.loading > .label {
 	display: none;
@@ -174,8 +185,8 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-color": $content-border-color
+				'background-color': $content-background-color,
+				'border-color': $content-border-color,
 			)
 		);
 	}
@@ -183,7 +194,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color
+				'background-color': $content-background-color,
 			)
 		);
 	}
@@ -191,9 +202,9 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"background-color": $content-background-color,
-				"border-color": $content-border-color,
-				"color": $text-muted-color
+				'background-color': $content-background-color,
+				'border-color': $content-border-color,
+				'color': $text-muted-color,
 			)
 		);
 	}
@@ -201,7 +212,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $embed-progress-background-color
+				'border-color': $embed-progress-background-color,
 			)
 		);
 	}
@@ -209,15 +220,19 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $embed-progress-fill-color
+				'border-color': $embed-progress-fill-color,
 			)
 		);
 	}
-	#{$root} .progress-indicator_vgryrl > .indicator > .progress > .fill.complete {
+	#{$root}
+		.progress-indicator_vgryrl
+		> .indicator
+		> .progress
+		> .fill.complete {
 		@include theme-colors(
 			$scheme,
 			(
-				"border-color": $embed-progress-complete-color
+				'border-color': $embed-progress-complete-color,
 			)
 		);
 	}
@@ -225,7 +240,7 @@ $progress-bar-width: 0.75em;
 		@include theme-colors(
 			$scheme,
 			(
-				"color": $text-muted-color
+				'color': $text-muted-color,
 			)
 		);
 	}

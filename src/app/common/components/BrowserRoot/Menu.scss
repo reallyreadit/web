@@ -1,0 +1,114 @@
+/*
+	componentPath: src/app/common/components/BrowserRoot/Menu
+	cssComponentId: menu_v25ec5
+*/
+@import '../../../../common/styles/colors';
+
+.menu_v25ec5 {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+	display: flex;
+	flex-flow: row-reverse;
+	animation-duration: 250ms;
+	animation-fill-mode: forwards;
+}
+.menu_v25ec5.closing {
+	animation-direction: reverse;
+	animation-fill-mode: backwards;
+}
+.menu_v25ec5 > .drawer {
+	display: flex;
+	flex-flow: column;
+	max-width: 290px;
+	border-left-width: 1px;
+	border-left-style: solid;
+	font-size: 16px;
+	animation: menu_v25ec5-drawer-open 250ms forwards;
+}
+.menu_v25ec5.closing > .drawer {
+	animation: menu_v25ec5-drawer-close 250ms forwards;
+}
+.menu_v25ec5 > .drawer > .header {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: space-between;
+	padding: 28px 38px 20px 30px;
+	font-size: 15pt;
+}
+.menu_v25ec5 > .drawer > .header > label {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
+}
+.menu_v25ec5 > .drawer > .header > .icon_rour3d {
+	flex: 0 0 auto;
+	cursor: pointer;
+}
+.menu_v25ec5 > .drawer > ol {
+	flex: 1 1 auto;
+	display: flex;
+	flex-flow: column;
+}
+.menu_v25ec5 > .drawer > .revenue-meter_56f8z4 {
+	flex: 0 0 auto;
+	margin: 0 20px 20px 20px;
+	font-size: 0.75em;
+}
+
+@keyframes menu_v25ec5-overlay-fade-in-light {
+	from {
+		background-color: transparent;
+	}
+	to {
+		background-color: map-get($light-theme, $overlay-color);
+	}
+}
+@keyframes menu_v25ec5-overlay-fade-in-dark {
+	from {
+		background-color: transparent;
+	}
+	to {
+		background-color: map-get($dark-theme, $overlay-color);
+	}
+}
+@keyframes menu_v25ec5-drawer-open {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+@keyframes menu_v25ec5-drawer-close {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .menu_v25ec5 {
+		@include theme-colors(
+			$scheme,
+			(
+				'animation-name': 'menu_v25ec5-overlay-fade-in',
+			)
+		);
+	}
+	#{$root} .menu_v25ec5 > .drawer {
+		@include theme-colors(
+			$scheme,
+			(
+				'background-color': $content-background-color,
+				'border-left-color': $nav-border-color,
+			)
+		);
+	}
+}

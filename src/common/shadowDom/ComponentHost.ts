@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -14,7 +14,9 @@ import icons from '../svg/icons';
 
 export type DomAttachmentDelegate = (shadowHost: HTMLElement) => void;
 export default abstract class ComponentHost<Services, State> {
-	protected abstract readonly _component: React.FunctionComponent<Services & State> | React.ComponentClass<Services & State>;
+	protected abstract readonly _component:
+		| React.FunctionComponent<Services & State>
+		| React.ComponentClass<Services & State>;
 	private readonly _domAttachmentDelegate: DomAttachmentDelegate;
 	private _isAttached = false;
 	private readonly _reactContainer: HTMLElement;
@@ -22,13 +24,11 @@ export default abstract class ComponentHost<Services, State> {
 	private readonly _shadowHost: HTMLElement;
 	private readonly _shadowRoot: ShadowRoot;
 	protected abstract _state: State;
-	constructor(
-		{
-			domAttachmentDelegate
-		}: {
-			domAttachmentDelegate: DomAttachmentDelegate
-		}
-	) {
+	constructor({
+		domAttachmentDelegate,
+	}: {
+		domAttachmentDelegate: DomAttachmentDelegate;
+	}) {
 		// store the dom attachment delegate
 		this._domAttachmentDelegate = domAttachmentDelegate;
 
@@ -39,20 +39,18 @@ export default abstract class ComponentHost<Services, State> {
 
 		// set initial theme and listen for changes
 		this.setTheme();
-		window.addEventListener(
-			'com.readup.themechange',
-			() => {
-				this.setTheme();
-			}
-		);
+		window.addEventListener('com.readup.themechange', () => {
+			this.setTheme();
+		});
 
 		// create shadow root by attaching to host
 		this._shadowRoot = this._shadowHost.attachShadow({
-			mode: 'open'
+			mode: 'open',
 		});
 	}
 	private setTheme() {
-		this._shadowHost.dataset['com_readup_theme'] = document.documentElement.dataset['com_readup_theme'];
+		this._shadowHost.dataset['com_readup_theme'] =
+			document.documentElement.dataset['com_readup_theme'];
 	}
 	protected abstract getStylesheetUrl(): string;
 	public attach() {
@@ -78,25 +76,18 @@ export default abstract class ComponentHost<Services, State> {
 		this._domAttachmentDelegate(this._shadowHost);
 	}
 	public setState(nextState: Partial<State>) {
-		return new Promise(
-			resolve => {
-				ReactDOM.render(
-					React.createElement(
-						this._component,
-						{
-							...this._services,
-							...(
-								this._state = {
-									...this._state,
-									...nextState
-								}
-							)
-						}
-					),
-					this._reactContainer,
-					resolve
-				);
-			}
-		);
+		return new Promise((resolve) => {
+			ReactDOM.render(
+				React.createElement(this._component, {
+					...this._services,
+					...(this._state = {
+						...this._state,
+						...nextState,
+					}),
+				}),
+				this._reactContainer,
+				resolve
+			);
+		});
 	}
 }

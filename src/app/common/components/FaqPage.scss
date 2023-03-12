@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
@@ -14,7 +14,6 @@
 */
 
 .faq-page_35vamf {
-
 	.faq-android-notify {
 		margin-top: 14px;
 	}
@@ -33,8 +32,8 @@
 		grid-template-columns: 200px auto;
 		grid-template-rows: auto auto;
 		grid-template-areas:
-			"sidebar sidebar"
-			"questions questions";
+			'sidebar sidebar'
+			'questions questions';
 
 		// > .hero {
 		// 	grid-area: hero;
@@ -130,7 +129,8 @@
 		}
 
 		@media screen and (min-width: 500px) {
-			.sidebar, .questions {
+			.sidebar,
+			.questions {
 				width: 440px;
 				margin-left: auto;
 				margin-right: auto;
@@ -139,10 +139,10 @@
 
 		@media screen and (min-width: 768px) {
 			grid-template-columns: 0.9fr 2fr;
-			grid-template-areas:
-				"sidebar questions";
+			grid-template-areas: 'sidebar questions';
 
-			.sidebar, .questions {
+			.sidebar,
+			.questions {
 				width: unset;
 				margin: unset;
 			}
@@ -151,7 +151,7 @@
 			}
 
 			.questions .question-section {
-				margin-top: 	42px;
+				margin-top: 42px;
 				&:first-child {
 					margin-top: 0;
 				}

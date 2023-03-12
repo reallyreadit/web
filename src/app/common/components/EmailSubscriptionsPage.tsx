@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -20,20 +20,34 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
 
 interface Props {
-	onGetEmailSubscriptions: (token: string, callback: (request: Fetchable<EmailSubscriptionsRequest>) => void) => Fetchable<EmailSubscriptionsRequest>,
-	onUpdateEmailSubscriptions: (token: string, prefrence: NotificationPreference) => Promise<void>,
-	token: string | null
+	onGetEmailSubscriptions: (
+		token: string,
+		callback: (request: Fetchable<EmailSubscriptionsRequest>) => void
+	) => Fetchable<EmailSubscriptionsRequest>;
+	onUpdateEmailSubscriptions: (
+		token: string,
+		prefrence: NotificationPreference
+	) => Promise<void>;
+	token: string | null;
 }
-export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Pick<Props, Exclude<keyof Props, 'token'>>) {
+export function createScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'token'>>
+) {
 	return {
-		create: (id: number, location: RouteLocation) => ({ id, key, location, title: 'Notification Preferences' }),
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: 'Notification Preferences',
+		}),
 		render: (state: Screen) => (
 			<EmailSubscriptionPage
 				onGetEmailSubscriptions={deps.onGetEmailSubscriptions}
 				onUpdateEmailSubscriptions={deps.onUpdateEmailSubscriptions}
 				token={parseQueryString(state.location.queryString)['token']}
 			/>
-		)
+		),
 	};
 }
 export default class EmailSubscriptionPage extends React.PureComponent<
@@ -52,10 +66,10 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 			this.state = {
 				request: props.onGetEmailSubscriptions(
 					props.token,
-					this._asyncTracker.addCallback(
-						request => this.setState({ request })
+					this._asyncTracker.addCallback((request) =>
+						this.setState({ request })
 					)
-				)
+				),
 			};
 		} else {
 			this._token = null;
@@ -66,21 +80,28 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 		return (
 			<ScreenContainer>
 				<div className="email-subscriptions-page_tqh2pd">
-					{this.state.request ?
-						this.state.request.isLoading ?
-							<span>Loading...</span> :
-							this.state.request.value.isValid ?
-								<>
-									<div className="address">
-										<span>Notification settings for: {this.state.request.value.emailAddress}</span>
-									</div>
-									<NotificationPreferencesControl
-										preference={this.state.request.value.preference}
-										onChangeNotificationPreference={this._saveChanges}
-									/>
-								</> :
-								<strong>Invalid token</strong> :
-						<strong>Invalid token</strong>}
+					{this.state.request ? (
+						this.state.request.isLoading ? (
+							<span>Loading...</span>
+						) : this.state.request.value.isValid ? (
+							<>
+								<div className="address">
+									<span>
+										Notification settings for:{' '}
+										{this.state.request.value.emailAddress}
+									</span>
+								</div>
+								<NotificationPreferencesControl
+									preference={this.state.request.value.preference}
+									onChangeNotificationPreference={this._saveChanges}
+								/>
+							</>
+						) : (
+							<strong>Invalid token</strong>
+						)
+					) : (
+						<strong>Invalid token</strong>
+					)}
 				</div>
 			</ScreenContainer>
 		);

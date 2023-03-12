@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import HttpEndpoint, { createUrl } from '../common/HttpEndpoint';
@@ -36,15 +36,13 @@ import BrowserPopupResponseResponse from '../common/models/auth/BrowserPopupResp
 export default class ApiServer {
 	private readonly _clientVersion: SemanticVersion;
 	private readonly _endpoint: HttpEndpoint;
-	constructor(
-		{
-			clientVersion,
-			endpoint
-		} : {
-			clientVersion: SemanticVersion,
-			endpoint: HttpEndpoint
-		}
-	) {
+	constructor({
+		clientVersion,
+		endpoint,
+	}: {
+		clientVersion: SemanticVersion;
+		endpoint: HttpEndpoint;
+	}) {
 		this._clientVersion = clientVersion;
 		this._endpoint = endpoint;
 	}
@@ -53,9 +51,9 @@ export default class ApiServer {
 		const options: RequestInit & { headers: Headers } = {
 			credentials: 'include',
 			headers: new Headers({
-				'X-Readup-Client': 'web/embed@' + this._clientVersion.toString()
+				'X-Readup-Client': 'web/embed@' + this._clientVersion.toString(),
 			}),
-			method
+			method,
 		};
 		switch (method) {
 			case HttpMethod.Get:
@@ -69,76 +67,125 @@ export default class ApiServer {
 				}
 				break;
 		}
-		return fetch(url, options)
-			.then(
-				res => {
-					// asp.net sets content-type = "application/json; charset=utf-8"
-					const contentType = res.headers.get('content-type');
-					if (
-						contentType?.includes('application/json') ||
-						contentType?.includes('application/problem+json')
-					) {
-						return res
-							.json()
-							.then(
-								(json: T) => {
-									if (!res.ok) {
-										throw (json || []);
-									}
-									return json;
-								}
-							);
-					} else {
-						if (!res.ok) {
-							const error = new Error();
-							error.name = res.status.toString();
-							throw error;
-						}
-						return null;
+		return fetch(url, options).then((res) => {
+			// asp.net sets content-type = "application/json; charset=utf-8"
+			const contentType = res.headers.get('content-type');
+			if (
+				contentType?.includes('application/json') ||
+				contentType?.includes('application/problem+json')
+			) {
+				return res.json().then((json: T) => {
+					if (!res.ok) {
+						throw json || [];
 					}
+					return json;
+				});
+			} else {
+				if (!res.ok) {
+					const error = new Error();
+					error.name = res.status.toString();
+					throw error;
 				}
-			);
+				return null;
+			}
+		});
 	}
 	public createAuthServiceAccount(request: AuthServiceAccountForm) {
-		return this.fetch<WebAppUserProfile>(HttpMethod.Post, '/UserAccounts/AuthServiceAccount', request);
+		return this.fetch<WebAppUserProfile>(
+			HttpMethod.Post,
+			'/UserAccounts/AuthServiceAccount',
+			request
+		);
 	}
 	public createUserAccount(request: UserAccountForm) {
-		return this.fetch<WebAppUserProfile>(HttpMethod.Post, '/UserAccounts/CreateAccount', request);
+		return this.fetch<WebAppUserProfile>(
+			HttpMethod.Post,
+			'/UserAccounts/CreateAccount',
+			request
+		);
 	}
 	public deleteComment(request: CommentDeletionForm) {
-		return this.fetch<CommentThread>(HttpMethod.Post, '/Social/CommentDeletion', request);
+		return this.fetch<CommentThread>(
+			HttpMethod.Post,
+			'/Social/CommentDeletion',
+			request
+		);
 	}
-	public getAuthServiceBrowserPopupResponse(request: BrowserPopupResponseRequest) {
-		return this.fetch<BrowserPopupResponseResponse>(HttpMethod.Get, '/Auth/BrowserPopupResponse', request);
+	public getAuthServiceBrowserPopupResponse(
+		request: BrowserPopupResponseRequest
+	) {
+		return this.fetch<BrowserPopupResponseResponse>(
+			HttpMethod.Get,
+			'/Auth/BrowserPopupResponse',
+			request
+		);
 	}
 	public getComments(slug: string) {
-		return this.fetch<CommentThread[]>(HttpMethod.Get, '/Articles/ListComments', { slug });
+		return this.fetch<CommentThread[]>(
+			HttpMethod.Get,
+			'/Articles/ListComments',
+			{ slug }
+		);
 	}
 	public initialize(request: InitializationRequest) {
-		return this.fetch<InitializationResponse>(HttpMethod.Post, '/Embed/Initialization', request);
+		return this.fetch<InitializationResponse>(
+			HttpMethod.Post,
+			'/Embed/Initialization',
+			request
+		);
 	}
 	public postArticle(request: PostForm) {
 		return this.fetch<Post>(HttpMethod.Post, '/Social/Post', request);
 	}
 	public postComment(request: CommentForm) {
-		return this.fetch<CommentCreationResponse>(HttpMethod.Post, '/Social/Comment', request);
+		return this.fetch<CommentCreationResponse>(
+			HttpMethod.Post,
+			'/Social/Comment',
+			request
+		);
 	}
 	public postCommentAddendum(request: CommentAddendumForm) {
-		return this.fetch<CommentThread>(HttpMethod.Post, '/Social/CommentAddendum', request);
+		return this.fetch<CommentThread>(
+			HttpMethod.Post,
+			'/Social/CommentAddendum',
+			request
+		);
 	}
 	public postCommentRevision(request: CommentRevisionForm) {
-		return this.fetch<CommentThread>(HttpMethod.Post, '/Social/CommentRevision', request);
+		return this.fetch<CommentThread>(
+			HttpMethod.Post,
+			'/Social/CommentRevision',
+			request
+		);
 	}
-	public requestAuthServiceBrowserPopupRequest(request: BrowserPopupRequestRequest) {
-		return this.fetch<BrowserPopupRequestResponse>(HttpMethod.Post, '/Auth/BrowserPopupRequest', request);
+	public requestAuthServiceBrowserPopupRequest(
+		request: BrowserPopupRequestRequest
+	) {
+		return this.fetch<BrowserPopupRequestResponse>(
+			HttpMethod.Post,
+			'/Auth/BrowserPopupRequest',
+			request
+		);
 	}
 	public requestPasswordReset(request: PasswordResetRequestForm) {
-		return this.fetch<void>(HttpMethod.Post, '/UserAccounts/RequestPasswordReset', request);
+		return this.fetch<void>(
+			HttpMethod.Post,
+			'/UserAccounts/RequestPasswordReset',
+			request
+		);
 	}
 	public signIn(request: SignInForm) {
-		return this.fetch<WebAppUserProfile>(HttpMethod.Post, '/UserAccounts/SignIn', request);
+		return this.fetch<WebAppUserProfile>(
+			HttpMethod.Post,
+			'/UserAccounts/SignIn',
+			request
+		);
 	}
 	public updateReadProgress(request: ReadProgressRequest) {
-		return this.fetch<ReadProgressResponse>(HttpMethod.Post, '/Embed/ReadProgress', request);
+		return this.fetch<ReadProgressResponse>(
+			HttpMethod.Post,
+			'/Embed/ReadProgress',
+			request
+		);
 	}
 }

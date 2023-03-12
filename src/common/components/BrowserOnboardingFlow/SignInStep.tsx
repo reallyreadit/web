@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
@@ -18,45 +18,56 @@ import FormPartition from '../controls/FormPartition';
 import AuthServiceButton from '../AuthServiceButton';
 import AuthServiceProvider from '../../models/auth/AuthServiceProvider';
 import BrowserPopupResponseResponse from '../../models/auth/BrowserPopupResponseResponse';
-import AuthenticationError, { errorMessage as authenticationErrorMessage } from '../../models/auth/AuthenticationError';
+import AuthenticationError, {
+	errorMessage as authenticationErrorMessage,
+} from '../../models/auth/AuthenticationError';
 import { Intent } from '../Toaster';
 import { getPromiseErrorMessage } from '../../format';
 
-export type Form = Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string };
+export type Form = Pick<
+	SignInForm,
+	'authServiceToken' | 'email' | 'password'
+> & { analyticsAction: string };
 interface Props {
-	analyticsAction: string,
-	authServiceToken?: string,
-	onCreateAccount?: () => void,
-	onRequestPasswordReset: (authServiceToken?: string) => void,
-	onShowToast: (content: React.ReactNode, intent: Intent) => void,
-	onSignIn: (form: Form) => Promise<void>,
-	onSignInWithAuthService?: (provider: AuthServiceProvider, analyticsAction: string) => Promise<BrowserPopupResponseResponse>
+	analyticsAction: string;
+	authServiceToken?: string;
+	onCreateAccount?: () => void;
+	onRequestPasswordReset: (authServiceToken?: string) => void;
+	onShowToast: (content: React.ReactNode, intent: Intent) => void;
+	onSignIn: (form: Form) => Promise<void>;
+	onSignInWithAuthService?: (
+		provider: AuthServiceProvider,
+		analyticsAction: string
+	) => Promise<BrowserPopupResponseResponse>;
 }
 enum GlobalError {
 	Unknown,
 	AuthenticationExpired,
-	InvalidSessionId
+	InvalidSessionId,
 }
 interface State {
-	email: string,
-	emailError: string | null,
-	globalError: GlobalError | null,
-	isSubmitting: boolean,
-	password: string,
-	passwordError: string | null,
-	showErrors: boolean
+	email: string;
+	emailError: string | null;
+	globalError: GlobalError | null;
+	isSubmitting: boolean;
+	password: string;
+	passwordError: string | null;
+	showErrors: boolean;
 }
 export default class SignInStep extends React.PureComponent<Props, State> {
 	private readonly _changeEmail = (email: string, emailError?: string) => {
 		this.setState({
 			email,
-			emailError
+			emailError,
 		});
 	};
-	private readonly _changePassword = (password: string, passwordError?: string) => {
+	private readonly _changePassword = (
+		password: string,
+		passwordError?: string
+	) => {
 		this.setState({
 			password,
-			passwordError
+			passwordError,
 		});
 	};
 	private readonly _requestPasswordReset = () => {
@@ -67,18 +78,15 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 			return;
 		}
 		this.setState({
-			showErrors: true
+			showErrors: true,
 		});
-		if (
-			this.state.emailError ||
-			this.state.passwordError
-		) {
+		if (this.state.emailError || this.state.passwordError) {
 			return;
 		}
 		this.setState(
 			{
 				globalError: null,
-				isSubmitting: true
+				isSubmitting: true,
 			},
 			() => {
 				this.props
@@ -86,62 +94,53 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 						authServiceToken: this.props.authServiceToken,
 						email: this.state.email,
 						password: this.state.password,
-						analyticsAction: this.props.analyticsAction
+						analyticsAction: this.props.analyticsAction,
 					})
-					.catch(
-						(errors?: string[]) => {
-							let nextState = {
-								emailError: null as string,
-								globalError: null as GlobalError,
-								isSubmitting: false,
-								passwordError: null as string
-							};
-							if (Array.isArray(errors)) {
-								if (errors.includes('UserAccountNotFound')) {
-									nextState.emailError = 'User account not found.';
-								}
-								if (errors.includes('IncorrectPassword')) {
-									nextState.passwordError = 'Incorrect password.';
-								}
-								if (errors.includes('AuthenticationExpired')) {
-									nextState.globalError = GlobalError.AuthenticationExpired;
-								}
-								if (errors.includes('InvalidSessionId')) {
-									nextState.globalError = GlobalError.InvalidSessionId;
-								}
-							} else {
-								nextState.globalError = GlobalError.Unknown;
+					.catch((errors?: string[]) => {
+						let nextState = {
+							emailError: null as string,
+							globalError: null as GlobalError,
+							isSubmitting: false,
+							passwordError: null as string,
+						};
+						if (Array.isArray(errors)) {
+							if (errors.includes('UserAccountNotFound')) {
+								nextState.emailError = 'User account not found.';
 							}
-							this.setState(nextState);
+							if (errors.includes('IncorrectPassword')) {
+								nextState.passwordError = 'Incorrect password.';
+							}
+							if (errors.includes('AuthenticationExpired')) {
+								nextState.globalError = GlobalError.AuthenticationExpired;
+							}
+							if (errors.includes('InvalidSessionId')) {
+								nextState.globalError = GlobalError.InvalidSessionId;
+							}
+						} else {
+							nextState.globalError = GlobalError.Unknown;
 						}
-					);
+						this.setState(nextState);
+					});
 			}
 		);
 	};
 	private readonly _signInWithAuthService = (provider: AuthServiceProvider) => {
 		return this.props
 			.onSignInWithAuthService(provider, this.props.analyticsAction)
-			.then(
-				response => {
-					if (response.error != null) {
-						this.props.onShowToast(
-							authenticationErrorMessage[response.error],
-							response.error === AuthenticationError.Cancelled ?
-								Intent.Neutral :
-								Intent.Danger
-						);
-					}
-					return response;
-				}
-			)
-			.catch(
-				reason => {
+			.then((response) => {
+				if (response.error != null) {
 					this.props.onShowToast(
-						getPromiseErrorMessage(reason),
-						Intent.Danger
+						authenticationErrorMessage[response.error],
+						response.error === AuthenticationError.Cancelled
+							? Intent.Neutral
+							: Intent.Danger
 					);
 				}
-			);
+				return response;
+			})
+			.catch((reason) => {
+				this.props.onShowToast(getPromiseErrorMessage(reason), Intent.Danger);
+			});
 	};
 	constructor(props: Props) {
 		super(props);
@@ -152,7 +151,7 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 			isSubmitting: false,
 			password: '',
 			passwordError: null,
-			showErrors: false
+			showErrors: false,
 		};
 	}
 	public render() {
@@ -171,9 +170,7 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 		return (
 			<div className="sign-in-step_cg2uy5">
 				<h1>
-					{this.props.authServiceToken ?
-						'Link Existing Account' :
-						'Log In'}
+					{this.props.authServiceToken ? 'Link Existing Account' : 'Log In'}
 				</h1>
 				<EmailAddressField
 					autoFocus
@@ -190,27 +187,17 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 					showError={this.state.showErrors}
 					value={this.state.password}
 				/>
-				{globalError ?
-					<div className="global-error">{globalError}</div> :
-					null}
+				{globalError ? <div className="global-error">{globalError}</div> : null}
 				<Button
 					align="center"
 					display="block"
 					intent="loud"
 					onClick={this._signIn}
 					size="large"
-					state={
-						this.state.isSubmitting ?
-							'busy' :
-							'normal'
-					}
-					text={
-						this.props.authServiceToken ?
-							'Link Account' :
-							'Log In'
-					}
+					state={this.state.isSubmitting ? 'busy' : 'normal'}
+					text={this.props.authServiceToken ? 'Link Account' : 'Log In'}
 				/>
-				{this.props.onSignInWithAuthService ?
+				{this.props.onSignInWithAuthService ? (
 					<>
 						<FormPartition />
 						<AuthServiceButton
@@ -221,31 +208,23 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 							onClick={this._signInWithAuthService}
 							provider={AuthServiceProvider.Twitter}
 						/>
-					</> :
-					null}
+					</>
+				) : null}
 				<Link
 					onClick={this._requestPasswordReset}
-					state={
-						this.state.isSubmitting ?
-							'disabled' :
-							'normal'
-					}
+					state={this.state.isSubmitting ? 'disabled' : 'normal'}
 					text="Forgot your password?"
 				/>
-				{this.props.onCreateAccount ?
+				{this.props.onCreateAccount ? (
 					<>
 						<br />
 						<Link
 							onClick={this.props.onCreateAccount}
-							state={
-								this.state.isSubmitting ?
-									'disabled' :
-									'normal'
-							}
+							state={this.state.isSubmitting ? 'disabled' : 'normal'}
 							text="Create an Account"
 						/>
-					</> :
-					null}
+					</>
+				) : null}
 			</div>
 		);
 	}

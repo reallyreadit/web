@@ -1,11 +1,11 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import ServerApi from '../common/serverApi/ServerApi';
@@ -89,18 +89,18 @@ export default class extends ServerApi {
 			if (exchange.responseData) {
 				return {
 					isLoading: false,
-					value: exchange.responseData as T
+					value: exchange.responseData as T,
 				};
 			} else {
 				return {
 					isLoading: false,
-					errors: exchange.responseErrors
+					errors: exchange.responseErrors,
 				};
 			}
 		} else {
 			this.fetchJson<T>('GET', request)
-				.then(value => callback({ isLoading: false, value }))
-				.catch(errors => callback({ isLoading: false, errors }));
+				.then((value) => callback({ isLoading: false, value }))
+				.catch((errors) => callback({ isLoading: false, errors }));
 			return { isLoading: true };
 		}
 	}
@@ -110,7 +110,7 @@ export default class extends ServerApi {
 	public getClientHeaderValue() {
 		return `web/app/client#${this._clientType}@${this._clientVersion}`;
 	}
-	public initialize() : void {
+	public initialize(): void {
 		this._isInitialized = true;
 	}
 }

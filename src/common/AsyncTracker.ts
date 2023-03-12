@@ -1,16 +1,16 @@
 // Copyright (C) 2022 reallyread.it, inc.
-// 
+//
 // This file is part of Readup.
-// 
+//
 // Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
-// 
+//
 // Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 export interface CancellationToken {
-	isCancelled: boolean,
-	tag?: string
+	isCancelled: boolean;
+	tag?: string;
 }
 export default class AsyncTracker {
 	private readonly _animationFrameHandles: number[] = [];
@@ -21,7 +21,7 @@ export default class AsyncTracker {
 	private createCancellationToken(tag?: string) {
 		const token = {
 			isCancelled: false,
-			tag
+			tag,
 		};
 		this._cancellationTokens.push(token);
 		return token;
@@ -56,7 +56,11 @@ export default class AsyncTracker {
 	 * @param callbacks Function(s) that will synchronously cancel an asynchronous operation when invoked
 	 */
 	public addCancellationDelegate(...callbacks: Function[]) {
-		this._cancellationDelegates.splice(this._cancellationDelegates.length - 1, 0, ...callbacks);
+		this._cancellationDelegates.splice(
+			this._cancellationDelegates.length - 1,
+			0,
+			...callbacks
+		);
 	}
 	public addInterval(handle: number) {
 		this._intervalHandles.push(handle);
@@ -64,9 +68,9 @@ export default class AsyncTracker {
 	}
 	public addPromise<T>(promise: Promise<T>, tag?: string) {
 		const token = this.createCancellationToken(tag);
-		return new Promise<T>(
-			(resolve, reject) => promise
-				.then(value => {
+		return new Promise<T>((resolve, reject) =>
+			promise
+				.then((value) => {
 					this.removeCancellationToken(token);
 					if (token.isCancelled) {
 						reject({ isCancelled: true });
@@ -74,7 +78,7 @@ export default class AsyncTracker {
 						resolve(value);
 					}
 				})
-				.catch(reason => {
+				.catch((reason) => {
 					this.removeCancellationToken(token);
 					if (token.isCancelled) {
 						reject({ isCancelled: true });
@@ -90,13 +94,11 @@ export default class AsyncTracker {
 	}
 	public cancelAll(tag?: string) {
 		if (tag) {
-			this._cancellationTokens.forEach(
-				token => {
-					if (token.tag === tag) {
-						token.isCancelled = true;
-					};
+			this._cancellationTokens.forEach((token) => {
+				if (token.tag === tag) {
+					token.isCancelled = true;
 				}
-			);
+			});
 			return;
 		}
 		while (this._animationFrameHandles.length) {
@@ -105,7 +107,7 @@ export default class AsyncTracker {
 		while (this._cancellationDelegates.length) {
 			this._cancellationDelegates.splice(0, 1)[0]();
 		}
-		this._cancellationTokens.forEach(token => {
+		this._cancellationTokens.forEach((token) => {
 			token.isCancelled = true;
 		});
 		while (this._intervalHandles.length) {
@@ -117,7 +119,7 @@ export default class AsyncTracker {
 	}
 	public removeCancellationDelegate(delegate: Function) {
 		const index = this._cancellationDelegates.findIndex(
-			existingDelegate => existingDelegate === delegate
+			(existingDelegate) => existingDelegate === delegate
 		);
 		if (index > -1) {
 			this._cancellationDelegates.splice(index, 1);
