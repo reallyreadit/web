@@ -114,12 +114,14 @@ function build(env) {
 }
 function watch() {
 	readerContentScript.setTargetPath(readerTargetPath);
-	readerContentScript.watch();
-	serviceWorker.watch();
-	optionsPage.watch();
-	staticAssets.watch();
-	webAppContentScript.watch();
-	alertContentScript.watch();
+	return Promise.all([
+		readerContentScript.watch(),
+		serviceWorker.watch(),
+		optionsPage.watch(),
+		staticAssets.watch(),
+		webAppContentScript.watch(),
+		alertContentScript.watch(),
+	]);
 }
 
 module.exports = {

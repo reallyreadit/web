@@ -70,8 +70,7 @@ function build(env) {
 	return Promise.all([app.build(env), authServiceLinkHandler.build(env)]);
 }
 function watch() {
-	app.watch();
-	authServiceLinkHandler.watch();
+	return Promise.all([app.watch(), authServiceLinkHandler.watch()]);
 }
 
 module.exports = {

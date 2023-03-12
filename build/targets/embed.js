@@ -50,8 +50,7 @@ function build(env) {
 	return Promise.all([embed.build(env), iframe.build(env)]);
 }
 function watch() {
-	embed.watch();
-	iframe.watch();
+	return Promise.all([embed.watch(), iframe.watch()]);
 }
 
 module.exports = {
