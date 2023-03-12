@@ -31,24 +31,6 @@ const targetPath = 'extension-mv3';
 const staticAssets = createBuild({
 	onBuildComplete: (buildInfo, resolve) => {
 		// Update manifest
-
-		console.log(buildInfo);
-		if (
-			buildInfo.src != null &&
-			!(
-				buildInfo.src instanceof Array &&
-				buildInfo.src.find((file) => file.endsWith('manifest.json'))
-			)
-		) {
-			// On build, this function gets called thrice.
-			// Ignore the onBuildComplete called for each base, until the one with the manifest in it appears.
-
-			// On watch, somehow this onBuildComplete gets called once, without src param.
-			// In that case, just let the update happen.
-			if (resolve) resolve();
-			return;
-		}
-
 		const manifestFileName = path.posix.join(
 			buildInfo.outPath,
 			'/manifest.json'

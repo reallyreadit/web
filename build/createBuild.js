@@ -19,6 +19,43 @@ const project = require('./project'),
 	buildScss = require('./buildScss'),
 	buildTemplates = require('./buildTemplates');
 
+// Only call onBuildComplete for static assets once after all batches have finished building and use the staticAssets param as the buildInfo src instead of the batches array.
+function createStaticAssetsTask(
+	staticAssets,
+	originalSrc,
+	dest,
+	env,
+	onBuildComplete
+) {
+	return Promise.all(
+		staticAssets.map(
+			(asset) =>
+				new Promise((resolve) => {
+					buildStaticAssets({
+						src: asset.src,
+						dest,
+						base: asset.base,
+						env,
+						onComplete: resolve,
+					});
+				})
+		)
+	).then(
+		() =>
+			new Promise((resolve) => {
+				onBuildComplete(
+					{
+						build: 'staticAssets',
+						src: originalSrc,
+						env,
+						outPath: dest,
+					},
+					resolve
+				);
+			})
+	);
+}
+
 function createBuild(params) {
 	// set the source path
 	const srcPath = path.posix.join(project.srcDir, params.path);
@@ -125,27 +162,13 @@ function createBuild(params) {
 				);
 			}
 			if (staticAssets) {
-				staticAssets.forEach((asset) =>
-					tasks.push(
-						new Promise((resolve) => {
-							buildStaticAssets({
-								src: asset.src,
-								dest: outPath,
-								base: asset.base,
-								env,
-								onComplete: () => {
-									params.onBuildComplete(
-										{
-											build: 'staticAssets',
-											src: asset.src,
-											env,
-											outPath,
-										},
-										resolve
-									);
-								},
-							});
-						})
+				tasks.push(
+					createStaticAssetsTask(
+						staticAssets,
+						params.staticAssets,
+						outPath,
+						env,
+						params.onBuildComplete
 					)
 				);
 			}
@@ -229,30 +252,29 @@ function createBuild(params) {
 				);
 			}
 			if (staticAssets) {
-				staticAssets.forEach((asset) => {
-					tasks.push(
-						new Promise((resolve) => {
-							watch(asset.src, function buildStaticAssetsTask() {
-								return buildStaticAssets({
-									src: asset.src,
-									dest: outPath,
-									base: asset.base,
-									env: project.env.dev,
-									onComplete: () => {
-										params.onBuildComplete(
-											{
-												build: 'staticAssets',
-												env: project.env.dev,
-												outPath: outPath,
-											},
-											resolve
-										);
-									},
-								});
-							});
-						})
-					);
-				});
+				tasks.push(
+					new Promise((resolve) =>
+						watch(
+							staticAssets.reduce((sources, asset) => {
+								if (typeof asset.src === 'string') {
+									sources.push(asset.src);
+								} else {
+									sources.push(...asset.src);
+								}
+								return sources;
+							}, []),
+							function buildStaticAssetsTask() {
+								return createStaticAssetsTask(
+									staticAssets,
+									params.staticAssets,
+									outPath,
+									project.env.dev,
+									params.onBuildComplete
+								).then(resolve);
+							}
+						)
+					)
+				);
 			}
 			if (params.templates) {
 				tasks.push(
