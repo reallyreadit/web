@@ -114,7 +114,7 @@ In all the steps below, `{version}` is a placeholder for the unquoted version nu
     1.  Select the target [EC2 instance](https://us-east-2.console.aws.amazon.com/ec2/v2/home?region=us-east-2#Instances:) that is currently offline and start the instance. It should be named `readup-app-server-x` where `x` is `a` or `b`.
     2.  Log in to the server using Remote Desktop over the VPN connection (see [`ops` `README`](https://github.com/reallyreadit/ops)) and execute the update script using PowerShell.
 
-            Execute-S3Object -Key app/update.ps1 -Params @{Version = '{version}'}
+            Execute-S3Object -Key app/update.ps1 -Params @{SiteName = 'readup.org'; Version = '{version}'}
 
     3.  Log out of the server. Don't just close the connection, but use a "Sign out" action.
 
