@@ -12,7 +12,7 @@
 			},
 			"embed": "1.0.2",
 			"embedIframe": "1.0.0",
-			"extension": "6.2.1",
+			"extension": "7.0.0",
 			"nativeClient": {
 				"reader": "14.0.4",
 				"shareExtension": "4.0.6"
