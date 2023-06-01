@@ -167,7 +167,7 @@ export default class ServerApi {
 						result.created.map(async (notification) => {
 							chrome.notifications.create(notification.id, {
 								type: 'basic',
-								iconUrl: '../icons/icon.svg',
+								iconUrl: chrome.runtime.getURL('icons/icon-128.png'),
 								title: notification.title,
 								message: notification.message,
 								isClickable: true,
