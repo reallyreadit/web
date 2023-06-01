@@ -369,23 +369,42 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				badgeApi.setDefault();
 			});
 	});
-	// create alarms
-	chrome.alarms.create('updateContentParser', {
-		when: Date.now(),
-		periodInMinutes: 120,
-	});
-	if (chrome.notifications) {
-		chrome.alarms.create(ServerApi.alarms.checkNotifications, {
-			when: Date.now(),
-			periodInMinutes: 2.5,
-		});
+});
+// create alarms
+chrome.alarms.getAll(chromeAlarms => {
+	const
+		registeredAlarms: { [key: string]: (number | null) } = {},
+		allowedAlarms = {
+			'updateContentParser': 120,
+			[ServerApi.alarms.checkNotifications]: 2.5,
+			[ServerApi.alarms.getBlacklist]: 120
+		};
+	let startTime = Date.now();
+	for (const alarm of chromeAlarms) {
+		registeredAlarms[alarm.name] = alarm.periodInMinutes;
 	}
-	chrome.alarms.create(ServerApi.alarms.getBlacklist, {
-		when: Date.now(),
-		periodInMinutes: 120,
-	});
-	// clean up old alarm
-	chrome.alarms.clear('ServerApi.checkNewReplyNotification');
+	if (!chrome.notifications) {
+		delete allowedAlarms[ServerApi.alarms.checkNotifications];
+	}
+	for (const alarm in allowedAlarms) {
+		const createAlarm = () => {
+			chrome.alarms.create(alarm, {
+				when: startTime,
+				periodInMinutes: allowedAlarms[alarm],
+			});
+			startTime += 1000 * 60;
+		};
+		if (!(alarm in registeredAlarms)) {
+			createAlarm();
+		} else if (allowedAlarms[alarm] !== registeredAlarms[alarm]) {
+			chrome.alarms.clear(alarm, createAlarm);
+		}
+	}
+	for (const alarm in registeredAlarms) {
+		if (!(alarm in allowedAlarms)) {
+			chrome.alarms.clear(alarm, () => { });
+		}
+	}
 });
 chrome.runtime.onStartup.addListener(async () => {
 	console.log('[EventPage] startup');
