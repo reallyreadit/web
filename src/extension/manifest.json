@@ -1,8 +1,8 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Readup",
 	"description": "The best way to read online.",
-	"author": "Shore Logic, LLC.",
+	"author": "reallyread.it, inc.",
 	"icons": {
 		"16": "./icons/icon-16.png",
 		"24": "./icons/icon-24.png",
@@ -14,7 +14,7 @@
 		"96": "./icons/icon-96.png",
 		"128": "./icons/icon-128.png"
 	},
-	"browser_action": {
+	"action": {
 		"default_icon": {
 			"16": "./icons/icon-16.png",
 			"24": "./icons/icon-24.png",
@@ -25,8 +25,7 @@
 		"default_title": "Readup"
 	},
 	"background": {
-		"page": "./event-page/index.html",
-		"persistent": false
+		"service_worker": "./event-page/bundle.js"
 	},
 	"content_scripts": [
 		{
@@ -36,33 +35,53 @@
 			]
 		}
 	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"content-scripts/alert/bundle.css",
+				"content-scripts/reader/bundle.css",
+				"content-scripts/reader/reset.css",
+				"content-scripts/ui/fonts/cambria-bold.ttf",
+				"content-scripts/ui/fonts/cambria-regular.ttf",
+				"content-scripts/ui/fonts/museo-sans-100.ttf",
+				"content-scripts/ui/fonts/museo-sans-300.ttf",
+				"content-scripts/ui/fonts/museo-sans-500.ttf",
+				"content-scripts/ui/fonts/museo-sans-700.ttf",
+				"content-scripts/ui/fonts/museo-sans-900.ttf",
+				"content-scripts/ui/images/logo.svg",
+				"content-scripts/ui/images/logo-white.svg",
+				"options-page/bundle.css"
+			],
+			"matches": [
+				"http://*/*",
+				"https://*/*"
+			]
+		}
+	],
 	"options_ui": {
 		"page": "options-page/index.html",
 		"open_in_tab": true,
-		"browser_style": true,
-		"chrome_style": true
+		"browser_style": true
 	},
 	"permissions": [
 		"activeTab",
 		"cookies",
 		"alarms",
 		"notifications",
+		"scripting",
 		"storage",
+		"declarativeNetRequest"
+	],
+	"host_permissions": [
 		"<all_urls>"
 	],
-	"web_accessible_resources": [
-		"content-scripts/alert/bundle.css",
-		"content-scripts/reader/bundle.css",
-		"content-scripts/reader/reset.css",
-		"content-scripts/ui/fonts/cambria-bold.ttf",
-		"content-scripts/ui/fonts/cambria-regular.ttf",
-		"content-scripts/ui/fonts/museo-sans-100.ttf",
-		"content-scripts/ui/fonts/museo-sans-300.ttf",
-		"content-scripts/ui/fonts/museo-sans-500.ttf",
-		"content-scripts/ui/fonts/museo-sans-700.ttf",
-		"content-scripts/ui/fonts/museo-sans-900.ttf",
-		"content-scripts/ui/images/logo.svg",
-		"content-scripts/ui/images/logo-white.svg",
-		"options-page/bundle.css"
-	]
+	"declarative_net_request": {
+		"rule_resources": [
+			{
+				"id": "ruleset",
+				"enabled": true,
+				"path": "rules.json"
+			}
+		]
+	}
 }

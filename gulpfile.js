@@ -14,7 +14,6 @@ const { parallel, series } = require('gulp'),
 	client = require('./build/targets/client'),
 	embed = require('./build/targets/embed'),
 	extension = require('./build/targets/extension'),
-	extensionMV3 = require('./build/targets/extension-mv3'),
 	nativeClientReader = require('./build/targets/nativeClient/reader'),
 	nativeClientShareExtension = require('./build/targets/nativeClient/shareExtension'),
 	metadataParser = require('./build/targets/metadataParser'),
@@ -118,30 +117,6 @@ function buildProdExtension() {
 }
 
 /**
- * extension MV3
- */
-function cleanDevExtensionMV3() {
-	return extensionMV3.clean(project.env.dev);
-}
-function buildDevExtensionMV3() {
-	return extensionMV3.build(project.env.dev);
-}
-
-function cleanStageExtensionMV3() {
-	return extensionMV3.clean(project.env.stage);
-}
-function buildStageExtensionMV3() {
-	return extensionMV3.build(project.env.stage);
-}
-
-function cleanProdExtensionMV3() {
-	return extensionMV3.clean(project.env.prod);
-}
-function buildProdExtensionMV3() {
-	return extensionMV3.build(project.env.prod);
-}
-
-/**
  * metadataParser
  */
 function cleanDevMetadataParser() {
@@ -238,13 +213,6 @@ module.exports = {
 	'build:stage:extension': buildStageExtension,
 	'clean:prod:extension': cleanProdExtension,
 	'build:prod:extension': buildProdExtension,
-	'clean:dev:extension-mv3': cleanDevExtensionMV3,
-	'build:dev:extension-mv3': buildDevExtensionMV3,
-	'watch:dev:extension-mv3': extensionMV3.watch,
-	'clean:stage:extension-mv3': cleanStageExtensionMV3,
-	'build:stage:extension-mv3': buildStageExtensionMV3,
-	'clean:prod:extension-mv3': cleanProdExtensionMV3,
-	'build:prod:extension-mv3': buildProdExtensionMV3,
 	'clean:dev:metadata-parser': cleanDevMetadataParser,
 	'build:dev:metadata-parser': buildDevMetadataParser,
 	'watch:dev:metadata-parser': metadataParser.watch,

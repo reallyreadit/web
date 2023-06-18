@@ -25,7 +25,6 @@ const build = createBuild({
 		},
 		sourceMaps: false,
 	},
-	staticAssets: [`${project.srcDir}/extension/event-page/index.html`],
 	path: 'extension/event-page',
 });
 

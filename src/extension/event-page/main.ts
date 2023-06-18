@@ -18,6 +18,9 @@ import {
 	extensionOptionsStorageQuery,
 } from '../options-page/ExtensionOptions';
 
+// NOTE: `window` does not exist in service workers.
+// All window config references are replaced at compile time by Webpack's DefinePlugin
+
 // browser action icon
 function setIcon(state: {
 	user: UserAccount | null;
@@ -29,7 +32,7 @@ function setIcon(state: {
 	} else {
 		pathTemplate += `icon-${placeholder}-warning.png`;
 	}
-	chrome.browserAction.setIcon({
+	chrome.action.setIcon({
 		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
 			(paths, size) => {
 				paths[size] = pathTemplate.replace(placeholder, size.toString());
@@ -134,12 +137,12 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			return comment;
 		});
 	},
-	onReadArticle: async (tabId, slug) => {
+	onReadArticle: async (tabId: number, slug: string) => {
 		const article = await serverApi.getArticleDetails(slug);
-		// note: tabs.get returning a Promise is MV3 only
-		return chrome.tabs.get(tabId, async (tab) => {
-			await openReaderInTab(tab, article.url);
-		});
+		console.log('article info: ', article);
+		// note: a Promise on tabs.get is MV3 only
+		const tab = await chrome.tabs.get(tabId);
+		await openReaderInTab(tab, article.url);
 	},
 	onRequestTwitterBrowserLinkRequestToken: () => {
 		return serverApi.requestTwitterBrowserLinkRequestToken();
@@ -262,7 +265,7 @@ async function openReaderInCurrentTab(articleUrl: string) {
 
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(async (details) => {
-	console.log('[EventPage] installed, reason: ' + details.reason);
+	console.log(`[EventPage] installed, reason: ${details.reason}`);
 	// ensure sameSite is set on sessionId and sessionKey cookies
 	[window.reallyreadit.extension.config.cookieName, sessionIdCookieKey].forEach(
 		(cookieName) => {
@@ -291,13 +294,15 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		}
 	);
 	// initialize settings
-	localStorage.removeItem('parseMode');
-	localStorage.removeItem('showOverlay');
-	localStorage.removeItem('newReplyNotification');
-	localStorage.removeItem('sourceRules');
-	localStorage.removeItem('articles');
-	localStorage.removeItem('tabs');
-	localStorage.setItem('debug', JSON.stringify(false));
+	('parseMode');
+	await chrome.storage.local.remove([
+		'showOverlay',
+		'newReplyNotification',
+		'sourceRules',
+		'articles',
+		'tabs',
+	]);
+	await chrome.storage.local.set({ debug: JSON.stringify(false) });
 	// update icon
 	setIcon({
 		user: await serverApi.getUser(),
@@ -313,17 +318,20 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	// safari doesn't allow us to get or set cookies prior to user granting access
 	// in fact chrome.cookies.* api calls take 30+s to time out with no results
 	// so we need to rely on the api server to get and set them for us
-	chrome.runtime.getPlatformInfo((platformInfo) => {
+	chrome.runtime.getPlatformInfo(async (platformInfo) => {
 		if (details.reason === 'install') {
 			badgeApi.setLoading();
 		}
+
 		serverApi
 			.logExtensionInstallation({
 				arch: platformInfo.arch,
-				installationId: localStorage.getItem('installationId'),
+				installationId: (await chrome.storage.local.get('installationId'))[
+					'installationId'
+				],
 				os: platformInfo.os,
 			})
-			.then((response) => {
+			.then(async (response) => {
 				if (details.reason === 'install') {
 					chrome.tabs.create({
 						url: createUrl(
@@ -347,7 +355,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 						}
 					)
 				);
-				localStorage.setItem('installationId', response.installationId);
+				await chrome.storage.local.set({
+					installationId: response.installationId,
+				});
 			})
 			.catch((error) => {
 				console.log('[EventPage] error logging installation');
@@ -407,7 +417,7 @@ chrome.runtime.onStartup.addListener(async () => {
 	webAppApi.clearTabs();
 	webAppApi.injectContentScripts();
 });
-chrome.browserAction.onClicked.addListener(async (tab) => {
+chrome.action.onClicked.addListener(async (tab) => {
 	// check if we're logged in
 	if (!serverApi.isAuthenticated()) {
 		chrome.tabs.create({
@@ -421,24 +431,76 @@ chrome.browserAction.onClicked.addListener(async (tab) => {
 	if (!tab.url) {
 		return;
 	}
+
+	// from a reader tab
+	if (tab.url.startsWith(`chrome-extension://${chrome.runtime.id}/reader`)) {
+		chrome.tabs.goBack(tab.id);
+		return;
+	}
+
 	// web app
 	if (
 		tab.url.startsWith(
 			createUrl(window.reallyreadit.extension.config.webServer)
 		)
 	) {
-		chrome.tabs.executeScript(tab.id, {
-			code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'Press the Readup button when you\\'re on an article web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }",
+		chrome.scripting.executeScript({
+			target: {
+				tabId: tab.id,
+			},
+			func: () => {
+				// Note: don't use TS features like the ? operator here, or the ... operator.
+				// TS transpiles these, but this function is executed in a different context
+				// from the current context where it is defined.
+				// `window` doesn't exist in the service worker, but this is run in the
+				// content script context of the tab.
+				// rome-ignore lint/complexity/useOptionalChain: <explanation>
+				if (!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
+					window.reallyreadit = Object.assign(window.reallyreadit, {
+						alertContentScript: {
+							alertContent:
+								"Press the Readup button when you're on an article web page.",
+						},
+					});
+					chrome.runtime.sendMessage({
+						from: 'contentScriptInitializer',
+						to: 'eventPage',
+						type: 'injectAlert',
+					});
+				} else if (!window.reallyreadit.alertContentScript.isActive) {
+					window.reallyreadit.alertContentScript.display();
+				}
+			},
 		});
 		return;
 	}
 	// blacklisted
 	const blacklist = await serverApi.getBlacklist();
 	if (blacklist.some((regex) => regex.test(tab.url))) {
-		chrome.tabs.executeScript(tab.id, {
-			code: "if (!window.reallyreadit?.alertContentScript) { window.reallyreadit = { ...window.reallyreadit, alertContentScript: { alertContent: 'No article detected on this web page.' } }; chrome.runtime.sendMessage({ from: 'contentScriptInitializer', to: 'eventPage', type: 'injectAlert' }); } else if (!window.reallyreadit.alertContentScript.isActive) { window.reallyreadit.alertContentScript.display(); }",
+		chrome.scripting.executeScript({
+			target: {
+				tabId: tab.id,
+			},
+			func: () => {
+				// Note: don't use TS features like the ? operator here, or the ... operator.
+				// TS transpiles these, but this function is executed in a different context
+				// from the current context where it is defined.
+				if (!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
+					window.reallyreadit = Object.assign(window.reallyreadit, {
+						alertContentScript: {
+							alertContent: 'No article detected on this web page.',
+						},
+					});
+					chrome.runtime.sendMessage({
+						from: 'contentScriptInitializer',
+						to: 'eventPage',
+						type: 'injectAlert',
+					});
+				} else if (!window.reallyreadit.alertContentScript.isActive) {
+					window.reallyreadit.alertContentScript.display();
+				}
+			},
 		});
-		return;
 	}
 
 	// open article, starring if that is the setting
@@ -462,23 +524,31 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 	}
 	switch (message.type) {
 		case 'injectAlert':
-			chrome.tabs.executeScript(sender.tab.id, {
-				file: '/content-scripts/alert/bundle.js',
+			chrome.scripting.executeScript({
+				target: {
+					tabId: sender.tab.id,
+				},
+				files: ['/content-scripts/alert/bundle.js'],
 			});
 			return;
 		case 'injectReader':
-			chrome.tabs.executeScript(sender.tab.id, {
-				file: '/content-scripts/reader/bundle.js',
+			chrome.scripting.executeScript({
+				target: {
+					tabId: sender.tab.id,
+				},
+				files: ['/content-scripts/reader/bundle.js'],
 			});
 			return;
 	}
 });
-chrome.alarms.onAlarm.addListener((alarm) => {
+chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === 'updateContentParser') {
 		const currentVersion = SemanticVersion.greatest(
 			...[
 				window.reallyreadit.extension.config.version.common.contentParser,
-				localStorage.getItem('contentParserVersion'),
+				(await chrome.storage.local.get('contentParserVersion'))[
+					'contentParserVersion'
+				],
 			]
 				.filter((string) => !!string)
 				.map((versionString) => new SemanticVersion(versionString))
@@ -511,16 +581,15 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 					fetch(
 						createUrl(
 							window.reallyreadit.extension.config.staticServer,
-							'/extension/content-parser/' + newVersionInfo.fileName
+							`/extension/content-parser/${newVersionInfo.fileName}`
 						)
 					)
 						.then((res) => res.text())
-						.then((text) => {
-							localStorage.setItem('contentParserScript', text);
-							localStorage.setItem(
-								'contentParserVersion',
-								newVersionInfo.version.toString()
-							);
+						.then(async (text) => {
+							await chrome.storage.local.set({ contentParserScript: text });
+							await chrome.storage.local.set({
+								contentParserVersion: newVersionInfo.version.toString(),
+							});
 						})
 						.catch(() => {
 							console.log(

@@ -13,16 +13,31 @@ const path = require('path');
 const project = require('../../../project'),
 	createBuild = require('../../../createBuild');
 
-const build = (targetPath) =>
-	createBuild({
-		webpack: {
-			entry: path.posix.join(
+const alertContentScriptBuild = createBuild({
+	path: 'extension/content-scripts/alert',
+	scss: {
+		files: [
+			`${project.srcDir}/common/styles/reset.css`,
+			`${project.srcDir}/common/styles/shadow-host.scss`,
+			`${project.srcDir}/extension/content-scripts/alert/main.scss`,
+		],
+		targetShadowDom: true,
+		sourceMaps: false,
+	},
+	webpack: {
+		appConfig: {
+			path: path.posix.join(
 				project.srcDir,
-				'extension/content-scripts/web-app/main.ts'
+				'extension/common/config.{env}.json'
 			),
-			sourceMaps: false,
+			key: 'window.reallyreadit.extension.config',
 		},
-		path: targetPath,
-	});
+		entry: path.posix.join(
+			project.srcDir,
+			'extension/content-scripts/alert/main.ts'
+		),
+		sourceMaps: false,
+	},
+});
 
-module.exports = build;
+module.exports = alertContentScriptBuild;
