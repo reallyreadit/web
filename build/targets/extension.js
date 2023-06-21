@@ -102,7 +102,6 @@ const staticAssets = createBuild({
 			manifest => {
 				manifest.version = packageData['it.reallyread'].version.extension;
 				manifest.content_scripts[0].matches.push(webUrlPattern);
-				manifest.host_permissions.push(webUrlPattern);
 				return manifest;
 			}
 		);
