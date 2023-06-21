@@ -60,7 +60,6 @@
 		"open_in_tab": true
 	},
 	"permissions": [
-		"activeTab",
 		"cookies",
 		"alarms",
 		"notifications",
