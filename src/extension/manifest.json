@@ -57,8 +57,7 @@
 	],
 	"options_ui": {
 		"page": "options-page/index.html",
-		"open_in_tab": true,
-		"browser_style": true
+		"open_in_tab": true
 	},
 	"permissions": [
 		"activeTab",
