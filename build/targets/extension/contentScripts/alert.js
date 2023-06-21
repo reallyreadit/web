@@ -13,8 +13,8 @@ const path = require('path');
 const project = require('../../../project'),
 	createBuild = require('../../../createBuild');
 
-const alertContentScriptBuild = createBuild({
-	path: 'extension/content-scripts/alert',
+const createAlertContentScriptBuild = params => createBuild({
+	path: path.posix.join(params.path, 'content-scripts/alert'),
 	scss: {
 		files: [
 			`${project.srcDir}/common/styles/reset.css`,
@@ -38,6 +38,7 @@ const alertContentScriptBuild = createBuild({
 		),
 		sourceMaps: false,
 	},
+	onBuildComplete: params.onBuildComplete
 });
 
-module.exports = alertContentScriptBuild;
+module.exports = createAlertContentScriptBuild;

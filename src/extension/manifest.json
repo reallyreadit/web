@@ -24,9 +24,6 @@
 		},
 		"default_title": "Readup"
 	},
-	"background": {
-		"service_worker": "./event-page/bundle.js"
-	},
 	"content_scripts": [
 		{
 			"matches": [],

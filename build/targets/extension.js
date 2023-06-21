@@ -11,59 +11,134 @@
 const del = require('del');
 const fs = require('fs');
 const path = require('path');
+const { src, dest } = require('gulp');
 
 const project = require('../project');
 const createBuild = require('../createBuild');
-const readerContentScript = require('./extension/contentScripts/reader');
-const eventPage = require('./extension/eventPage');
-const optionsPage = require('./extension/optionsPage');
-const webAppContentScript = require('./extension/contentScripts/webApp');
-const alertContentScript = require('./extension/contentScripts/alert');
+const createReaderContentScriptBuild = require('./extension/contentScripts/reader');
+const createEventPageBuild = require('./extension/eventPage');
+const createOptionsPageBuild = require('./extension/optionsPage');
+const createWebAppContentScriptBuild = require('./extension/contentScripts/webApp');
+const createAlertContentScriptBuild = require('./extension/contentScripts/alert');
 
-const targetPath = 'extension';
+const
+	targetPath = 'extension',
+	outputPath = path.posix.join(targetPath, 'output'),
+	browsersPath = path.posix.join(targetPath, 'browsers'),
+	buildParams = {
+		path: outputPath,
+		onBuildComplete: (buildInfo, resolve) => {
+			copyOutputToBrowsersDirectories(buildInfo, null, null, resolve);
+		}
+	};
+
+function getBrowsersAbsPath(env) {
+	return project.getOutPath(browsersPath, env);
+}
+function getBrowserManifestEntries(dirPath) {
+	const
+		manifestRegex = /^manifest\.(.+)\.json$/,
+		manifests = [];
+	for (const dirEnt of fs.readdirSync(dirPath, { withFileTypes: true })) {
+		let match;
+		if (!dirEnt.isFile() || !(match = dirEnt.name.match(manifestRegex))) {
+			continue;
+		}
+		manifests.push({
+			fileName: dirEnt.name,
+			filePath: path.posix.join(dirPath, dirEnt.name),
+			browserName: match[1]
+		});
+	}
+	return manifests;
+}
+function createBrowsersDirectories(env) {
+	const browsersAbsPath = getBrowsersAbsPath(env);
+	for (const entry of getBrowserManifestEntries(path.posix.join(project.srcDir, 'extension'))) {
+		fs.mkdirSync(path.posix.join(browsersAbsPath, entry.browserName), { recursive: true });
+	}
+}
+function copyOutputToBrowsersDirectories(buildInfo, callback, options, resolve) {
+	const
+		browsersAbsPath = getBrowsersAbsPath(buildInfo.env),
+		browserDirs = fs.readdirSync(browsersAbsPath, { withFileTypes: true }),
+		outputAbsPath = project.getOutPath(outputPath, buildInfo.env),
+		copyOps = [];
+	for (const dirEnt of browserDirs) {
+		if (!dirEnt.isDirectory()) {
+			continue;
+		}
+		const destAbsPath = path.posix.join(browsersAbsPath, dirEnt.name, options?.preserveAncestorDirectoryStructure === false ? '' : path.relative(outputAbsPath, buildInfo.outPath));
+		let copyOp = new Promise(resolve => {
+			src(path.posix.join(buildInfo.outPath, '**', '*'))
+				.pipe(dest(destAbsPath))
+				.on('end', resolve);
+		});
+		if (callback) {
+			copyOp = copyOp.then(() => { callback(dirEnt.name, destAbsPath); });
+		}
+		copyOps.push(copyOp);
+	}
+	Promise
+		.all(copyOps)
+		.then(resolve);
+}
+function readJsonData(filePath) {
+	return JSON.parse(fs.readFileSync(filePath).toString());
+}
+function transformJsonFile(filePath, transform) {
+	fs.writeFileSync(filePath, JSON.stringify(transform(readJsonData(filePath)), null, 3));
+}
+
 const staticAssets = createBuild({
 	onBuildComplete: (buildInfo, resolve) => {
 		// Update manifest
-		const manifestFileName = path.posix.join(
-			buildInfo.outPath,
-			'/manifest.json'
+		const
+			packageData = readJsonData('./package.json'),
+			config = readJsonData(path.posix.join(project.srcDir, `extension/common/config.${buildInfo.env}.json`)),
+			webUrlPattern = `${config.webServer.protocol}://${config.webServer.host}/*`;
+		transformJsonFile(
+			path.posix.join(buildInfo.outPath, 'manifest.json'),
+			manifest => {
+				manifest.version = packageData['it.reallyread'].version.extension;
+				manifest.content_scripts[0].matches.push(webUrlPattern);
+				manifest.host_permissions.push(webUrlPattern);
+				return manifest;
+			}
 		);
-		const manifest = JSON.parse(fs.readFileSync(manifestFileName).toString());
-		const packageData = JSON.parse(
-			fs.readFileSync('./package.json').toString()
+		// Copy output and create individual manifests
+		copyOutputToBrowsersDirectories(
+			buildInfo,
+			(browser, outputAbsPath) => {
+				for (const entry of getBrowserManifestEntries(outputAbsPath)) {
+					if (entry.browserName === browser) {
+						transformJsonFile(
+							path.posix.join(outputAbsPath, 'manifest.json'),
+							manifest => ({ ...manifest, ...readJsonData(entry.filePath) })
+						);
+					}
+					fs.unlinkSync(entry.filePath);
+				}
+			},
+			{ preserveAncestorDirectoryStructure: false },
+			resolve
 		);
-		const config = JSON.parse(
-			fs
-				.readFileSync(
-					path.posix.join(
-						project.srcDir,
-						`extension/common/config.${buildInfo.env}.json`
-					)
-				)
-				.toString()
-		);
-		const webUrlPattern = `${config.webServer.protocol}://${config.webServer.host}/*`;
-		manifest.version = packageData['it.reallyread'].version.extension;
-		manifest.content_scripts[0].matches.push(webUrlPattern);
-		manifest.host_permissions.push(webUrlPattern);
-		const manifestOutFilename = path.posix.join(
-			buildInfo.outPath,
-			'manifest.json'
-		);
-		fs.writeFileSync(manifestOutFilename, JSON.stringify(manifest, null, 3));
-		if (resolve) {
-			resolve();
-		}
 	},
-	path: targetPath,
+	path: path.posix.join(outputPath, 'static'),
 	// TODO PROXY EXT: find a way to not assume base path from targetPath here in createBuild
 	// based on an option? (especially in inner scripts)
 	staticAssets: [
-		`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
-		`${project.srcDir}/extension/content-scripts/ui/images/**`,
-		`${project.srcDir}/extension/icons/**`,
-		`${project.srcDir}/extension/manifest.json`,
-		`${project.srcDir}/extension/rules.json`,
+		{
+			base: `${project.srcDir}/extension/`,
+			src: [
+				`${project.srcDir}/extension/content-scripts/ui/fonts/**`,
+				`${project.srcDir}/extension/content-scripts/ui/images/**`,
+				`${project.srcDir}/extension/icons/**`,
+				`${project.srcDir}/extension/manifest.json`,
+				`${project.srcDir}/extension/manifest.*.json`,
+				`${project.srcDir}/extension/rules.json`,
+			]
+		},
 		// We copy these into the root directory, to make the reader url look a little prettier
 		// They are logically part of extension/content-scripts/
 		// TODO: maybe rename this, since it's not really a 'content script' anymore.
@@ -81,25 +156,27 @@ function clean(env) {
 	return del(`${project.getOutPath(targetPath, env)}/*`);
 }
 function build(env) {
+	createBrowsersDirectories(env);
 	return Promise.all([
-		eventPage.build(env),
+		createEventPageBuild(buildParams).build(env),
 		// TODO PROXY EXT: do we still need the alertContentScript here?
 		// Should we also remove the reader content script?
-		readerContentScript.build(env),
-		optionsPage.build(env),
+		createReaderContentScriptBuild(buildParams).build(env),
+		createOptionsPageBuild(buildParams).build(env),
 		staticAssets.build(env),
-		webAppContentScript.build(env),
-		alertContentScript.build(env),
+		createWebAppContentScriptBuild(buildParams).build(env),
+		createAlertContentScriptBuild(buildParams).build(env),
 	]);
 }
 function watch() {
+	createBrowsersDirectories(project.env.dev);
 	return Promise.all([
-		readerContentScript.watch(),
-		eventPage.watch(),
-		optionsPage.watch(),
+		createReaderContentScriptBuild(buildParams).watch(),
+		createEventPageBuild(buildParams).watch(),
+		createOptionsPageBuild(buildParams).watch(),
 		staticAssets.watch(),
-		webAppContentScript.watch(),
-		alertContentScript.watch(),
+		createWebAppContentScriptBuild(buildParams).watch(),
+		createAlertContentScriptBuild(buildParams).watch(),
 	]);
 }
 

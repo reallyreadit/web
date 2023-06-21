@@ -13,7 +13,7 @@ const path = require('path');
 const project = require('../../../project'),
 	createBuild = require('../../../createBuild');
 
-const webAppContentScriptBuild = createBuild({
+const createWebAppContentScriptBuild = params => createBuild({
 	webpack: {
 		entry: path.posix.join(
 			project.srcDir,
@@ -21,7 +21,8 @@ const webAppContentScriptBuild = createBuild({
 		),
 		sourceMaps: false,
 	},
-	path: 'extension/content-scripts/web-app',
+	path: path.posix.join(params.path, 'content-scripts/web-app'),
+	onBuildComplete: params.onBuildComplete
 });
 
-module.exports = webAppContentScriptBuild;
+module.exports = createWebAppContentScriptBuild;

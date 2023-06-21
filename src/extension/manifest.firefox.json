@@ -1,0 +1,12 @@
+{
+	"background": {
+		"scripts": [
+			"./event-page/bundle.js"
+		]
+	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{20f866de-c377-49f8-be05-4c16fb5afdb9}"
+		}
+	}
+}

@@ -13,7 +13,7 @@ const path = require('path');
 const project = require('../../project'),
 	createBuild = require('../../createBuild');
 
-const build = createBuild({
+const createEventPageBuild = params => createBuild({
 	webpack: {
 		entry: path.posix.join(project.srcDir, 'extension/event-page/main.ts'),
 		appConfig: {
@@ -25,7 +25,8 @@ const build = createBuild({
 		},
 		sourceMaps: false,
 	},
-	path: 'extension/event-page',
+	path: path.posix.join(params.path, 'event-page'),
+	onBuildComplete: params.onBuildComplete
 });
 
-module.exports = build;
+module.exports = createEventPageBuild;

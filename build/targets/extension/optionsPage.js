@@ -17,7 +17,7 @@ const project = require('../../project'),
 		'extension/common/config.{env}.json'
 	);
 
-const optionsPageBuild = createBuild({
+const createOptionsPageBuild = params => createBuild({
 	scss: {
 		appConfig: {
 			path: appConfigPath,
@@ -53,7 +53,8 @@ const optionsPageBuild = createBuild({
 			src: `${project.srcDir}/extension/options-page/index.html`,
 		},
 	],
-	path: 'extension/options-page',
+	path: path.posix.join(params.path, 'options-page'),
+	onBuildComplete: params.onBuildComplete
 });
 
-module.exports = optionsPageBuild;
+module.exports = createOptionsPageBuild;

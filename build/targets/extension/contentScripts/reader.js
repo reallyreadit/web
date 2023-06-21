@@ -8,7 +8,7 @@ const project = require('../../../project'),
 		project.srcDir,
 		'extension/common/config.{env}.json'
 	),
-	targetPath = 'extension/content-scripts/reader';
+	targetPath = 'content-scripts/reader';
 
 const jsBundleFileName = 'bundle.js';
 
@@ -60,7 +60,7 @@ const svgInliningTemplate = `
 // This build builds a "HTML template" (html.js) that contains the SVG icons.
 // Note: templates/html.scss is not picked up here, but it is included in the style inline
 // build.
-const htmlTemplateBuild = createBuild({
+const createHtmlTemplateBuild = params => createBuild({
 	onBuildComplete: (buildInfo, resolve) => {
 		if (buildInfo.build === 'webpack') {
 			const template = path.join(buildInfo.outPath, 'html.js');
@@ -73,12 +73,10 @@ const htmlTemplateBuild = createBuild({
 				html.svgTemplates.default
 			);
 			fs.unlinkSync(template);
-			if (resolve) {
-				resolve();
-			}
+			params.onBuildComplete(buildInfo, resolve);
 		}
 	},
-	path: targetPath,
+	path: path.posix.join(params.path, targetPath),
 	webpack: {
 		entry: path.posix.join(
 			project.srcDir,
@@ -92,14 +90,14 @@ const htmlTemplateBuild = createBuild({
 	},
 });
 
-const contentScriptBuild = createBuild({
+const createContentScriptBuild = params => createBuild({
 	onBuildComplete: (function () {
 		const completedBuilds = new Set();
 		return (buildInfo, resolve) => {
 			completedBuilds.add(buildInfo.build);
 			if (completedBuilds.has('scss') && completedBuilds.has('webpack')) {
 				// build the html template
-				htmlTemplateBuild.build(buildInfo.env).then(() => {
+				createHtmlTemplateBuild(params).build(buildInfo.env).then(() => {
 					// concat the inline CSS injector and SVG injectors
 					// into to the built js bundle
 					const jsBundleFilePath = path.join(
@@ -141,10 +139,10 @@ const contentScriptBuild = createBuild({
 						...(buildInfo.env !== project.env.dev
 							? [`${buildInfo.outPath}/bundle.css*`]
 							: []),
-					]).then(resolve || (() => {}));
+					]).then(() => { params.onBuildComplete(buildInfo, resolve); });
 				});
 			} else {
-				resolve();
+				params.onBuildComplete(buildInfo, resolve);
 			}
 		};
 	})(),
@@ -172,21 +170,7 @@ const contentScriptBuild = createBuild({
 			'extension/content-scripts/reader/main.ts'
 		),
 	},
-	path: targetPath,
+	path: path.posix.join(params.path, targetPath),
 });
 
-function clean(env) {
-	return del(project.getOutPath(targetPath, env) + '/*');
-}
-function build(env) {
-	return contentScriptBuild.build(env);
-}
-function watch() {
-	return contentScriptBuild.watch();
-}
-
-module.exports = {
-	clean,
-	build,
-	watch,
-};
+module.exports = createContentScriptBuild;
