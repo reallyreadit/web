@@ -7,24 +7,11 @@ import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthSer
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import { ReadArticleReference } from '../../app/common/components/Root';
-import AsyncObjectStore from '../common/storage/AsyncObjectStore';
 
 /**
  * An API for the event page to communicate with Readup's web app tabs, if any are running.
  */
 export default class WebAppApi {
-	private readonly _tabs = new AsyncObjectStore<number[]>(
-		'webAppTabs',
-		[],
-		'local'
-	);
-	/**
-	 * @deprecated
-	 */
-	public async initializeAsyncStores(): Promise<void> {
-		await this._tabs.initialized();
-	}
-
 	constructor(handlers: {
 		onArticleUpdated: (event: ArticleUpdatedEvent) => void;
 		onAuthServiceLinkCompleted: (
@@ -88,64 +75,71 @@ export default class WebAppApi {
 			return false;
 		});
 	}
+	private async getTabIds() {
+		const result = await chrome.storage.local.get('webAppTabs');
+		return (result['webAppTabs'] || []) as number[];
+	}
+	private async setTabIds(tabIds: number[]) {
+		await chrome.storage.local.set({ 'webAppTabs': tabIds });
+	}
 	private async addTab(id: number) {
-		const tabs = await this._tabs.get();
-		if (!tabs.includes(id)) {
-			tabs.push(id);
-			await this._tabs.set(tabs);
+		const tabIds = await this.getTabIds();
+		if (!tabIds.includes(id)) {
+			tabIds.push(id);
+			await this.setTabIds(tabIds);
 		}
 	}
 	private async broadcastMessage<T>(message: Message) {
-		(await this._tabs.get()).forEach((tabId) => {
+		const tabIds = await this.getTabIds();
+		for (const tabId of tabIds) {
 			console.log(
 				`[WebAppApi] sending ${message.type} message to tab # ${tabId}`
 			);
-			chrome.tabs.sendMessage(tabId, message, () => {
-				if (chrome.runtime.lastError) {
-					console.log(
-						`[WebAppApi] error sending message to tab # ${tabId}, message: ${chrome.runtime.lastError.message}`
-					);
-					this.removeTab(tabId);
-				}
-			});
-		});
-	}
-	private async removeTab(id: number) {
-		const tabs = await this._tabs.get();
-		if (tabs.includes(id)) {
-			tabs.splice(tabs.indexOf(id), 1);
-			await this._tabs.set(tabs);
+			try {
+				await chrome.tabs.sendMessage(tabId, message);
+			} catch (ex) {
+				console.log(
+					`[WebAppApi] error sending message to tab # ${tabId}, message: ${ex}`
+				);
+				await this.removeTab(tabId);
+			}
 		}
 	}
-	public articlePosted(post: Post) {
-		this.broadcastMessage({
+	private async removeTab(id: number) {
+		const tabIds = await this.getTabIds();
+		if (tabIds.includes(id)) {
+			await this.setTabIds(tabIds.filter(existingId => existingId !== id));
+		}
+	}
+	public async articlePosted(post: Post) {
+		await this.broadcastMessage({
 			type: 'articlePosted',
 			data: post,
 		});
 	}
-	public articleUpdated(event: ArticleUpdatedEvent) {
-		this.broadcastMessage({
+	public async articleUpdated(event: ArticleUpdatedEvent) {
+		await this.broadcastMessage({
 			type: 'articleUpdated',
 			data: event,
 		});
 	}
-	public clearTabs() {
-		this._tabs.clear();
+	public async clearTabs() {
+		await this.setTabIds([]);
 	}
-	public commentPosted(comment: CommentThread) {
-		this.broadcastMessage({
+	public async commentPosted(comment: CommentThread) {
+		await this.broadcastMessage({
 			type: 'commentPosted',
 			data: comment,
 		});
 	}
-	public commentUpdated(comment: CommentThread) {
-		this.broadcastMessage({
+	public async commentUpdated(comment: CommentThread) {
+		await this.broadcastMessage({
 			type: 'commentUpdated',
 			data: comment,
 		});
 	}
-	public displayPreferenceChanged(preference: DisplayPreference) {
-		this.broadcastMessage({
+	public async displayPreferenceChanged(preference: DisplayPreference) {
+		await this.broadcastMessage({
 			type: 'displayPreferenceChanged',
 			data: preference,
 		});
@@ -155,49 +149,37 @@ export default class WebAppApi {
 	 * Inject the content scripts in any running Readup web app tabs that will allow this event page to
 	 * communicate with the web app.
 	 */
-	public injectContentScripts() {
+	public async injectContentScripts() {
 		// some browsers do not allow querying whitelisted urls without 'tabs' permission
 		const webAppBaseUrl =
 			window.reallyreadit.extension.config.webServer.protocol +
 			'://' +
 			window.reallyreadit.extension.config.webServer.host +
 			'/';
-		chrome.tabs.query(
-			{
+		try {
+			const tabs = await chrome.tabs.query({
 				url: webAppBaseUrl + '*',
 				status: 'complete',
-			},
-			(tabs) => {
-				if (chrome.runtime.lastError) {
-					console.log('[WebAppApi] error querying tabs');
+			});
+			for (const tab of tabs) {
+				// safari allows querying but returns all tabs with the url set to empty strings
+				if (!tab.url?.startsWith(webAppBaseUrl)) {
 					return;
 				}
-				tabs.forEach((tab) => {
-					// safari allows querying but returns all tabs with the url set to empty strings
-					if (!tab.url?.startsWith(webAppBaseUrl)) {
-						return;
-					}
-					console.log(
-						'[WebAppApi] injecting content script into tab # ' + tab.id
-					);
-					const scriptPath = '/content-scripts/web-app/bundle.js';
-					const manifestVersion = chrome.runtime.getManifest().manifest_version;
-					if (manifestVersion > 2) {
-						chrome.scripting.executeScript({
-							target: { tabId: tab.id },
-							files: [scriptPath],
-						});
-					} else {
-						chrome.tabs.executeScript(tab.id, {
-							file: scriptPath,
-						});
-					}
+				console.log(
+					'[WebAppApi] injecting content script into tab # ' + tab.id
+				);
+				chrome.scripting.executeScript({
+					target: { tabId: tab.id },
+					files: ['/content-scripts/web-app/bundle.js'],
 				});
 			}
-		);
+		} catch {
+			console.log('[WebAppApi] error querying tabs');
+		}
 	}
-	public userUpdated(user: UserAccount) {
-		this.broadcastMessage({
+	public async userUpdated(user: UserAccount) {
+		await this.broadcastMessage({
 			type: 'userUpdated',
 			data: user,
 		});

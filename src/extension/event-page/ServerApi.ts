@@ -27,8 +27,6 @@ import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfil
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
-import AsyncObjectStore from '../common/storage/AsyncObjectStore';
-import AsyncSetStore from '../common/storage/AsyncSetStore';
 
 function getCustomHeaders() {
 	return {
@@ -44,31 +42,6 @@ export default class ServerApi {
 		checkNotifications: 'ServerApi.checkNotifications',
 		getBlacklist: 'ServerApi.getBlacklist',
 	};
-	// cached local storage
-	private _displayedNotifications = new AsyncSetStore<
-		string,
-		DisplayedNotification
-	>('displayedNotifications', (notification) => notification.id);
-	private _displayPreference = new AsyncObjectStore<DisplayPreference | null>(
-		'displayPreference',
-		null
-	);
-	private _blacklist = new AsyncObjectStore<Cached<string[]>>('blacklist', {
-		value: [],
-		timestamp: 0,
-		expirationTimespan: 0,
-	});
-	private _user = new AsyncObjectStore<UserAccount>('user', null);
-
-	/**
-	 * @deprecated
-	 */
-	public async initializeAsyncStores() {
-		await this._blacklist.initialized();
-		await this._displayPreference.initialized();
-		await this._user.initialized();
-		await this._displayedNotifications.initialized();
-	}
 
 	// handlers
 	private readonly _onDisplayPreferenceChanged: (
@@ -82,23 +55,24 @@ export default class ServerApi {
 		onUserUpdated: (user: UserAccount) => void;
 	}) {
 		// alarms
-		chrome.alarms.onAlarm.addListener((alarm) => {
-			if (!this.isAuthenticated()) {
+		chrome.alarms.onAlarm.addListener(async (alarm) => {
+			const isAuthenticated = await this.isAuthenticated();
+			if (isAuthenticated) {
 				return;
 			}
 			switch (alarm.name) {
 				case ServerApi.alarms.checkNotifications:
-					this.checkNotifications();
+					await this.checkNotifications();
 					break;
 				case ServerApi.alarms.getBlacklist:
-					this.checkBlacklistCache();
+					await this.checkBlacklistCache();
 					break;
 			}
 		});
 		// notifications
 		if (chrome.notifications) {
-			chrome.notifications.onClicked.addListener((id) => {
-				chrome.tabs.create({
+			chrome.notifications.onClicked.addListener(async (id) => {
+				await chrome.tabs.create({
 					url: createUrl(
 						window.reallyreadit.extension.config.apiServer,
 						'/Extension/Notification/' + id
@@ -112,90 +86,88 @@ export default class ServerApi {
 		this._onUserUpdated = handlers.onUserUpdated;
 	}
 
-	private checkNotifications() {
+	private async getNotificationsFromStorage() {
+		const result = await chrome.storage.local.get('displayedNotifications');
+		return (result['displayedNotifications'] || []) as DisplayedNotification[];
+	}
+	public async getDisplayPreferenceFromStorage() {
+		const result = await chrome.storage.local.get('displayPreference');
+		return result['displayPreference'] as DisplayPreference | null;
+	}
+	private async getBlacklistFromStorage() {
+		const result = await chrome.storage.local.get('blacklist');
+		return (result['blacklist'] || {
+			value: [],
+			timestamp: 0,
+			expirationTimespan: 0,
+		}) as Cached<string[]>;
+	}
+	public async getUserFromStorage() {
+		const result = await chrome.storage.local.get('user');
+		return result['user'] as UserAccount | null;
+	}
+	private async checkNotifications() {
 		if (!chrome.notifications) {
 			return;
 		}
 		chrome.notifications.getAll(async (chromeNotifications) => {
 			const now = Date.now(),
 				displayedNotificationExpiration = now - 2 * 60 * 1000,
-				{ current: currentNotifications, expired: expiredNotifications } = (
-					await this._displayedNotifications.getAll()
-				).reduce<{
-					current: DisplayedNotification[];
-					expired: DisplayedNotification[];
-				}>(
-					(result, notification) => {
-						if (notification.date >= displayedNotificationExpiration) {
-							result.current.push(notification);
-						} else {
-							result.expired.push(notification);
-						}
-						return result;
+				currentNotifications = (await this.getNotificationsFromStorage()).filter(notification => notification.date >= displayedNotificationExpiration);
+			try {
+				const result = await this.fetchJson<NotificationsQueryResult>({
+					method: 'GET',
+					path: '/Extension/Notifications',
+					data: {
+						ids: Object.keys(chromeNotifications).concat(
+							currentNotifications
+								.filter(
+									(notification) => !(notification.id in chromeNotifications)
+								)
+								.map((notification) => notification.id)
+						),
 					},
-					{
-						current: [],
-						expired: [],
+				});
+				for (const id of result.cleared) {
+					chrome.notifications.clear(id);
+					const index = currentNotifications.findIndex(notification => notification.id === id);
+					if (index !== -1) {
+						currentNotifications.splice(index, 1);
 					}
-				);
-			await Promise.all(
-				expiredNotifications.map(async (notification) => {
-					await this._displayedNotifications.remove(notification.id);
-				})
-			);
-			this.fetchJson<NotificationsQueryResult>({
-				method: 'GET',
-				path: '/Extension/Notifications',
-				data: {
-					ids: Object.keys(chromeNotifications).concat(
-						currentNotifications
-							.filter(
-								(notification) => !(notification.id in chromeNotifications)
-							)
-							.map((notification) => notification.id)
-					),
-				},
-			})
-				.then(async (result) => {
-					await Promise.all(
-						result.cleared.map(async (id) => {
-							chrome.notifications.clear(id);
-							await this._displayedNotifications.remove(id);
-						})
-					);
-					await Promise.all(
-						result.created.map(async (notification) => {
-							chrome.notifications.create(notification.id, {
-								type: 'basic',
-								iconUrl: chrome.runtime.getURL('icons/icon-128.png'),
-								title: notification.title,
-								message: notification.message,
-								isClickable: true,
-							});
-							await this._displayedNotifications.set({
-								id: notification.id,
-								date: Date.now(),
-							});
-						})
-					);
-					const currentUser = await this.getUser();
-					if (!areEqual(currentUser, result.user)) {
-						await this._user.set(result.user);
-						// don't broadcast on sign in order to avoid sending stale data
-						if (currentUser) {
-							console.log(`[ServerApi] user updated (notification check)`);
-							this._onUserUpdated(result.user);
-						}
+				}
+				for (const notification of result.created) {
+					chrome.notifications.create(notification.id, {
+						type: 'basic',
+						iconUrl: chrome.runtime.getURL('icons/icon-128.png'),
+						title: notification.title,
+						message: notification.message,
+						isClickable: true,
+					});
+					currentNotifications.push({
+						id: notification.id,
+						date: Date.now(),
+					});
+				}
+				await chrome.storage.local.set({ 'displayedNotifications': currentNotifications });
+				const currentUser = await this.getUser();
+				if (!areEqual(currentUser, result.user)) {
+					await chrome.storage.local.set({ 'user': result.user });
+					// don't broadcast on sign in order to avoid sending stale data
+					if (currentUser) {
+						console.log(`[ServerApi] user updated (notification check)`);
+						this._onUserUpdated(result.user);
 					}
-				})
-				.catch(() => {});
+				}
+			} catch { }
 		});
 	}
 	private async checkBlacklistCache() {
-		if (isExpired(await this._blacklist.get())) {
-			this.fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' })
-				.then((rules) => this._blacklist.set(cache(rules, 719000)))
-				.catch(() => {});
+		const blacklist = await this.getBlacklistFromStorage();
+		if (isExpired(blacklist)) {
+			try {
+				const rules = await this.fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' });
+				await chrome.storage.local.set({ 'blacklist': cache(rules, 719000) });
+			} catch { }
 		}
 	}
 	private async fetchJson<T>(request: ReadupRequest) {
@@ -355,14 +327,17 @@ export default class ServerApi {
 			data,
 		});
 	}
-	public isAuthenticated() {
-		return this.getUser() != null;
+	public async isAuthenticated() {
+		const user = await this.getUser();
+		return user != null;
 	}
 	public async getUser() {
-		return await this._user.get();
+		const result = await chrome.storage.local.get('user');
+		return result['user'] as UserAccount | null;
 	}
 	public async getBlacklist() {
-		return (await this._blacklist.get()).value.map(
+		const blacklist = await this.getBlacklistFromStorage();
+		return blacklist.value.map(
 			(pattern) => new RegExp(pattern)
 		);
 	}
@@ -410,25 +385,29 @@ export default class ServerApi {
 		});
 	}
 	public async userSignedIn(profile: WebAppUserProfile) {
-		await this._user.set(profile.userAccount);
-		await this._displayPreference.set(profile.displayPreference);
-		this.checkNotifications();
+		await chrome.storage.local.set({
+			'user': profile.userAccount,
+			'displayPreference': profile.displayPreference
+		});
+		await this.checkNotifications();
 	}
-	public userSignedOut() {
-		this._user.clear();
-		this._displayPreference.clear();
-		this._displayedNotifications.clear();
+	public async userSignedOut() {
+		await chrome.storage.local.set({
+			'user': null,
+			'displayPreference': null,
+			'displayedNotifications': []
+		});
 	}
 	public async userUpdated(user: UserAccount) {
-		await this._user.set(user || null);
+		await chrome.storage.local.set({ 'user': user || null });
 	}
 
 	public async getDisplayPreferenceFromCache() {
-		return await this._displayPreference.get();
+		return await this.getDisplayPreferenceFromStorage();
 	}
 
 	public async getDisplayPreference() {
-		const storedPreference = await this._displayPreference.get();
+		const storedPreference = await this.getDisplayPreferenceFromStorage();
 		this.fetchJson<DisplayPreference | null>({
 			method: 'GET',
 			path: '/UserAccounts/DisplayPreference',
@@ -437,14 +416,14 @@ export default class ServerApi {
 				if (
 					storedPreference != null &&
 					preference != null &&
-					areDisplayPreferencesEqual(await storedPreference, preference)
+					areDisplayPreferencesEqual(storedPreference, preference)
 				) {
 					return;
 				}
 				if (preference) {
-					this.displayPreferenceChanged(preference);
+					await this.displayPreferenceChanged(preference);
 				} else {
-					this.changeDisplayPreference(
+					await this.changeDisplayPreference(
 						(preference = getClientDefaultDisplayPreference())
 					);
 				}
@@ -457,7 +436,7 @@ export default class ServerApi {
 		return storedPreference;
 	}
 	public async displayPreferenceChanged(preference: DisplayPreference) {
-		await this._displayPreference.set(preference);
+		await chrome.storage.local.set({ 'displayPreference': preference });
 	}
 	public async changeDisplayPreference(preference: DisplayPreference) {
 		await this.displayPreferenceChanged(preference);
