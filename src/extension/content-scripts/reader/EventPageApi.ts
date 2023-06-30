@@ -69,6 +69,7 @@ function sendMessageAwaitingResponse<T>(type: string, data?: {}) {
  * https://developer.chrome.com/docs/extensions/mv2/background_pages/
  */
 export default class EventPageApi {
+	private _loadingAnimationInterval: number | null;
 	/**
 	 * Initializes the API with the given response handlers in the client script.
 	 */
@@ -127,6 +128,22 @@ export default class EventPageApi {
 			'changeDisplayPreference',
 			preference
 		);
+	}
+	public startLoadingAnimation() {
+		if (this._loadingAnimationInterval != null) {
+			return;
+		}
+		let tick = 0;
+		this._loadingAnimationInterval = window.setInterval(() => {
+			sendMessage('loadingAnimationTick', tick++);
+		}, 150);
+	}
+	public stopLoadingAnimation() {
+		if (this._loadingAnimationInterval == null) {
+			return;
+		}
+		window.clearInterval(this._loadingAnimationInterval);
+		this._loadingAnimationInterval = null;
 	}
 	public registerPage(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>(

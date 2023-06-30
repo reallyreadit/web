@@ -94,6 +94,15 @@ export default class ReaderContentScriptApi {
 							sendResponse
 						);
 						return true;
+					case 'loadingAnimationTick':
+						(async () => {
+							const tick = message.data as number;
+							if (tick === 0) {
+								await this._badge.setDefault(sender.tab.id);
+							}
+							await this._badge.setLoading(sender.tab.id, tick);
+						})();
+						break;
 					case 'registerPage':
 						createMessageResponseHandler(
 							(async () => {
@@ -101,7 +110,6 @@ export default class ReaderContentScriptApi {
 									articleId: null,
 									id: sender.tab.id,
 								});
-								this._badge.setLoading(sender.tab.id);
 								try {
 									const result = await params.onRegisterPage(sender.tab.id, message.data);
 									await this.setTab({
@@ -111,7 +119,7 @@ export default class ReaderContentScriptApi {
 									const tabs = await this.getTabs();
 									for (const tab of tabs) {
 										if (tab.articleId === result.userArticle.id) {
-											this._badge.setReading(tab.id, result.userArticle);
+											await this._badge.setReading(tab.id, result.userArticle);
 											await chrome.action.setTitle({
 												tabId: tab.id,
 												title: `${calculateEstimatedReadTime(
@@ -123,7 +131,7 @@ export default class ReaderContentScriptApi {
 									return result;
 								} catch (ex) {
 									await this.removeTab(sender.tab.id);
-									this._badge.setDefault(sender.tab.id);
+									await this._badge.setDefault(sender.tab.id);
 									throw ex;
 								}
 							})(),
@@ -141,7 +149,7 @@ export default class ReaderContentScriptApi {
 								const tabs = await this.getTabs();
 								for (const tab of tabs) {
 									if (tab.articleId === article.id) {
-										this._badge.setReading(tab.id, article);
+										await this._badge.setReading(tab.id, article);
 									}
 								}
 								return article;
@@ -367,7 +375,7 @@ export default class ReaderContentScriptApi {
 		});
 		const tabs = await this.getTabs();
 		for (const tab of tabs) {
-			this._badge.setDefault(tab.id);
+			await this._badge.setDefault(tab.id);
 		}
 		await this.clearTabs();
 	}

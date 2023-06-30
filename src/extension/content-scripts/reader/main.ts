@@ -731,6 +731,8 @@ async function processArticleContent(doc: Document) {
 // eventPageApi.getDisplayPreference().then(
 // 	async (cachedDisplayPreference) => {
 async function initialize() {
+	eventPageApi.startLoadingAnimation();
+
 	await fetchAndInjectArticle();
 
 	const metadataParseResult = parseDocumentMetadata({
@@ -798,6 +800,8 @@ async function initialize() {
 	const result = await eventPageApi.registerPage(
 		createPageParseResult(metadataParseResult, contentParseResult)
 	);
+
+	eventPageApi.stopLoadingAnimation();
 
 	// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
 	// extract into common?

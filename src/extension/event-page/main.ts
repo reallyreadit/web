@@ -319,10 +319,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	// in fact chrome.cookies.* api calls take 30+s to time out with no results
 	// so we need to rely on the api server to get and set them for us
 	chrome.runtime.getPlatformInfo(async (platformInfo) => {
-		if (details.reason === 'install') {
-			badgeApi.setLoading();
-		}
-
 		serverApi
 			.logExtensionInstallation({
 				arch: platformInfo.arch,
@@ -364,9 +360,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 				if (error) {
 					console.log(error);
 				}
-			})
-			.finally(() => {
-				badgeApi.setDefault();
 			});
 	});
 });
