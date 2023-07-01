@@ -294,14 +294,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		}
 	);
 	// initialize settings
-	('parseMode');
-	await chrome.storage.local.remove([
-		'showOverlay',
-		'newReplyNotification',
-		'sourceRules',
-		'articles',
-		'tabs',
-	]);
 	await chrome.storage.local.set({ debug: JSON.stringify(false) });
 	// update icon
 	setIcon({
