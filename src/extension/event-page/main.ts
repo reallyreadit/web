@@ -48,22 +48,22 @@ const badgeApi = new BrowserActionBadgeApi();
 
 // server
 const serverApi = new ServerApi({
-	onDisplayPreferenceChanged: (preference) => {
-		readerContentScriptApi.displayPreferenceChanged(preference);
-		webAppApi.displayPreferenceChanged(preference);
+	onDisplayPreferenceChanged: async (preference) => {
+		await readerContentScriptApi.displayPreferenceChanged(preference);
+		await webAppApi.displayPreferenceChanged(preference);
 	},
-	onUserSignedOut: () => {
+	onUserSignedOut: async () => {
 		setIcon({
 			user: null,
 		});
-		readerContentScriptApi.userSignedOut();
+		await readerContentScriptApi.userSignedOut();
 	},
-	onUserUpdated: (user) => {
+	onUserUpdated: async (user) => {
 		setIcon({
 			user,
 		});
-		readerContentScriptApi.userUpdated(user);
-		webAppApi.userUpdated(user);
+		await readerContentScriptApi.userUpdated(user);
+		await webAppApi.userUpdated(user);
 	},
 });
 
@@ -73,16 +73,16 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onGetDisplayPreference: () => {
 		return serverApi.getDisplayPreference();
 	},
-	onChangeDisplayPreference: (preference) => {
+	onChangeDisplayPreference: async (preference) => {
 		// update web app
-		webAppApi.displayPreferenceChanged(preference);
+		await webAppApi.displayPreferenceChanged(preference);
 		// persist
 		return serverApi.changeDisplayPreference(preference);
 	},
 	onRegisterPage: (tabId, data) =>
-		serverApi.registerPage(tabId, data).then((result) => {
+		serverApi.registerPage(tabId, data).then(async (result) => {
 			// update web app (article is automatically starred)
-			webAppApi.articleUpdated({
+			await webAppApi.articleUpdated({
 				article: result.userArticle,
 				isCompletionCommit: false,
 			});
@@ -91,9 +91,9 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onCommitReadState: (tabId, commitData, isCompletionCommit) => {
 		console.log(`contentScriptApi.onCommitReadState (tabId: ${tabId})`);
 		// commit read state
-		return serverApi.commitReadState(tabId, commitData).then((article) => {
+		return serverApi.commitReadState(tabId, commitData).then(async (article) => {
 			// update web app
-			webAppApi.articleUpdated({
+			await webAppApi.articleUpdated({
 				article,
 				isCompletionCommit,
 			});
@@ -103,37 +103,37 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	},
 	onGetComments: (slug) => serverApi.getComments(slug),
 	onPostArticle: (form) => {
-		return serverApi.postArticle(form).then((post) => {
-			webAppApi.articlePosted(post);
-			webAppApi.articleUpdated({
+		return serverApi.postArticle(form).then(async (post) => {
+			await webAppApi.articlePosted(post);
+			await webAppApi.articleUpdated({
 				article: post.article,
 				isCompletionCommit: false,
 			});
 			if (post.comment) {
-				webAppApi.commentPosted(createCommentThread(post));
+				await webAppApi.commentPosted(createCommentThread(post));
 			}
 			return post;
 		});
 	},
 	onPostComment: (form) => {
-		return serverApi.postComment(form).then((result) => {
-			webAppApi.articleUpdated({
+		return serverApi.postComment(form).then(async (result) => {
+			await webAppApi.articleUpdated({
 				article: result.article,
 				isCompletionCommit: false,
 			});
-			webAppApi.commentPosted(result.comment);
+			await webAppApi.commentPosted(result.comment);
 			return result;
 		});
 	},
 	onPostCommentAddendum: (form) => {
-		return serverApi.postCommentAddendum(form).then((comment) => {
-			webAppApi.commentUpdated(comment);
+		return serverApi.postCommentAddendum(form).then(async (comment) => {
+			await webAppApi.commentUpdated(comment);
 			return comment;
 		});
 	},
 	onPostCommentRevision: (form) => {
-		return serverApi.postCommentRevision(form).then((comment) => {
-			webAppApi.commentUpdated(comment);
+		return serverApi.postCommentRevision(form).then(async (comment) => {
+			await webAppApi.commentUpdated(comment);
 			return comment;
 		});
 	},
@@ -151,16 +151,16 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 		return serverApi.reportArticleIssue(request);
 	},
 	onSetStarred: (form) =>
-		serverApi.setStarred(form.articleId, form.isStarred).then((article) => {
-			webAppApi.articleUpdated({
+		serverApi.setStarred(form.articleId, form.isStarred).then(async (article) => {
+			await webAppApi.articleUpdated({
 				article,
 				isCompletionCommit: false,
 			});
 			return article;
 		}),
 	onDeleteComment: (form) => {
-		return serverApi.deleteComment(form).then((comment) => {
-			webAppApi.commentUpdated(comment);
+		return serverApi.deleteComment(form).then(async (comment) => {
+			await webAppApi.commentUpdated(comment);
 			return comment;
 		});
 	},
@@ -168,52 +168,52 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 
 // web app
 const webAppApi = new WebAppApi({
-	onArticleUpdated: (event) => {
+	onArticleUpdated: async (event) => {
 		// update readers
-		readerContentScriptApi.articleUpdated(event);
+		await readerContentScriptApi.articleUpdated(event);
 	},
-	onAuthServiceLinkCompleted: (response) => {
+	onAuthServiceLinkCompleted: async (response) => {
 		// update readers
-		readerContentScriptApi.authServiceLinkCompleted(response);
+		await readerContentScriptApi.authServiceLinkCompleted(response);
 	},
-	onDisplayPreferenceChanged: (preference) => {
+	onDisplayPreferenceChanged: async (preference) => {
 		// update server cache
-		serverApi.displayPreferenceChanged(preference);
+		await serverApi.displayPreferenceChanged(preference);
 		// update readers
-		readerContentScriptApi.displayPreferenceChanged(preference);
+		await readerContentScriptApi.displayPreferenceChanged(preference);
 	},
-	onCommentPosted: (comment) => {
+	onCommentPosted: async (comment) => {
 		// update readers
-		readerContentScriptApi.commentPosted(comment);
+		await readerContentScriptApi.commentPosted(comment);
 	},
-	onCommentUpdated: (comment) => {
+	onCommentUpdated: async (comment) => {
 		// update readers
-		readerContentScriptApi.commentUpdated(comment);
+		await readerContentScriptApi.commentUpdated(comment);
 	},
-	onUserSignedIn: (profile) => {
+	onUserSignedIn: async (profile) => {
 		setIcon({
 			user: profile.userAccount,
 		});
-		serverApi.userSignedIn(profile);
+		await serverApi.userSignedIn(profile);
 	},
-	onUserSignedOut: () => {
+	onUserSignedOut: async () => {
 		setIcon({
 			user: null,
 		});
-		serverApi.userSignedOut();
-		readerContentScriptApi.userSignedOut();
+		await serverApi.userSignedOut();
+		await readerContentScriptApi.userSignedOut();
 	},
-	onUserUpdated: (user) => {
+	onUserUpdated: async (user) => {
 		setIcon({
 			user,
 		});
 		// update server cache
-		serverApi.userUpdated(user);
+		await serverApi.userUpdated(user);
 		// update readers
-		readerContentScriptApi.userUpdated(user);
+		await readerContentScriptApi.userUpdated(user);
 	},
-	onReadArticle: (article) => {
-		openReaderInCurrentTab(article.url);
+	onReadArticle: async (article) => {
+		await openReaderInCurrentTab(article.url);
 	},
 });
 
@@ -253,7 +253,7 @@ async function openReaderInTab(
 		star: star.toString(),
 	});
 	const readerUrl = `${baseURL}?${searchParams}`;
-	chrome.tabs.update(tab.id, { url: readerUrl });
+	await chrome.tabs.update(tab.id, { url: readerUrl });
 }
 
 async function openReaderInCurrentTab(articleUrl: string) {
@@ -267,32 +267,27 @@ async function openReaderInCurrentTab(articleUrl: string) {
 chrome.runtime.onInstalled.addListener(async (details) => {
 	console.log(`[EventPage] installed, reason: ${details.reason}`);
 	// ensure sameSite is set on sessionId and sessionKey cookies
-	[window.reallyreadit.extension.config.cookieName, sessionIdCookieKey].forEach(
-		(cookieName) => {
-			chrome.cookies.get(
-				{
-					url: createUrl(window.reallyreadit.extension.config.webServer),
-					name: cookieName,
-				},
-				(cookie) => {
-					if (cookie?.sameSite === 'unspecified') {
-						chrome.cookies.set({
-							url: createUrl(window.reallyreadit.extension.config.webServer),
-							domain: cookie.domain,
-							expirationDate: cookie.expirationDate,
-							httpOnly: cookie.httpOnly,
-							name: cookie.name,
-							path: cookie.path,
-							sameSite: 'no_restriction',
-							secure: cookie.secure,
-							storeId: cookie.storeId,
-							value: cookie.value,
-						});
-					}
-				}
-			);
+	const cookieNames = [window.reallyreadit.extension.config.cookieName, sessionIdCookieKey];
+	for (const cookieName of cookieNames) {
+		const cookie = await chrome.cookies.get({
+			url: createUrl(window.reallyreadit.extension.config.webServer),
+			name: cookieName,
+		});
+		if (cookie?.sameSite === 'unspecified') {
+			await chrome.cookies.set({
+				url: createUrl(window.reallyreadit.extension.config.webServer),
+				domain: cookie.domain,
+				expirationDate: cookie.expirationDate,
+				httpOnly: cookie.httpOnly,
+				name: cookie.name,
+				path: cookie.path,
+				sameSite: 'no_restriction',
+				secure: cookie.secure,
+				storeId: cookie.storeId,
+				value: cookie.value,
+			});
 		}
-	);
+	}
 	// initialize settings
 	await chrome.storage.local.set({ debug: JSON.stringify(false) });
 	// update icon
@@ -303,57 +298,54 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
 	// on updates
-	readerContentScriptApi.clearTabs();
-	webAppApi.clearTabs();
-	webAppApi.injectContentScripts();
+	await readerContentScriptApi.clearTabs();
+	await webAppApi.clearTabs();
+	await webAppApi.injectContentScripts();
 	// log all installations
 	// safari doesn't allow us to get or set cookies prior to user granting access
 	// in fact chrome.cookies.* api calls take 30+s to time out with no results
 	// so we need to rely on the api server to get and set them for us
-	chrome.runtime.getPlatformInfo(async (platformInfo) => {
-		serverApi
-			.logExtensionInstallation({
-				arch: platformInfo.arch,
-				installationId: (await chrome.storage.local.get('installationId'))[
-					'installationId'
-				],
-				os: platformInfo.os,
-			})
-			.then(async (response) => {
-				if (details.reason === 'install') {
-					chrome.tabs.create({
-						url: createUrl(
-							window.reallyreadit.extension.config.webServer,
-							response.redirectPath,
-							{
-								[extensionInstalledQueryStringKey]: null,
-							}
-						),
-					});
-				}
-				if (!response.installationId) {
-					return;
-				}
-				chrome.runtime.setUninstallURL(
-					createUrl(
-						window.reallyreadit.extension.config.webServer,
-						'/extension/uninstall',
-						{
-							installationId: response.installationId,
-						}
-					)
-				);
-				await chrome.storage.local.set({
-					installationId: response.installationId,
-				});
-			})
-			.catch((error) => {
-				console.log('[EventPage] error logging installation');
-				if (error) {
-					console.log(error);
-				}
+	const platformInfo = await chrome.runtime.getPlatformInfo();
+	try {
+		const response = await serverApi.logExtensionInstallation({
+			arch: platformInfo.arch,
+			installationId: (await chrome.storage.local.get('installationId'))[
+				'installationId'
+			],
+			os: platformInfo.os,
+		});
+		if (details.reason === 'install') {
+			await chrome.tabs.create({
+				url: createUrl(
+					window.reallyreadit.extension.config.webServer,
+					response.redirectPath,
+					{
+						[extensionInstalledQueryStringKey]: null,
+					}
+				),
 			});
-	});
+		}
+		if (!response.installationId) {
+			return;
+		}
+		chrome.runtime.setUninstallURL(
+			createUrl(
+				window.reallyreadit.extension.config.webServer,
+				'/extension/uninstall',
+				{
+					installationId: response.installationId,
+				}
+			)
+		);
+		await chrome.storage.local.set({
+			installationId: response.installationId,
+		});
+	} catch (error) {
+		console.log('[EventPage] error logging installation');
+		if (error) {
+			console.log(error);
+		}
+	}
 });
 // create alarms
 chrome.alarms.getAll(chromeAlarms => {
@@ -398,14 +390,15 @@ chrome.runtime.onStartup.addListener(async () => {
 		user: await serverApi.getUser(),
 	});
 	// initialize tabs
-	readerContentScriptApi.clearTabs();
-	webAppApi.clearTabs();
-	webAppApi.injectContentScripts();
+	await readerContentScriptApi.clearTabs();
+	await webAppApi.clearTabs();
+	await webAppApi.injectContentScripts();
 });
 chrome.action.onClicked.addListener(async (tab) => {
 	// check if we're logged in
-	if (!serverApi.isAuthenticated()) {
-		chrome.tabs.create({
+	const isAuthenticated = await serverApi.isAuthenticated();
+	if (!isAuthenticated) {
+		await chrome.tabs.create({
 			url: createUrl(window.reallyreadit.extension.config.webServer, null, {
 				[extensionAuthQueryStringKey]: null,
 			}),
@@ -419,7 +412,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 	// from a reader tab
 	if (tab.url.startsWith(`chrome-extension://${chrome.runtime.id}/reader`)) {
-		chrome.tabs.goBack(tab.id);
+		await chrome.tabs.goBack(tab.id);
 		return;
 	}
 
@@ -429,7 +422,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 			createUrl(window.reallyreadit.extension.config.webServer)
 		)
 	) {
-		chrome.scripting.executeScript({
+		await chrome.scripting.executeScript({
 			target: {
 				tabId: tab.id,
 			},
@@ -462,7 +455,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 	// blacklisted
 	const blacklist = await serverApi.getBlacklist();
 	if (blacklist.some((regex) => regex.test(tab.url))) {
-		chrome.scripting.executeScript({
+		await chrome.scripting.executeScript({
 			target: {
 				tabId: tab.id,
 			},
@@ -500,7 +493,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 		}
 	);
 });
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener(async (message, sender) => {
 	if (
 		message.from !== 'contentScriptInitializer' ||
 		message.to !== 'eventPage'
@@ -509,7 +502,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 	}
 	switch (message.type) {
 		case 'injectAlert':
-			chrome.scripting.executeScript({
+			await chrome.scripting.executeScript({
 				target: {
 					tabId: sender.tab.id,
 				},
@@ -517,7 +510,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 			});
 			return;
 		case 'injectReader':
-			chrome.scripting.executeScript({
+			await chrome.scripting.executeScript({
 				target: {
 					tabId: sender.tab.id,
 				},

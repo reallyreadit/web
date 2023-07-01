@@ -169,7 +169,7 @@ export default class WebAppApi {
 				console.log(
 					'[WebAppApi] injecting content script into tab # ' + tab.id
 				);
-				chrome.scripting.executeScript({
+				await chrome.scripting.executeScript({
 					target: { tabId: tab.id },
 					files: ['/content-scripts/web-app/bundle.js'],
 				});

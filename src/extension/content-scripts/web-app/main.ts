@@ -28,7 +28,9 @@ if (!window.reallyreadit) {
 				to: 'eventPage',
 				from: 'webAppContentScript',
 				type: message.type,
-				data: message.data,
+				data: message.data
+			}, () => {
+				// Not expecting a response. This channel is currently only used to broadcast events to the extension.
 			});
 		} catch {
 			chrome.runtime.onMessage.removeListener(handleMessageFromExtension);
