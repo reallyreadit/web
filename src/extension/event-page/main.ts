@@ -492,7 +492,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 		}
 	);
 });
-chrome.runtime.onMessage.addListener(async (message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender) => {
 	if (
 		message.from !== 'contentScriptInitializer' ||
 		message.to !== 'eventPage'
@@ -501,21 +501,21 @@ chrome.runtime.onMessage.addListener(async (message, sender) => {
 	}
 	switch (message.type) {
 		case 'injectAlert':
-			await chrome.scripting.executeScript({
+			chrome.scripting.executeScript({
 				target: {
 					tabId: sender.tab.id,
 				},
 				files: ['/content-scripts/alert/bundle.js'],
 			});
-			return;
+			break;
 		case 'injectReader':
-			await chrome.scripting.executeScript({
+			chrome.scripting.executeScript({
 				target: {
 					tabId: sender.tab.id,
 				},
 				files: ['/content-scripts/reader/bundle.js'],
 			});
-			return;
+			break;
 	}
 });
 chrome.alarms.onAlarm.addListener(async (alarm) => {
