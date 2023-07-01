@@ -72,7 +72,6 @@ export default class WebAppApi {
 						break;
 				}
 			}
-			return false;
 		});
 	}
 	private async getTabIds() {

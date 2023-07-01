@@ -278,7 +278,7 @@ export default class ReaderContentScriptApi {
 						return true;
 				}
 			}
-			return false;
+			return undefined;
 		});
 	}
 	private async getTabs() {
