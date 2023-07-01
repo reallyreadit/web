@@ -6,21 +6,6 @@ enum Color {
 	Unread = '#A9A9A9',
 }
 
-// function createLoadingAnimation(tabId: number) {
-// 	let frameIndex = 0;
-// 	let frameCount = 5;
-// 	chrome.action.setBadgeBackgroundColor({
-// 		color: Color.Default,
-// 		tabId,
-// 	});
-// 	return {
-// 		interval: window.setInterval(() => {
-
-// 			frameIndex = ++frameIndex % frameCount;
-// 		}, 150),
-// 		tabId,
-// 	};
-// }
 export default class BrowserActionBadgeApi {
 	private readonly _loadingAnimationFrameCount = 5;
 	public async setDefault(tabId: number) {
