@@ -23,7 +23,7 @@ interface Props {
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
 	selectedScreen: Screen;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 export default class NavTray extends React.PureComponent<Props> {
 	public render() {
@@ -39,7 +39,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={this.props.user && hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							name="trophy"
 						/>
 						<label>AOTD</label>
@@ -80,7 +80,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						}
 						onClick={this.props.onViewMyFeed}
 					>
-						<Icon badge={this.props.user.followerAlertCount} name="candy" />
+						<Icon badge={this.props.user?.followerAlertCount ?? 0} name="candy" />
 						<label>My Feed</label>
 					</button>
 				</li>

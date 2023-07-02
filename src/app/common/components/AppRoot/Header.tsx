@@ -27,7 +27,7 @@ export default (props: {
 	selectedRootScreen: Screen;
 	currentScreen: Screen;
 	titles: (React.ReactNode | null)[];
-	user: UserAccount;
+	user: UserAccount | null;
 }) => {
 	let leftButton: {
 		action: () => void;
@@ -40,7 +40,7 @@ export default (props: {
 	) {
 		leftButton = {
 			action: props.onViewNotifications,
-			badge: props.user.replyAlertCount,
+			badge: props.user?.replyAlertCount ?? 0,
 			iconName: 'bell',
 		};
 	} else {
@@ -80,7 +80,7 @@ export default (props: {
 					className="menu-button notification-icon"
 					onClick={props.onViewNotifications}
 				>
-					<Icon badge={props.user.replyAlertCount} name="bell" />
+					<Icon badge={props.user?.replyAlertCount ?? 0} name="bell" />
 				</div>
 				{props.currentScreen.key === ScreenKey.Profile &&
 				findRouteByKey(routes, ScreenKey.Profile)

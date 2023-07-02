@@ -31,7 +31,7 @@ interface Props {
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
 	selectedScreen: Screen;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 export default class NavBar extends React.PureComponent<Props> {
 	public render() {
@@ -40,7 +40,7 @@ export default class NavBar extends React.PureComponent<Props> {
 				<ol>
 					<li>
 						<Button
-							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={this.props.user && hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							href={homeUrl}
 							onClick={this.props.onViewHome}
 							state={
@@ -87,7 +87,7 @@ export default class NavBar extends React.PureComponent<Props> {
 					<li>
 						<Button
 							href={myFeedUrl}
-							badge={this.props.user.followerAlertCount}
+							badge={this.props.user?.followerAlertCount ?? 0}
 							onClick={this.props.onViewMyFeed}
 							state={
 								this.props.selectedScreen.key === ScreenKey.MyFeed

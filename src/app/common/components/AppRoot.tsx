@@ -9,7 +9,6 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import AuthScreen from './AppRoot/AuthScreen';
 import Header from './AppRoot/Header';
 import Toaster, { Intent } from '../../../common/components/Toaster';
 import NavTray from './AppRoot/NavTray';
@@ -54,7 +53,6 @@ import {
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
 import createProfileScreenFactory from './AppRoot/ProfileScreen';
-import DialogKey from '../../../common/routing/DialogKey';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
@@ -368,86 +366,86 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				);
 			});
 	};
-	private readonly _signInWithApple = () => {
-		this.props.appApi.getDeviceInfo().then((deviceInfo) => {
-			if (
-				!isAppleAppPlatform(deviceInfo.appPlatform) ||
-				deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0
-			) {
-				this.props.appApi.requestAppleIdCredential();
-			} else {
-				this.openAppUpdateRequiredDialog('5.4');
-			}
-		});
-	};
-	private readonly _signInWithTwitter = () => {
-		return new Promise((resolve) => {
-			this.props.appApi
-				.getDeviceInfo()
-				.then((deviceInfo) => {
-					if (
-						isAppleAppPlatform(deviceInfo.appPlatform) &&
-						deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
-					) {
-						this.openAppUpdateRequiredDialog('5.7');
-						throw 'Unsupported';
-					}
-				})
-				.then(this.props.serverApi.requestTwitterWebViewRequestToken)
-				.then((token) => {
-					this.setState(
-						{
-							authStatus: {
-								provider: AuthServiceProvider.Twitter,
-								step: AuthStep.Authenticating,
-							},
-						},
-						resolve
-					);
-					const url = new URL('https://api.twitter.com/oauth/authorize');
-					url.searchParams.set('oauth_token', token.value);
-					return this.props.appApi.requestWebAuthentication({
-						authUrl: url.href,
-						callbackScheme: 'readup',
-					});
-				})
-				.then((webAuthResponse) => {
-					if (!webAuthResponse.callbackURL) {
-						if (webAuthResponse.error === 'Unsupported') {
-							this.openIosUpdateRequiredDialog('13');
-						}
-						throw webAuthResponse.error ?? 'Unknown';
-					}
-					const url = new URL(webAuthResponse.callbackURL);
-					if (url.searchParams.has('denied')) {
-						throw 'Cancelled';
-					}
-					return this.props.serverApi
-						.authenticateTwitterCredential({
-							oauthToken: url.searchParams.get('oauth_token'),
-							oauthVerifier: url.searchParams.get('oauth_verifier'),
-							analytics: this.getSignUpAnalyticsForm(null),
-							pushDevice: this.getPushDeviceForm(),
-						})
-						.then(this._handleAuthServiceCredentialAuthResponse);
-				})
-				.catch((error) => {
-					let authStatus: AuthStatus | null;
-					if (error !== 'Unsupported' && error !== 'Cancelled') {
-						authStatus = {
-							provider: AuthServiceProvider.Twitter,
-							step: AuthStep.Error,
-						};
-					}
-					this.setState(
-						{
-							authStatus,
-						},
-						resolve
-					);
-				});
-		});
-	};
+	// private readonly _signInWithApple = () => {
+	// 	this.props.appApi.getDeviceInfo().then((deviceInfo) => {
+	// 		if (
+	// 			!isAppleAppPlatform(deviceInfo.appPlatform) ||
+	// 			deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0
+	// 		) {
+	// 			this.props.appApi.requestAppleIdCredential();
+	// 		} else {
+	// 			this.openAppUpdateRequiredDialog('5.4');
+	// 		}
+	// 	});
+	// };
+	// private readonly _signInWithTwitter = () => {
+	// 	return new Promise((resolve) => {
+	// 		this.props.appApi
+	// 			.getDeviceInfo()
+	// 			.then((deviceInfo) => {
+	// 				if (
+	// 					isAppleAppPlatform(deviceInfo.appPlatform) &&
+	// 					deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+	// 				) {
+	// 					this.openAppUpdateRequiredDialog('5.7');
+	// 					throw 'Unsupported';
+	// 				}
+	// 			})
+	// 			.then(this.props.serverApi.requestTwitterWebViewRequestToken)
+	// 			.then((token) => {
+	// 				this.setState(
+	// 					{
+	// 						authStatus: {
+	// 							provider: AuthServiceProvider.Twitter,
+	// 							step: AuthStep.Authenticating,
+	// 						},
+	// 					},
+	// 					resolve
+	// 				);
+	// 				const url = new URL('https://api.twitter.com/oauth/authorize');
+	// 				url.searchParams.set('oauth_token', token.value);
+	// 				return this.props.appApi.requestWebAuthentication({
+	// 					authUrl: url.href,
+	// 					callbackScheme: 'readup',
+	// 				});
+	// 			})
+	// 			.then((webAuthResponse) => {
+	// 				if (!webAuthResponse.callbackURL) {
+	// 					if (webAuthResponse.error === 'Unsupported') {
+	// 						this.openIosUpdateRequiredDialog('13');
+	// 					}
+	// 					throw webAuthResponse.error ?? 'Unknown';
+	// 				}
+	// 				const url = new URL(webAuthResponse.callbackURL);
+	// 				if (url.searchParams.has('denied')) {
+	// 					throw 'Cancelled';
+	// 				}
+	// 				return this.props.serverApi
+	// 					.authenticateTwitterCredential({
+	// 						oauthToken: url.searchParams.get('oauth_token'),
+	// 						oauthVerifier: url.searchParams.get('oauth_verifier'),
+	// 						analytics: this.getSignUpAnalyticsForm(null),
+	// 						pushDevice: this.getPushDeviceForm(),
+	// 					})
+	// 					.then(this._handleAuthServiceCredentialAuthResponse);
+	// 			})
+	// 			.catch((error) => {
+	// 				let authStatus: AuthStatus | null;
+	// 				if (error !== 'Unsupported' && error !== 'Cancelled') {
+	// 					authStatus = {
+	// 						provider: AuthServiceProvider.Twitter,
+	// 						step: AuthStep.Error,
+	// 					};
+	// 				}
+	// 				this.setState(
+	// 					{
+	// 						authStatus,
+	// 					},
+	// 					resolve
+	// 				);
+	// 			});
+	// 	});
+	// };
 
 	// window
 	private readonly _handleVisibilityChange = () => {
@@ -1056,17 +1054,8 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			}
 		} else {
 			const locationState = this.getLocationDependentState(location);
-			if (user) {
-				screens = [locationState.screen];
-				dialog = locationState.dialog;
-			} else {
-				this._signInLocation = location;
-				screens = [];
-				dialog =
-					route.dialogKey === DialogKey.ResetPassword
-						? locationState.dialog
-						: null;
-			}
+			screens = [locationState.screen];
+			dialog = locationState.dialog;
 		}
 		return { screens, dialog };
 	}
@@ -1302,90 +1291,73 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		}
 		return (
 			<>
-				{this.state.user ? (
-					<>
-						<NavBar
-							onNavTo={this._navTo}
-							onViewContenders={this._viewContenders}
-							onViewHome={this._viewHome}
-							onViewMyFeed={this._viewMyFeed}
-							onViewMyReads={this._viewMyReads}
-							selectedScreen={this.state.screens[0]}
-							user={this.state.user}
-						/>
-						<div className="content">
-							<Header
-								content={headerContent}
-								isTransitioningBack={this.state.isPoppingScreen}
-								onBack={this._popScreen}
-								onViewNotifications={this._viewNotifications}
-								onViewProfile={this._viewProfile}
-								onViewSettings={this._viewSettings}
-								// this is only the selected "root" screen when ReplaceAll is used
-								selectedRootScreen={this.state.screens[0]}
-								currentScreen={
-									this.state.screens[this.state.screens.length - 1]
-								}
-								titles={this.state.screens.map(
-									(screen) => screen.titleContent || screen.title
-								)}
-								user={this.state.user}
-							/>
-							<ol className="screens">
-								{this.state.screens.map((screen, index, screens) => (
-									<li
-										className={classNames('screen', {
-											'slide-in': !screen.isReplacement,
-											'slide-out':
-												this.state.isPoppingScreen &&
-												index === screens.length - 1,
-										})}
-										key={screen.id}
-										onAnimationEnd={this._handleScreenAnimationEnd}
-									>
-										{this._screenFactoryMap[screen.key].render(
-											screen,
-											sharedState
-										)}
-									</li>
-								))}
-							</ol>
-						</div>
-						<NavTray
-							onViewContenders={this._viewContenders}
-							onViewHome={this._viewHome}
-							onViewMyFeed={this._viewMyFeed}
-							onViewMyReads={this._viewMyReads}
-							selectedScreen={this.state.screens[0]}
-							user={this.state.user}
-						/>
-						{this.state.isInOrientation ? (
-							<OrientationWizard
-								appPlatform={this.props.appApi.deviceInfo.appPlatform}
-								onComplete={this._completeOrientation}
-								onCreateStaticContentUrl={this._createStaticContentUrl}
-								onRequestNotificationAuthorization={
-									this._requestNotificationAuthorization
-								}
-							/>
-						) : null}
-					</>
-				) : (
-					<AuthScreen
-						authStatus={this.state.authStatus}
-						captcha={this.props.captcha}
-						onCloseDialog={this._dialog.closeDialog}
-						onCreateAccount={this._createAccount}
-						onOpenDialog={this._dialog.openDialog}
-						onOpenRequestPasswordResetDialog={
-							this._openRequestPasswordResetDialog
-						}
-						onShowToast={this._toaster.addToast}
-						onSignIn={this._signIn}
-						onSignInWithApple={this._signInWithApple}
-						onSignInWithTwitter={this._signInWithTwitter}
+				<>
+					<NavBar
+						onNavTo={this._navTo}
+						onViewContenders={this._viewContenders}
+						onViewHome={this._viewHome}
+						onViewMyFeed={this._viewMyFeed}
+						onViewMyReads={this._viewMyReads}
+						selectedScreen={this.state.screens[0]}
+						user={this.state.user}
 					/>
-				)}
+					<div className="content">
+						<Header
+							content={headerContent}
+							isTransitioningBack={this.state.isPoppingScreen}
+							onBack={this._popScreen}
+							onViewNotifications={this._viewNotifications}
+							onViewProfile={this._viewProfile}
+							onViewSettings={this._viewSettings}
+							// this is only the selected "root" screen when ReplaceAll is used
+							selectedRootScreen={this.state.screens[0]}
+							currentScreen={
+								this.state.screens[this.state.screens.length - 1]
+							}
+							titles={this.state.screens.map(
+								(screen) => screen.titleContent || screen.title
+							)}
+							user={this.state.user}
+						/>
+						<ol className="screens">
+							{this.state.screens.map((screen, index, screens) => (
+								<li
+									className={classNames('screen', {
+										'slide-in': !screen.isReplacement,
+										'slide-out':
+											this.state.isPoppingScreen &&
+											index === screens.length - 1,
+									})}
+									key={screen.id}
+									onAnimationEnd={this._handleScreenAnimationEnd}
+								>
+									{this._screenFactoryMap[screen.key].render(
+										screen,
+										sharedState
+									)}
+								</li>
+							))}
+						</ol>
+					</div>
+					<NavTray
+						onViewContenders={this._viewContenders}
+						onViewHome={this._viewHome}
+						onViewMyFeed={this._viewMyFeed}
+						onViewMyReads={this._viewMyReads}
+						selectedScreen={this.state.screens[0]}
+						user={this.state.user}
+					/>
+					{this.state.isInOrientation ? (
+						<OrientationWizard
+							appPlatform={this.props.appApi.deviceInfo.appPlatform}
+							onComplete={this._completeOrientation}
+							onCreateStaticContentUrl={this._createStaticContentUrl}
+							onRequestNotificationAuthorization={
+								this._requestNotificationAuthorization
+							}
+						/>
+					) : null}
+				</>
 				<DialogManager
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}
