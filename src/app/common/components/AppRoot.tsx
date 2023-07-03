@@ -1315,7 +1315,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 								this.state.screens[this.state.screens.length - 1]
 							}
 							titles={this.state.screens.map(
-								(screen) => screen.titleContent || screen.title
+								(screen) => screen.title
 							)}
 							user={this.state.user}
 						/>

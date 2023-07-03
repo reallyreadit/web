@@ -149,7 +149,6 @@ export interface Screen<T = any> {
 	key: ScreenKey;
 	location: RouteLocation;
 	title?: string;
-	titleContent?: React.ReactNode;
 	isReplacement?: boolean;
 }
 export interface ScreenFactory<TSharedState> {
