@@ -30,7 +30,6 @@ import { SharedState } from '../BrowserRoot';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
-import MarketingScreen from './MarketingScreen';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
 import ScreenContainer from '../ScreenContainer';
@@ -127,51 +126,27 @@ class HomeScreen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		const sort = CommunityReadSort.Hot;
-		if (props.user) {
-			this.state = {
-				communityReads: props.onGetCommunityReads(
-					{
-						maxLength: null,
-						minLength: null,
-						pageNumber: 1,
-						pageSize: 40,
-						sort,
-					},
-					this._asyncTracker.addCallback((communityReads) => {
-						this.setState({
-							communityReads,
-						});
-						this.clearAlertIfNeeded();
-					})
-				),
-				isLoading: false,
-				isLoadingNewItems: false,
-				newAotd: false,
-				sort,
-			};
-		} else {
-			this.state = {
-				communityReads: props.onGetCommunityReads(
-					{
-						maxLength: null,
-						minLength: null,
-						pageNumber: 1,
-						pageSize: 5,
-						sort,
-					},
-					this._asyncTracker.addCallback((communityReads) => {
-						this.setState({
-							communityReads,
-						});
-						this.clearAlertIfNeeded();
-					})
-				),
-				isLoading: false,
-				isLoadingNewItems: false,
-				newAotd: false,
-				sort,
-			};
-		}
+		this.state = {
+			communityReads: props.onGetCommunityReads(
+				{
+					maxLength: null,
+					minLength: null,
+					pageNumber: 1,
+					pageSize: 40,
+					sort,
+				},
+				this._asyncTracker.addCallback((communityReads) => {
+					this.setState({
+						communityReads,
+					});
+					this.clearAlertIfNeeded();
+				})
+			),
+			isLoading: false,
+			isLoadingNewItems: false,
+			newAotd: false,
+			sort,
+		};
 		this._asyncTracker.addCancellationDelegate(
 			props.onRegisterArticleChangeHandler((event) => {
 				updateCommunityReads.call(
@@ -181,49 +156,27 @@ class HomeScreen extends React.Component<Props, State> {
 				);
 			}),
 			props.onRegisterUserChangeHandler((user: UserAccount | null) => {
-				if (user) {
-					this.setState({
-						communityReads: props.onGetCommunityReads(
-							{
-								maxLength: null,
-								minLength: null,
-								pageNumber: 1,
-								pageSize: 40,
-								sort: CommunityReadSort.Hot,
-							},
-							this._asyncTracker.addCallback((communityReads) => {
-								this.setState({
-									communityReads,
-								});
-								this.clearAlertIfNeeded();
-							})
-						),
-						isLoading: false,
-						newAotd: false,
-					});
-				} else {
-					this.setState({
-						communityReads: props.onGetCommunityReads(
-							{
-								maxLength: null,
-								minLength: null,
-								pageNumber: 1,
-								pageSize: 5,
-								sort: CommunityReadSort.Hot,
-							},
-							this._asyncTracker.addCallback((communityReads) => {
-								this.setState({
-									communityReads,
-								});
-								this.clearAlertIfNeeded();
-							})
-						),
-						isLoading: false,
-						maxLength: null,
-						minLength: null,
-						newAotd: false,
-					});
-				}
+				this.setState({
+					communityReads: props.onGetCommunityReads(
+						{
+							maxLength: null,
+							minLength: null,
+							pageNumber: 1,
+							pageSize: 40,
+							sort: CommunityReadSort.Hot,
+						},
+						this._asyncTracker.addCallback((communityReads) => {
+							this.setState({
+								communityReads,
+							});
+							this.clearAlertIfNeeded();
+						})
+					),
+					isLoading: false,
+					maxLength: null,
+					minLength: null,
+					newAotd: false,
+				});
 			})
 		);
 	}
@@ -280,101 +233,69 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
-		if (this.props.user) {
-			return (
-				<ScreenContainer className="home-screen_1sjipy">
-					{this.state.communityReads && this.state.communityReads.isLoading ? (
-						<LoadingOverlay position="static" />
-					) : (
-						<>
-							{this.state.newAotd ? (
-								<UpdateBanner
-									isBusy={this.state.isLoadingNewItems}
-									onClick={this._loadNewItems}
-									text="Show new Article of the Day"
-								/>
-							) : null}
-							{!this.state.communityReads.value.userReadCount ? (
-								<StickyNote>
-									<strong>Welcome to Readup.</strong>
-									<span>It's time to start reading!</span>
-								</StickyNote>
-							) : null}
-							<CommunityReadsList
-								aotd={
-									this.state.communityReads &&
-									this.state.communityReads.value.aotd
-								}
-								aotdHasAlert={
-									this.state.communityReads &&
-									this.state.communityReads.value.aotdHasAlert
-								}
-								articles={
-									this.state.communityReads &&
-									this.state.communityReads.value.articles
-								}
-								deviceType={this.props.deviceType}
-								isLoading={this.state.isLoading}
-								maxLength={this.state.maxLength}
-								minLength={this.state.minLength}
-								onChangeSort={this._changeSort}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onNavTo={this.props.onNavTo}
-								onPostArticle={this.props.onPostArticle}
-								onRateArticle={this.props.onRateArticle}
-								onReadArticle={this.props.onReadArticle}
-								onShare={this.props.onShare}
-								onShareViaChannel={this.props.onShareViaChannel}
-								onToggleArticleStar={this.props.onToggleArticleStar}
-								onViewAotdHistory={this.props.onViewAotdHistory}
-								onViewComments={this.props.onViewComments}
-								onViewProfile={this.props.onViewProfile}
-								sort={this.state.sort}
-								user={this.props.user}
-							/>
-							{!this.state.isLoading ? (
-								<PageSelector
-									pageNumber={
-										this.state.communityReads.value.articles.pageNumber
-									}
-									pageCount={this.state.communityReads.value.articles.pageCount}
-									onChange={this._changePage}
-								/>
-							) : null}
-						</>
-					)}
-				</ScreenContainer>
-			);
-		}
 		return (
-			<MarketingScreen
-				communityReads={this.state.communityReads}
-				deviceType={this.props.deviceType}
-				location={this.props.location}
-				onBeginOnboarding={this.props.onBeginOnboarding}
-				onCopyAppReferrerTextToClipboard={
-					this.props.onCopyAppReferrerTextToClipboard
-				}
-				onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-				onGetPublisherArticles={this.props.onGetPublisherArticles}
-				onGetUserCount={this.props.onGetUserCount}
-				onNavTo={this.props.onNavTo}
-				onOpenNewPlatformNotificationRequestDialog={
-					this.props.onOpenNewPlatformNotificationRequestDialog
-				}
-				onPostArticle={this.props.onPostArticle}
-				onRateArticle={this.props.onRateArticle}
-				onReadArticle={this.props.onReadArticle}
-				onShare={this.props.onShare}
-				onShareViaChannel={this.props.onShareViaChannel}
-				onToggleArticleStar={this.props.onToggleArticleStar}
-				onViewAotdHistory={this.props.onViewAotdHistory}
-				onViewAuthor={this.props.onViewAuthor}
-				onViewComments={this.props.onViewComments}
-				onViewProfile={this.props.onViewProfile}
-				user={this.props.user}
-			/>
+			<ScreenContainer className="home-screen_1sjipy">
+				{this.state.communityReads && this.state.communityReads.isLoading ? (
+					<LoadingOverlay position="static" />
+				) : (
+					<>
+						{this.state.newAotd ? (
+							<UpdateBanner
+								isBusy={this.state.isLoadingNewItems}
+								onClick={this._loadNewItems}
+								text="Show new Article of the Day"
+							/>
+						) : null}
+						{!this.state.communityReads.value.userReadCount ? (
+							<StickyNote>
+								<strong>Welcome to Readup.</strong>
+								<span>It's time to start reading!</span>
+							</StickyNote>
+						) : null}
+						<CommunityReadsList
+							aotd={
+								this.state.communityReads &&
+								this.state.communityReads.value.aotd
+							}
+							aotdHasAlert={
+								this.state.communityReads &&
+								this.state.communityReads.value.aotdHasAlert
+							}
+							articles={
+								this.state.communityReads &&
+								this.state.communityReads.value.articles
+							}
+							deviceType={this.props.deviceType}
+							isLoading={this.state.isLoading}
+							maxLength={this.state.maxLength}
+							minLength={this.state.minLength}
+							onChangeSort={this._changeSort}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onNavTo={this.props.onNavTo}
+							onPostArticle={this.props.onPostArticle}
+							onRateArticle={this.props.onRateArticle}
+							onReadArticle={this.props.onReadArticle}
+							onShare={this.props.onShare}
+							onShareViaChannel={this.props.onShareViaChannel}
+							onToggleArticleStar={this.props.onToggleArticleStar}
+							onViewAotdHistory={this.props.onViewAotdHistory}
+							onViewComments={this.props.onViewComments}
+							onViewProfile={this.props.onViewProfile}
+							sort={this.state.sort}
+							user={this.props.user}
+						/>
+						{!this.state.isLoading ? (
+							<PageSelector
+								pageNumber={
+									this.state.communityReads.value.articles.pageNumber
+								}
+								pageCount={this.state.communityReads.value.articles.pageCount}
+								onChange={this._changePage}
+							/>
+						) : null}
+					</>
+				)}
+			</ScreenContainer>
 		);
 	}
 }
