@@ -105,12 +105,6 @@ export interface Props {
 	version: SemanticVersion;
 	webServerEndpoint: HttpEndpoint;
 }
-export enum TemplateSection {
-	None = 0,
-	Header = 1,
-	Navigation = 2,
-	Footer = 4,
-}
 export enum NavMethod {
 	Pop,
 	Push,
@@ -154,7 +148,6 @@ export interface Screen<T = any> {
 	componentState?: T;
 	key: ScreenKey;
 	location: RouteLocation;
-	templateSection?: TemplateSection;
 	title?: string;
 	titleContent?: React.ReactNode;
 	isReplacement?: boolean;

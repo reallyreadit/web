@@ -4,11 +4,6 @@
 */
 @import '../../../common/styles/colors';
 
-.browser-root_6tjc3j {
-	height: 100%;
-	display: flex;
-	flex-flow: column;
-}
 .browser-root_6tjc3j > .welcome-message {
 	flex: 0 0 auto;
 	font-family: 'Cambria (Regular)';
@@ -25,29 +20,13 @@
 	right: 12px;
 	font-size: 20px;
 }
-.browser-root_6tjc3j > main {
-	flex: 1 1 auto;
-	display: flex;
-	overflow: hidden;
-}
-.browser-root_6tjc3j > main > .screens {
-	flex: 1 1 auto;
-	overflow: hidden;
-	position: relative;
-}
 .browser-root_6tjc3j > main > .screens > .screen {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-	-webkit-overflow-scrolling: touch;
+	display: none;
 	box-sizing: border-box;
 	z-index: 1;
-	// assuming that a .screen only has 2 children, this will push the footer to the bottom of the screen, but not under it
-	// example: https://github.com/reallyreadit/web/blob/56bcdadb7b786377c42cf2adbd70d6962abf8329/src/app/common/components/BrowserRoot.tsx#L1403
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+}
+.browser-root_6tjc3j > main > .screens > .screen:last-child {
+	display: block;
 }
 
 @include theme using ($root, $scheme) {

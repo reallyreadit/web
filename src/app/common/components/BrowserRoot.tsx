@@ -15,7 +15,6 @@ import Root, {
 	Props as RootProps,
 	State as RootState,
 	SharedState as RootSharedState,
-	TemplateSection,
 	Screen,
 	Events,
 	NavMethod,
@@ -1347,9 +1346,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div>
 				) : null}
-				{topScreen.templateSection == null ||
-				topScreen.templateSection & TemplateSection.Header ? (
-					this.state.user != null ? (
+				{this.state.user != null ? (
 						<Header
 							deviceType={this.props.deviceType}
 							onBeginOnboarding={this._beginOnboarding}
@@ -1379,12 +1376,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 							currentScreen={this.state.screens[0]}
 							user={this.state.user}
 						/>
-					)
-				) : null}
+					)}
 				<main>
-					{(topScreen.templateSection == null ||
-						topScreen.templateSection & TemplateSection.Navigation) &&
-					this.state.user ? (
+					{this.state.user ? (
 						<NavBar
 							onNavTo={this._navTo}
 							onViewHome={this._viewHome}
@@ -1397,21 +1391,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 						{this.state.screens.map((screen) => (
 							<li className="screen" key={screen.id}>
 								{this._screenFactoryMap[screen.key].render(screen, sharedState)}
-								{(screen.templateSection == null ||
-									screen.templateSection & TemplateSection.Footer) &&
-								!this.state.user ? (
-									<ColumnFooter
-										onNavTo={this._navTo}
-										onOpenDialog={this._dialog.openDialog}
-										onCloseDialog={this._dialog.closeDialog}
-										onCreateStaticContentUrl={this._createStaticContentUrl}
-										showWhatIsReadup={topScreen.key !== ScreenKey.Home}
-									/>
-								) : null}
 							</li>
 						))}
 					</ol>
 				</main>
+				<ColumnFooter
+					onNavTo={this._navTo}
+					onOpenDialog={this._dialog.openDialog}
+					onCloseDialog={this._dialog.closeDialog}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
+					showWhatIsReadup={topScreen.key !== ScreenKey.Home}
+				/>
 				{this.state.menuState !== 'closed' ? (
 					<Menu
 						isClosing={this.state.menuState === 'closing'}

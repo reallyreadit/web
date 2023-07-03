@@ -78,14 +78,11 @@ html {
 html[data-client-type='App'] {
 	height: 100vh;
 }
-html[data-client-type='Browser'] {
+html[data-client-type='App'] body,
+html[data-client-type='App'] #root {
 	height: 100%;
 }
-body,
-#root {
-	height: 100%;
-}
-body {
+html[data-client-type='App'] body {
 	overflow: hidden;
 }
 a,
