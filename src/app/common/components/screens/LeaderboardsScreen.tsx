@@ -265,45 +265,44 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	}
 
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<div className="leaderboards-screen_wuzsob">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : (
-					<>
-						<Panel className="main">
-							{!this.props.user ? <h1>Leaderboards</h1> : null}
-							<HeaderSelector
-								disabled={
-									this.state.authorLeaderboards?.isLoading ||
-									this.state.readerLeaderboards?.isLoading
-								}
-								items={this._headerSelectorItems}
-								onChange={this._changeView}
-								value={this.props.view}
-							/>
-							{this.props.view === View.Authors ? (
-								<AuthorLeaderboards
-									onNavTo={this.props.onNavTo}
-									onOpenDialog={this.props.onOpenDialog}
-									onCloseDialog={this.props.onCloseDialog}
-									onLoadMoreAuthors={this.onLoadMoreAuthors.bind(this)}
-									response={this.state.authorLeaderboards}
-									responseMore={this.state.moreAuthorLeaderboards}
-									user={this.props.user}
-								/>
-							) : (
-								<ReaderLeaderboards
-									leaderboards={this.state.readerLeaderboards}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onOpenExplainer={this._openExplainer}
-									onViewProfile={this.props.onViewProfile}
-									user={this.props.user}
-								/>
-							)}
-						</Panel>
-					</>
-				)}
+				<Panel className="main">
+					{!this.props.user ? <h1>Leaderboards</h1> : null}
+					<HeaderSelector
+						disabled={
+							this.state.authorLeaderboards?.isLoading ||
+							this.state.readerLeaderboards?.isLoading
+						}
+						items={this._headerSelectorItems}
+						onChange={this._changeView}
+						value={this.props.view}
+					/>
+					{this.props.view === View.Authors ? (
+						<AuthorLeaderboards
+							onNavTo={this.props.onNavTo}
+							onOpenDialog={this.props.onOpenDialog}
+							onCloseDialog={this.props.onCloseDialog}
+							onLoadMoreAuthors={this.onLoadMoreAuthors.bind(this)}
+							response={this.state.authorLeaderboards}
+							responseMore={this.state.moreAuthorLeaderboards}
+							user={this.props.user}
+						/>
+					) : (
+						<ReaderLeaderboards
+							leaderboards={this.state.readerLeaderboards}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onOpenExplainer={this._openExplainer}
+							onViewProfile={this.props.onViewProfile}
+							user={this.props.user}
+						/>
+					)}
+				</Panel>
 			</div>
 		);
 	}

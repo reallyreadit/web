@@ -201,53 +201,52 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="aotd-history-screen_lpelxe">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+				{this.props.title ? <h1>{this.props.title}</h1> : null}
+				<div className="controls">
+					<HeaderSelector
+						disabled={this.state.articles.isLoading}
+						items={this._headerSelectorItems}
+						onChange={this._changeList}
+						value={this.state.view}
+					/>
+				</div>
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
 				) : (
 					<>
-						{this.props.title ? <h1>{this.props.title}</h1> : null}
-						<div className="controls">
-							<HeaderSelector
-								disabled={this.state.articles.isLoading}
-								items={this._headerSelectorItems}
-								onChange={this._changeList}
-								value={this.state.view}
-							/>
-						</div>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : (
-							<>
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						)}
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						<PageSelector
+							pageNumber={this.state.articles.value.pageNumber}
+							pageCount={this.state.articles.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
 				)}
 			</ScreenContainer>

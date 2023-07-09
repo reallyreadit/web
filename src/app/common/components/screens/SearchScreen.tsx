@@ -196,68 +196,67 @@ class SearchScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.options.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="search-screen_cdqndl">
-				{this.state.options.isLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : (
-					<>
-						<ContentBox className="filters">
-							<MultiSelectFilter
-								onChange={this._changeSources}
-								options={this.state.options.value.sources}
-								title="Publications"
-								value={this.state.sources}
-							/>
-							<MultiSelectFilter
-								onChange={this._changeTags}
-								options={this.state.options.value.tags}
-								title="Topics"
-								value={this.state.tags}
-							/>
-							<MultiSelectFilter
-								onChange={this._changeAuthors}
-								options={this.state.options.value.authors}
-								title="Writers"
-								value={this.state.authors}
-							/>
-							<ArticleLengthFilter
-								max={this.state.maxLength}
-								min={this.state.minLength}
-								onChange={this._changeLength}
-							/>
-						</ContentBox>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : this.state.articles.value ? (
-							this.state.articles.value.items.length ? (
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-							) : (
-								<div className="no-results">No articles found.</div>
-							)
-						) : null}
-					</>
-				)}
+				<ContentBox className="filters">
+					<MultiSelectFilter
+						onChange={this._changeSources}
+						options={this.state.options.value.sources}
+						title="Publications"
+						value={this.state.sources}
+					/>
+					<MultiSelectFilter
+						onChange={this._changeTags}
+						options={this.state.options.value.tags}
+						title="Topics"
+						value={this.state.tags}
+					/>
+					<MultiSelectFilter
+						onChange={this._changeAuthors}
+						options={this.state.options.value.authors}
+						title="Writers"
+						value={this.state.authors}
+					/>
+					<ArticleLengthFilter
+						max={this.state.maxLength}
+						min={this.state.minLength}
+						onChange={this._changeLength}
+					/>
+				</ContentBox>
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
+				) : this.state.articles.value ? (
+					this.state.articles.value.items.length ? (
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+					) : (
+						<div className="no-results">No articles found.</div>
+					)
+				) : null}
 			</ScreenContainer>
 		);
 	}

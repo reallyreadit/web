@@ -233,68 +233,67 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.communityReads && this.state.communityReads.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="home-screen_1sjipy">
-				{this.state.communityReads && this.state.communityReads.isLoading ? (
-					<LoadingOverlay position="static" />
-				) : (
-					<>
-						{this.state.newAotd ? (
-							<UpdateBanner
-								isBusy={this.state.isLoadingNewItems}
-								onClick={this._loadNewItems}
-								text="Show new Article of the Day"
-							/>
-						) : null}
-						{!this.state.communityReads.value.userReadCount ? (
-							<StickyNote>
-								<strong>Welcome to Readup.</strong>
-								<span>It's time to start reading!</span>
-							</StickyNote>
-						) : null}
-						<CommunityReadsList
-							aotd={
-								this.state.communityReads &&
-								this.state.communityReads.value.aotd
-							}
-							aotdHasAlert={
-								this.state.communityReads &&
-								this.state.communityReads.value.aotdHasAlert
-							}
-							articles={
-								this.state.communityReads &&
-								this.state.communityReads.value.articles
-							}
-							deviceType={this.props.deviceType}
-							isLoading={this.state.isLoading}
-							maxLength={this.state.maxLength}
-							minLength={this.state.minLength}
-							onChangeSort={this._changeSort}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onNavTo={this.props.onNavTo}
-							onPostArticle={this.props.onPostArticle}
-							onRateArticle={this.props.onRateArticle}
-							onReadArticle={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onShareViaChannel={this.props.onShareViaChannel}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewAotdHistory={this.props.onViewAotdHistory}
-							onViewComments={this.props.onViewComments}
-							onViewProfile={this.props.onViewProfile}
-							sort={this.state.sort}
-							user={this.props.user}
-						/>
-						{!this.state.isLoading ? (
-							<PageSelector
-								pageNumber={
-									this.state.communityReads.value.articles.pageNumber
-								}
-								pageCount={this.state.communityReads.value.articles.pageCount}
-								onChange={this._changePage}
-							/>
-						) : null}
-					</>
-				)}
+				{this.state.newAotd ? (
+					<UpdateBanner
+						isBusy={this.state.isLoadingNewItems}
+						onClick={this._loadNewItems}
+						text="Show new Article of the Day"
+					/>
+				) : null}
+				{!this.state.communityReads.value.userReadCount ? (
+					<StickyNote>
+						<strong>Welcome to Readup.</strong>
+						<span>It's time to start reading!</span>
+					</StickyNote>
+				) : null}
+				<CommunityReadsList
+					aotd={
+						this.state.communityReads &&
+						this.state.communityReads.value.aotd
+					}
+					aotdHasAlert={
+						this.state.communityReads &&
+						this.state.communityReads.value.aotdHasAlert
+					}
+					articles={
+						this.state.communityReads &&
+						this.state.communityReads.value.articles
+					}
+					deviceType={this.props.deviceType}
+					isLoading={this.state.isLoading}
+					maxLength={this.state.maxLength}
+					minLength={this.state.minLength}
+					onChangeSort={this._changeSort}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onNavTo={this.props.onNavTo}
+					onPostArticle={this.props.onPostArticle}
+					onRateArticle={this.props.onRateArticle}
+					onReadArticle={this.props.onReadArticle}
+					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
+					onToggleArticleStar={this.props.onToggleArticleStar}
+					onViewAotdHistory={this.props.onViewAotdHistory}
+					onViewComments={this.props.onViewComments}
+					onViewProfile={this.props.onViewProfile}
+					sort={this.state.sort}
+					user={this.props.user}
+				/>
+				{!this.state.isLoading ? (
+					<PageSelector
+						pageNumber={
+							this.state.communityReads.value.articles.pageNumber
+						}
+						pageCount={this.state.communityReads.value.articles.pageCount}
+						onChange={this._changePage}
+					/>
+				) : null}
 			</ScreenContainer>
 		);
 	}

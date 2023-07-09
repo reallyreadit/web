@@ -171,85 +171,86 @@ class StatsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (!this.state.componentDidMount || this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="stats-screen_mqbxl8">
-				{!this.state.componentDidMount || this.state.isScreenLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : (
-					<div className="reading-time">
-						<form autoComplete="off">
-							<span className="title">Time Spent Reading</span>
-							<SelectList
-								disabled={
-									!this.state.stats.value || this.state.stats.value.isNewUser
-								}
-								onChange={this._changeReadingTimeWindow}
-								options={[
-									{
-										key: 'All Time',
-										value: ReadingTimeTotalsTimeWindow.AllTime,
-									},
-									{
-										key: 'Past Week',
-										value: ReadingTimeTotalsTimeWindow.PastWeek,
-									},
-									{
-										key: 'Past Month',
-										value: ReadingTimeTotalsTimeWindow.PastMonth,
-									},
-									{
-										key: 'Past Year',
-										value: ReadingTimeTotalsTimeWindow.PastYear,
-									},
-								]}
-								value={this.state.timeWindow}
-							/>
-						</form>
-						{this.state.stats.isLoading ? (
-							<div className="loading-container">
-								<LoadingOverlay position="absolute" />
-							</div>
-						) : (
-							<div className="chart">
-								<ResponsiveContainer aspect={2}>
-									<AreaChart
-										data={this.state.stats.value.dataset}
-										margin={{ top: 10, right: 10, left: 10 }}
-										onClick={this._showToolTip}
-									>
-										<Area
-											dataKey="timeReading"
-											fill="#c3d7ef"
-											name="Total"
-											stroke="#9bbde4"
-											type="monotone"
-										/>
-										<Area
-											dataKey="timeReadingToCompletion"
-											fill="#73a3d9"
-											name="To Completion"
-											stroke="#4b88ce"
-											type="monotone"
-										/>
-										<XAxis dataKey="xLabel" minTickGap={1} />
-										<YAxis minTickGap={1} width={30} />
-										{!this.state.stats.value.isNewUser ? (
-											<Tooltip formatter={this._formatToolTip} />
-										) : null}
-									</AreaChart>
-								</ResponsiveContainer>
-								<div className="y-label">{this.state.stats.value.yLabel}</div>
-								{this.state.stats.value.isNewUser ? (
-									<div className="placeholder">
-										<Icon className="padlock" display="block" name="padlock" />
-										Read at least one full article to unlock stats.
-									</div>
-								) : null}
-							</div>
-						)}
-						<ChartKey item1="Total" item2="To Completion" />
-					</div>
-				)}
+				<div className="reading-time">
+					<form autoComplete="off">
+						<span className="title">Time Spent Reading</span>
+						<SelectList
+							disabled={
+								!this.state.stats.value || this.state.stats.value.isNewUser
+							}
+							onChange={this._changeReadingTimeWindow}
+							options={[
+								{
+									key: 'All Time',
+									value: ReadingTimeTotalsTimeWindow.AllTime,
+								},
+								{
+									key: 'Past Week',
+									value: ReadingTimeTotalsTimeWindow.PastWeek,
+								},
+								{
+									key: 'Past Month',
+									value: ReadingTimeTotalsTimeWindow.PastMonth,
+								},
+								{
+									key: 'Past Year',
+									value: ReadingTimeTotalsTimeWindow.PastYear,
+								},
+							]}
+							value={this.state.timeWindow}
+						/>
+					</form>
+					{this.state.stats.isLoading ? (
+						<div className="loading-container">
+							<LoadingOverlay />
+						</div>
+					) : (
+						<div className="chart">
+							<ResponsiveContainer aspect={2}>
+								<AreaChart
+									data={this.state.stats.value.dataset}
+									margin={{ top: 10, right: 10, left: 10 }}
+									onClick={this._showToolTip}
+								>
+									<Area
+										dataKey="timeReading"
+										fill="#c3d7ef"
+										name="Total"
+										stroke="#9bbde4"
+										type="monotone"
+									/>
+									<Area
+										dataKey="timeReadingToCompletion"
+										fill="#73a3d9"
+										name="To Completion"
+										stroke="#4b88ce"
+										type="monotone"
+									/>
+									<XAxis dataKey="xLabel" minTickGap={1} />
+									<YAxis minTickGap={1} width={30} />
+									{!this.state.stats.value.isNewUser ? (
+										<Tooltip formatter={this._formatToolTip} />
+									) : null}
+								</AreaChart>
+							</ResponsiveContainer>
+							<div className="y-label">{this.state.stats.value.yLabel}</div>
+							{this.state.stats.value.isNewUser ? (
+								<div className="placeholder">
+									<Icon className="padlock" display="block" name="padlock" />
+									Read at least one full article to unlock stats.
+								</div>
+							) : null}
+						</div>
+					)}
+					<ChartKey item1="Total" item2="To Completion" />
+				</div>
 			</ScreenContainer>
 		);
 	}

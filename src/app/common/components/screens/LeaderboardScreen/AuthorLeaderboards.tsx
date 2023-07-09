@@ -355,7 +355,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 	public render() {
 		return this.props.response.isLoading ? (
 			<ContentBox>
-				<LoadingOverlay position="static" />
+				<LoadingOverlay />
 			</ContentBox>
 		) : this.props.response.value ? (
 			<div

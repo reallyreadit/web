@@ -142,49 +142,48 @@ export class BestEverScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="best-ever-screen_bmdeo1">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+				{this.props.title ? <h1>{this.props.title}</h1> : null}
+				{this.state.communityReads.isLoading ? (
+					<LoadingOverlay />
 				) : (
 					<>
-						{this.props.title ? <h1>{this.props.title}</h1> : null}
-						{this.state.communityReads.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : (
-							<>
-								<List>
-									{this.state.communityReads.value.articles.items.map(
-										(article) => (
-											<li key={article.id}>
-												<ArticleDetails
-													article={article}
-													deviceType={this.props.deviceType}
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onNavTo={this.props.onNavTo}
-													onPost={this.props.onPostArticle}
-													onRateArticle={this.props.onRateArticle}
-													onRead={this.props.onReadArticle}
-													onShare={this.props.onShare}
-													onShareViaChannel={this.props.onShareViaChannel}
-													onToggleStar={this.props.onToggleArticleStar}
-													onViewComments={this.props.onViewComments}
-													onViewProfile={this.props.onViewProfile}
-													user={this.props.user}
-												/>
-											</li>
-										)
-									)}
-								</List>
-								<PageSelector
-									pageNumber={
-										this.state.communityReads.value.articles.pageNumber
-									}
-									pageCount={this.state.communityReads.value.articles.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						)}
+						<List>
+							{this.state.communityReads.value.articles.items.map(
+								(article) => (
+									<li key={article.id}>
+										<ArticleDetails
+											article={article}
+											deviceType={this.props.deviceType}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onShareViaChannel={this.props.onShareViaChannel}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
+											user={this.props.user}
+										/>
+									</li>
+								)
+							)}
+						</List>
+						<PageSelector
+							pageNumber={
+								this.state.communityReads.value.articles.pageNumber
+							}
+							pageCount={this.state.communityReads.value.articles.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
 				)}
 			</ScreenContainer>

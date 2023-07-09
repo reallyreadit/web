@@ -84,82 +84,84 @@ export interface Props {
 export default class CommentsScreen extends React.PureComponent<Props> {
 	private readonly _noop = () => {};
 	public render() {
-		return (
-			<div className="comments-screen_udh2l6">
-				{this.props.article.isLoading || this.props.comments.isLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : !(this.props.article.value && this.props.comments.value) ? (
-					<InfoBox position="absolute" style="normal">
-						{!this.props.article.value ? (
-							<p>Article not found.</p>
-						) : (
+		if (this.props.article.isLoading || this.props.comments.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
+		if (!(this.props.article.value && this.props.comments.value)) {
+			return (
+				<InfoBox position="absolute" style="normal">
+					{!this.props.article.value ? (
+						<p>Article not found.</p>
+					) : (
 							<p>Error loading comments.</p>
 						)}
-					</InfoBox>
-				) : (
-					<>
-						<Panel className="main">
-							<ArticleDetails
-								article={this.props.article.value}
-								deviceType={this.props.deviceType}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onNavTo={this.props.onNavTo}
-								onRateArticle={this.props.onRateArticle}
-								onPost={this.props.onPostArticle}
-								onRead={this.props.onReadArticle}
-								onShare={this.props.onShare}
-								onShareViaChannel={this.props.onShareViaChannel}
-								onToggleStar={this.props.onToggleArticleStar}
-								onViewComments={this._noop}
-								onViewProfile={this.props.onViewProfile}
-								user={this.props.user}
-							/>
-							<CommentsSection
-								article={this.props.article.value}
-								comments={this.props.comments.value}
-								highlightedCommentId={this.props.highlightedCommentId}
-								noCommentsMessage="Be the first to post a comment on this article."
-								onCloseDialog={this.props.onCloseDialog}
-								onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-								onDeleteComment={this.props.onDeleteComment}
-								onNavTo={this.props.onNavTo}
-								onOpenDialog={this.props.onOpenDialog}
-								onPostComment={this.props.onPostComment}
-								onPostCommentAddendum={this.props.onPostCommentAddendum}
-								onPostCommentRevision={this.props.onPostCommentRevision}
-								onShare={this.props.onShare}
-								onShareViaChannel={this.props.onShareViaChannel}
-								onViewProfile={this.props.onViewProfile}
-								user={this.props.user}
-							/>
-						</Panel>
-						<JsonLd<AggregateRating>
-							item={{
-								'@context': 'https://schema.org',
-								'@type': 'AggregateRating',
-								bestRating: '10',
-								itemReviewed: {
-									'@type': 'Article',
-									articleSection: this.props.article.value.section,
-									datePublished: this.props.article.value.datePublished,
-									description: this.props.article.value.description,
-									headline: this.props.article.value.title,
-									name: this.props.article.value.title,
-									publisher: {
-										'@type': 'Organization',
-										name: this.props.article.value.source,
-									},
-									url: this.props.article.value.url,
-								},
-								ratingCount: this.props.article.value.ratingCount,
-								ratingExplanation:
-									'Readup verifies that users have read the article to completion before allowing them to leave a rating or review.',
-								ratingValue: this.props.article.value.averageRatingScore,
-								reviewCount: this.props.article.value.commentCount,
-							}}
-						/>
-					</>
-				)}
+				</InfoBox>
+			);
+		}
+		return (
+			<div className="comments-screen_udh2l6">
+				<Panel className="main">
+					<ArticleDetails
+						article={this.props.article.value}
+						deviceType={this.props.deviceType}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onNavTo={this.props.onNavTo}
+						onRateArticle={this.props.onRateArticle}
+						onPost={this.props.onPostArticle}
+						onRead={this.props.onReadArticle}
+						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
+						onToggleStar={this.props.onToggleArticleStar}
+						onViewComments={this._noop}
+						onViewProfile={this.props.onViewProfile}
+						user={this.props.user}
+					/>
+					<CommentsSection
+						article={this.props.article.value}
+						comments={this.props.comments.value}
+						highlightedCommentId={this.props.highlightedCommentId}
+						noCommentsMessage="Be the first to post a comment on this article."
+						onCloseDialog={this.props.onCloseDialog}
+						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+						onDeleteComment={this.props.onDeleteComment}
+						onNavTo={this.props.onNavTo}
+						onOpenDialog={this.props.onOpenDialog}
+						onPostComment={this.props.onPostComment}
+						onPostCommentAddendum={this.props.onPostCommentAddendum}
+						onPostCommentRevision={this.props.onPostCommentRevision}
+						onShare={this.props.onShare}
+						onShareViaChannel={this.props.onShareViaChannel}
+						onViewProfile={this.props.onViewProfile}
+						user={this.props.user}
+					/>
+				</Panel>
+				<JsonLd<AggregateRating>
+					item={{
+						'@context': 'https://schema.org',
+						'@type': 'AggregateRating',
+						bestRating: '10',
+						itemReviewed: {
+							'@type': 'Article',
+							articleSection: this.props.article.value.section,
+							datePublished: this.props.article.value.datePublished,
+							description: this.props.article.value.description,
+							headline: this.props.article.value.title,
+							name: this.props.article.value.title,
+							publisher: {
+								'@type': 'Organization',
+								name: this.props.article.value.source,
+							},
+							url: this.props.article.value.url,
+						},
+						ratingCount: this.props.article.value.ratingCount,
+						ratingExplanation:
+							'Readup verifies that users have read the article to completion before allowing them to leave a rating or review.',
+						ratingValue: this.props.article.value.averageRatingScore,
+						reviewCount: this.props.article.value.commentCount,
+					}}
+				/>
 			</div>
 		);
 	}

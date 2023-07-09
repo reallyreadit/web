@@ -140,49 +140,48 @@ export default class BlogScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="blog-screen_61pk1b">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+				<div className="controls">
+					<h1 className={classNames({ 'has-title': !!this.props.title })}>
+						{this.props.title}
+					</h1>
+				</div>
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
 				) : (
 					<>
-						<div className="controls">
-							<h1 className={classNames({ 'has-title': !!this.props.title })}>
-								{this.props.title}
-							</h1>
-						</div>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : (
-							<>
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						)}
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						<PageSelector
+							pageNumber={this.state.articles.value.pageNumber}
+							pageCount={this.state.articles.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
 				)}
 			</ScreenContainer>

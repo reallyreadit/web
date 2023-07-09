@@ -124,9 +124,6 @@ class MyImpactScreen extends React.Component<Props, State> {
 	}
 
 	private renderContent() {
-		if (this.state.summary.isLoading) {
-			return <LoadingOverlay position="absolute" />;
-		}
 		const summary = this.state.summary.value;
 		if (this.state.selectedReportType === ReportType.CompletedPeriods) {
 			return (
@@ -187,6 +184,9 @@ class MyImpactScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.summary.isLoading) {
+			return <LoadingOverlay />;
+		}
 		return (
 			<ScreenContainer
 				className={classNames('my-impact-screen_n8wfkf', {

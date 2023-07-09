@@ -55,9 +55,6 @@
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 }
-.aotd-view_hgax0h > .loading-overlay_zfgtd1 {
-	margin: 20px 0;
-}
 
 @include theme using ($root, $scheme) {
 	#{$root} .aotd-view_hgax0h > .separator {

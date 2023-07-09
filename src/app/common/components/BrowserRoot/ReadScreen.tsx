@@ -134,17 +134,19 @@ class ReadScreen extends React.PureComponent<Props> {
 		);
 	}
 	public render() {
-		return this.props.article.isLoading ? (
-			<ScreenContainer className="read-screen_ikr26q">
-				<LoadingOverlay position="absolute" />
-			</ScreenContainer>
-		) : !this.props.article.value ? (
-			<ScreenContainer className="read-screen_ikr26q">
+		if (this.props.article.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
+		if (!this.props.article.value) {
+			return (
 				<InfoBox position="absolute" style="normal">
 					<p>Article not found.</p>
 				</InfoBox>
-			</ScreenContainer>
-		) : (
+			);
+		}
+		return (
 			<>
 				<ScreenContainer className="read-screen_ikr26q article-screen-container">
 					{this.renderArticle()}
@@ -223,7 +225,7 @@ class ReadScreen extends React.PureComponent<Props> {
 												/>
 											) : null}
 											{/* If on desktop & logged in & extension NOT yet installed,
-											    OR, if on mobile
+												OR, if on mobile
 												route to Download page */}
 											{(!!this.props.user &&
 												!this.props.isExtensionInstalled) ||
@@ -251,7 +253,7 @@ class ReadScreen extends React.PureComponent<Props> {
 											) : null}
 											{/*
 												Suggest to read article, in case the automatic redirect above fails
-											 */}
+												*/}
 											{!!this.props.user &&
 											!!this.props.isExtensionInstalled ? (
 												<Button

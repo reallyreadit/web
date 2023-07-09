@@ -271,132 +271,132 @@ class HomeScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		/* NOTE: this will only show content once both the AOTD and previous winners are loaded */
+		const isLoading = this.isLoading();
+		if (isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="home-screen_an7vm5">
-				{/* NOTE: this will only show content once both the AOTD and previous winners are loaded */}
-				{this.isLoading() ? (
-					<LoadingOverlay position="static" />
-				) : (
-					<>
-						{/* TODO: this has not been tested yet */}
-						{this.state.newAotd ? (
-							<UpdateBanner
-								isBusy={this.state.isLoadingNewItems}
-								onClick={this._loadNewItems}
-								text="Show new Article of the Day"
-							/>
-						) : null}
-						<h2 className="section-header">
-							<Icon name="trophy" /> Article of the Day
-						</h2>
-						<MorphingArticleDetails
-							article={this.state.communityReads.value.aotd}
-							className="aotd--desktop-display"
-							deviceType={this.props.deviceType}
-							highlight={this.state.communityReads.value.aotdHasAlert}
-							isFeatured={true}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onNavTo={this.props.onNavTo}
-							onPost={this.props.onPostArticle}
-							onRateArticle={this.props.onRateArticle}
-							onRead={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onShareViaChannel={this.props.onShareViaChannel}
-							onToggleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-							onViewProfile={this.props.onViewProfile}
-							user={this.props.user}
-							showImage={true}
-							showDescription={true}
-							showScout={false}
-							showAotdMetadata={false}
-							topline={null}
-						/>
-						<h2 className="section-header">
-							<Icon name="trophy" /> Yesterday's Article of the Day
-						</h2>
-						<MorphingArticleDetails
-							article={this.state.aotdHistory.value.items[0]}
-							className="aotd--desktop-display"
-							deviceType={this.props.deviceType}
-							highlight={this.state.communityReads.value.aotdHasAlert}
-							isFeatured={true}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onNavTo={this.props.onNavTo}
-							onPost={this.props.onPostArticle}
-							onRateArticle={this.props.onRateArticle}
-							onRead={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onShareViaChannel={this.props.onShareViaChannel}
-							onToggleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-							onViewProfile={this.props.onViewProfile}
-							user={this.props.user}
-							showImage={true}
-							showDescription={true}
-							showScout={false}
-							showAotdMetadata={false}
-							topline={null}
-						/>
-						<h2 className="section-header">
-							<Icon name="internet" /> Discover
-						</h2>
-						<div className="controls">
-							<Button
-								iconRight="chevron-right"
-								intent="normal"
-								onClick={(_) => this.props.onNavTo({ key: ScreenKey.BestEver })}
-								text="Top articles of all time"
-							/>
-							<Button
-								iconRight="chevron-right"
-								intent="normal"
-								onClick={(_) =>
-									this.props.onNavTo({
-										key: ScreenKey.Leaderboards,
-										params: { view: LeaderboardsViewParams.Readers },
-									})
-								}
-								text="Community Leaderboards"
-							/>
-						</div>
-						<h2 className="section-header">
-							<Icon name="history-simple" /> Previous Winners
-						</h2>
-						<List>
-							{this.state.aotdHistory.value.items
-								.slice(1)
-								.map((article, index) => (
-									<li key={article.id}>
-										<ArticleDetails
-											article={article}
-											deviceType={this.props.deviceType}
-											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-											onNavTo={this.props.onNavTo}
-											onPost={this.props.onPostArticle}
-											onRateArticle={this.props.onRateArticle}
-											onRead={this.props.onReadArticle}
-											onShare={this.props.onShare}
-											onShareViaChannel={this.props.onShareViaChannel}
-											onToggleStar={this.props.onToggleArticleStar}
-											onViewComments={this.props.onViewComments}
-											onViewProfile={this.props.onViewProfile}
-											showAotdMetadata={true}
-											showDescription={true}
-											showScout={false}
-											showImage={true}
-											user={this.props.user}
-										/>
-									</li>
-								))}
-						</List>
-						{!this.isLoading() ? (
-							<div className="show-more">
-								<AsyncLink text="Show more" onClick={this._loadMore} />
-							</div>
-						) : null}
-					</>
-				)}
+				{/* TODO: this has not been tested yet */}
+				{this.state.newAotd ? (
+					<UpdateBanner
+						isBusy={this.state.isLoadingNewItems}
+						onClick={this._loadNewItems}
+						text="Show new Article of the Day"
+					/>
+				) : null}
+				<h2 className="section-header">
+					<Icon name="trophy" /> Article of the Day
+				</h2>
+				<MorphingArticleDetails
+					article={this.state.communityReads.value.aotd}
+					className="aotd--desktop-display"
+					deviceType={this.props.deviceType}
+					highlight={this.state.communityReads.value.aotdHasAlert}
+					isFeatured={true}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onNavTo={this.props.onNavTo}
+					onPost={this.props.onPostArticle}
+					onRateArticle={this.props.onRateArticle}
+					onRead={this.props.onReadArticle}
+					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
+					onToggleStar={this.props.onToggleArticleStar}
+					onViewComments={this.props.onViewComments}
+					onViewProfile={this.props.onViewProfile}
+					user={this.props.user}
+					showImage={true}
+					showDescription={true}
+					showScout={false}
+					showAotdMetadata={false}
+					topline={null}
+				/>
+				<h2 className="section-header">
+					<Icon name="trophy" /> Yesterday's Article of the Day
+				</h2>
+				<MorphingArticleDetails
+					article={this.state.aotdHistory.value.items[0]}
+					className="aotd--desktop-display"
+					deviceType={this.props.deviceType}
+					highlight={this.state.communityReads.value.aotdHasAlert}
+					isFeatured={true}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onNavTo={this.props.onNavTo}
+					onPost={this.props.onPostArticle}
+					onRateArticle={this.props.onRateArticle}
+					onRead={this.props.onReadArticle}
+					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
+					onToggleStar={this.props.onToggleArticleStar}
+					onViewComments={this.props.onViewComments}
+					onViewProfile={this.props.onViewProfile}
+					user={this.props.user}
+					showImage={true}
+					showDescription={true}
+					showScout={false}
+					showAotdMetadata={false}
+					topline={null}
+				/>
+				<h2 className="section-header">
+					<Icon name="internet" /> Discover
+				</h2>
+				<div className="controls">
+					<Button
+						iconRight="chevron-right"
+						intent="normal"
+						onClick={(_) => this.props.onNavTo({ key: ScreenKey.BestEver })}
+						text="Top articles of all time"
+					/>
+					<Button
+						iconRight="chevron-right"
+						intent="normal"
+						onClick={(_) =>
+							this.props.onNavTo({
+								key: ScreenKey.Leaderboards,
+								params: { view: LeaderboardsViewParams.Readers },
+							})
+						}
+						text="Community Leaderboards"
+					/>
+				</div>
+				<h2 className="section-header">
+					<Icon name="history-simple" /> Previous Winners
+				</h2>
+				<List>
+					{this.state.aotdHistory.value.items
+						.slice(1)
+						.map((article, index) => (
+							<li key={article.id}>
+								<ArticleDetails
+									article={article}
+									deviceType={this.props.deviceType}
+									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+									onNavTo={this.props.onNavTo}
+									onPost={this.props.onPostArticle}
+									onRateArticle={this.props.onRateArticle}
+									onRead={this.props.onReadArticle}
+									onShare={this.props.onShare}
+									onShareViaChannel={this.props.onShareViaChannel}
+									onToggleStar={this.props.onToggleArticleStar}
+									onViewComments={this.props.onViewComments}
+									onViewProfile={this.props.onViewProfile}
+									showAotdMetadata={true}
+									showDescription={true}
+									showScout={false}
+									showImage={true}
+									user={this.props.user}
+								/>
+							</li>
+						))}
+				</List>
+				{!isLoading ? (
+					<div className="show-more">
+						<AsyncLink text="Show more" onClick={this._loadMore} />
+					</div>
+				) : null}
 			</ScreenContainer>
 		);
 	}

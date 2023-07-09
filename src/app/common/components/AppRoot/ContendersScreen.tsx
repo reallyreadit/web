@@ -157,39 +157,38 @@ class ContendersScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.communityReads.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="contenders-screen_2yh8r3">
-				{this.state.communityReads.isLoading ? (
-					<LoadingOverlay position="static" />
-				) : (
-					<>
-						<ContendersView
-							articles={this.state.communityReads.value.articles}
-							deviceType={this.props.deviceType}
-							isLoading={this.state.isLoading}
-							maxLength={this.state.maxLength}
-							minLength={this.state.minLength}
-							onChangeSort={this._changeSort}
-							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-							onNavTo={this.props.onNavTo}
-							onRateArticle={this.props.onRateArticle}
-							onPostArticle={this.props.onPostArticle}
-							onReadArticle={this.props.onReadArticle}
-							onShare={this.props.onShare}
-							onShareViaChannel={this.props.onShareViaChannel}
-							onToggleArticleStar={this.props.onToggleArticleStar}
-							onViewComments={this.props.onViewComments}
-							onViewProfile={this.props.onViewProfile}
-							sort={this.state.sort}
-							user={this.props.user}
-						/>
-						{!this.state.isLoading ? (
-							<div className="show-more">
-								<AsyncLink text="Show more" onClick={this._loadMore} />
-							</div>
-						) : null}
-					</>
-				)}
+				<ContendersView
+					articles={this.state.communityReads.value.articles}
+					deviceType={this.props.deviceType}
+					isLoading={this.state.isLoading}
+					maxLength={this.state.maxLength}
+					minLength={this.state.minLength}
+					onChangeSort={this._changeSort}
+					onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+					onNavTo={this.props.onNavTo}
+					onRateArticle={this.props.onRateArticle}
+					onPostArticle={this.props.onPostArticle}
+					onReadArticle={this.props.onReadArticle}
+					onShare={this.props.onShare}
+					onShareViaChannel={this.props.onShareViaChannel}
+					onToggleArticleStar={this.props.onToggleArticleStar}
+					onViewComments={this.props.onViewComments}
+					onViewProfile={this.props.onViewProfile}
+					sort={this.state.sort}
+					user={this.props.user}
+				/>
+				{!this.state.isLoading ? (
+					<div className="show-more">
+						<AsyncLink text="Show more" onClick={this._loadMore} />
+					</div>
+				) : null}
 			</ScreenContainer>
 		);
 	}

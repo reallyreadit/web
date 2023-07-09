@@ -126,7 +126,7 @@ export default class AotdView extends React.Component<{
 					) : null}
 				</div>
 				{this.props.isLoading ? (
-					<LoadingOverlay position="static" />
+					<LoadingOverlay />
 				) : (
 					<List>
 						{this.props.articles.items.map((article, index) => (

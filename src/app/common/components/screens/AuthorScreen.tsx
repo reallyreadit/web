@@ -157,72 +157,74 @@ class AuthorScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
+		if (!this.props.profile.value) {
+			return (
+				<InfoBox position="absolute" style="normal">
+					<p>Author not found.</p>
+				</InfoBox>
+			);
+		}
 		return (
 			<div className="author-screen_2cri7v">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : !this.props.profile.value ? (
-					<InfoBox position="absolute" style="normal">
-						<p>Author not found.</p>
-					</InfoBox>
-				) : (
-					<>
-						<Panel className="main">
-							<div className="profile">
-								<h1>{this.props.profile.value.name}</h1>
-							</div>
-							{this.state.articles.isLoading ? (
-								<LoadingOverlay position="static" />
-							) : !this.state.articles.value ? (
-								<InfoBox position="static" style="normal">
-									<p>Error loading articles.</p>
-								</InfoBox>
-							) : !this.state.articles.value.items.length ? (
-								<InfoBox position="static" style="normal">
-									<p>No articles found.</p>
-								</InfoBox>
-							) : (
-								<>
-									<List>
-										{this.state.articles.value.items.map((article) => (
-											<li key={article.id}>
-												<ArticleDetails
-													article={article}
-													deviceType={this.props.deviceType}
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onNavTo={this.props.onNavTo}
-													onPost={this.props.onPostArticle}
-													onRateArticle={this.props.onRateArticle}
-													onRead={this.props.onReadArticle}
-													onShare={this.props.onShare}
-													onShareViaChannel={this.props.onShareViaChannel}
-													onToggleStar={this.props.onToggleArticleStar}
-													onViewComments={this.props.onViewComments}
-													onViewProfile={this.props.onViewProfile}
-													showAotdMetadata={false}
-													user={this.props.user}
-												/>
-											</li>
-										))}
-									</List>
-									<PageSelector
-										pageNumber={this.state.articles.value.pageNumber}
-										pageCount={this.state.articles.value.pageCount}
-										onChange={this._changePageNumber}
-									/>
-								</>
-							)}
-							<JsonLd<ProfilePage>
-								item={{
-									'@context': 'https://schema.org',
-									'@type': 'ProfilePage',
-									description: `Articles written by ${this.props.profile.value.name}`,
-									name: this.props.profile.value.name,
-								}}
+				<Panel className="main">
+					<div className="profile">
+						<h1>{this.props.profile.value.name}</h1>
+					</div>
+					{this.state.articles.isLoading ? (
+						<LoadingOverlay />
+					) : !this.state.articles.value ? (
+						<InfoBox position="static" style="normal">
+							<p>Error loading articles.</p>
+						</InfoBox>
+					) : !this.state.articles.value.items.length ? (
+						<InfoBox position="static" style="normal">
+							<p>No articles found.</p>
+						</InfoBox>
+					) : (
+						<>
+							<List>
+								{this.state.articles.value.items.map((article) => (
+									<li key={article.id}>
+										<ArticleDetails
+											article={article}
+											deviceType={this.props.deviceType}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onShareViaChannel={this.props.onShareViaChannel}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
+											showAotdMetadata={false}
+											user={this.props.user}
+										/>
+									</li>
+								))}
+							</List>
+							<PageSelector
+								pageNumber={this.state.articles.value.pageNumber}
+								pageCount={this.state.articles.value.pageCount}
+								onChange={this._changePageNumber}
 							/>
-						</Panel>
-					</>
-				)}
+						</>
+					)}
+					<JsonLd<ProfilePage>
+						item={{
+							'@context': 'https://schema.org',
+							'@type': 'ProfilePage',
+							description: `Articles written by ${this.props.profile.value.name}`,
+							name: this.props.profile.value.name,
+						}}
+					/>
+				</Panel>
 			</div>
 		);
 	}

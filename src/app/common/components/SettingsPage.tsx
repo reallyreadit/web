@@ -307,7 +307,7 @@ class SettingsPage extends React.PureComponent<
 					<div>View your author distribution stats</div>
 				</SettingsLink>
 				{this.state.settings.isLoading ? (
-					<LoadingOverlay position="absolute" />
+					<LoadingOverlay />
 				) : (
 					<>
 						<div className="setting">

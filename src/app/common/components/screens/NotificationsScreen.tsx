@@ -175,62 +175,61 @@ class NotificationsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="notifications-screen_qjaly4">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
-				) : (
+				{this.state.newItemCount ? (
+					<UpdateBanner
+						isBusy={this.state.isLoadingNewItems}
+						onClick={this._loadNewItems}
+						text={this.getUpdateBannerText()}
+					/>
+				) : null}
+				{this.state.replies.isLoading ? (
+					<LoadingOverlay />
+				) : this.state.replies.value.items.length ? (
 					<>
-						{this.state.newItemCount ? (
-							<UpdateBanner
-								isBusy={this.state.isLoadingNewItems}
-								onClick={this._loadNewItems}
-								text={this.getUpdateBannerText()}
-							/>
-						) : null}
-						{this.state.replies.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : this.state.replies.value.items.length ? (
-							<>
-								<List>
-									{this.state.replies.value.items.map((post) => (
-										<li key={post.date}>
-											<PostDetails
-												deviceType={this.props.deviceType}
-												isReply={true}
-												onCloseDialog={this.props.onCloseDialog}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onOpenDialog={this.props.onOpenDialog}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onPost={this.props.onPostArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												onViewThread={this.props.onViewThread}
-												post={post}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								<PageSelector
-									pageNumber={this.state.replies.value.pageNumber}
-									pageCount={this.state.replies.value.pageCount}
-									onChange={this._changePage}
-								/>
-							</>
-						) : (
-							<CenteringContainer>
-								<StickyNote>
-									<span>No replies found.</span>
-								</StickyNote>
-							</CenteringContainer>
-						)}
+						<List>
+							{this.state.replies.value.items.map((post) => (
+								<li key={post.date}>
+									<PostDetails
+										deviceType={this.props.deviceType}
+										isReply={true}
+										onCloseDialog={this.props.onCloseDialog}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onOpenDialog={this.props.onOpenDialog}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onPost={this.props.onPostArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										onViewThread={this.props.onViewThread}
+										post={post}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						<PageSelector
+							pageNumber={this.state.replies.value.pageNumber}
+							pageCount={this.state.replies.value.pageCount}
+							onChange={this._changePage}
+						/>
 					</>
+				) : (
+					<CenteringContainer>
+						<StickyNote>
+							<span>No replies found.</span>
+						</StickyNote>
+					</CenteringContainer>
 				)}
 			</ScreenContainer>
 		);

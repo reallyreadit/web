@@ -291,66 +291,65 @@ class MyReadsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="my-reads-screen_56ihtk">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
-				) : (
+				{this.state.newStarsCount ? (
+					<UpdateBanner
+						isBusy
+						text={`Loading ${
+							this.state.newStarsCount
+						} new ${formatCountable(this.state.newStarsCount, 'article')}`}
+					/>
+				) : null}
+				<div className="controls">
+					<HeaderSelector
+						disabled={this.state.articles.isLoading}
+						items={headerSelectorItems}
+						onChange={this._changeList}
+						value={this.props.view}
+					/>
+				</div>
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
+				) : this.state.articles.value.items.length ? (
 					<>
-						{this.state.newStarsCount ? (
-							<UpdateBanner
-								isBusy
-								text={`Loading ${
-									this.state.newStarsCount
-								} new ${formatCountable(this.state.newStarsCount, 'article')}`}
-							/>
-						) : null}
-						<div className="controls">
-							<HeaderSelector
-								disabled={this.state.articles.isLoading}
-								items={headerSelectorItems}
-								onChange={this._changeList}
-								value={this.props.view}
-							/>
-						</div>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : this.state.articles.value.items.length ? (
-							<>
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								{this.state.articles.value.pageNumber < 2
-									? this.renderStickyNote()
-									: null}
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						) : (
-							<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
-						)}
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						{this.state.articles.value.pageNumber < 2
+							? this.renderStickyNote()
+							: null}
+						<PageSelector
+							pageNumber={this.state.articles.value.pageNumber}
+							pageCount={this.state.articles.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
+				) : (
+					<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
 				)}
 			</ScreenContainer>
 		);

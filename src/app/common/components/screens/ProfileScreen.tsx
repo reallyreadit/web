@@ -358,6 +358,18 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.props.profile.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
+		if (!this.props.profile.value) {
+			return (
+				<InfoBox position="absolute" style="normal">
+					<p>Profile not found.</p>
+				</InfoBox>
+			);
+		}
 		const isOwnProfile = this.isOwnProfile();
 		let isListLoading: boolean;
 		switch (this.state.view) {
@@ -373,70 +385,60 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		}
 		return (
 			<div className="profile-screen_1u1j1e">
-				{this.props.profile.isLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : !this.props.profile.value ? (
-					<InfoBox position="absolute" style="normal">
-						<p>Profile not found.</p>
-					</InfoBox>
-				) : (
-					<>
-						<Panel className="main">
-							<div className="profile" data-nosnippet>
-								{this.props.profile.value.authorProfile ? (
-									<div className="author">
-										{this.props.profile.value.authorProfile.name}
-										<Icon name="verified-user" title="Verified" />
-									</div>
-								) : null}
-								<div
-									className={classNames('user-name', {
-										small: !!this.props.profile.value.authorProfile,
-									})}
-								>
-									<span className="name">
-										@{this.props.profile.value.userName}
-									</span>
-									{this.props.profile.value.leaderboardBadge !==
-									LeaderboardBadge.None ? (
-										<LeaderboardBadges
-											badge={this.props.profile.value.leaderboardBadge}
-										/>
-									) : null}
-								</div>
-								{!isOwnProfile && this.props.userAccount ? (
-									<FollowButton
-										following={this.props.profile.value}
-										isBusy={this.state.isFollowingButtonBusy}
-										onFollow={this._followUser}
-										onUnfollow={this._unfollowUser}
-										size="large"
-									/>
-								) : null}
+				<Panel className="main">
+					<div className="profile" data-nosnippet>
+						{this.props.profile.value.authorProfile ? (
+							<div className="author">
+								{this.props.profile.value.authorProfile.name}
+								<Icon name="verified-user" title="Verified" />
 							</div>
-							{this.props.profile.value.authorProfile ? (
-								<div className="controls" data-nosnippet>
-									<HeaderSelector
-										disabled={isListLoading}
-										items={headerSelectorItems}
-										onChange={this._changeView}
-										style="compact"
-										value={this.state.view}
-									/>
-								</div>
+						) : null}
+						<div
+							className={classNames('user-name', {
+								small: !!this.props.profile.value.authorProfile,
+							})}
+						>
+							<span className="name">
+								@{this.props.profile.value.userName}
+							</span>
+							{this.props.profile.value.leaderboardBadge !==
+							LeaderboardBadge.None ? (
+								<LeaderboardBadges
+									badge={this.props.profile.value.leaderboardBadge}
+								/>
 							) : null}
-							{this.renderList()}
-						</Panel>
-						<JsonLd<ProfilePage>
-							item={{
-								'@context': 'https://schema.org',
-								'@type': 'ProfilePage',
-								description: `Join Readup to read with ${this.props.profile.value.userName}`,
-								name: this.props.profile.value.userName,
-							}}
-						/>
-					</>
-				)}
+						</div>
+						{!isOwnProfile && this.props.userAccount ? (
+							<FollowButton
+								following={this.props.profile.value}
+								isBusy={this.state.isFollowingButtonBusy}
+								onFollow={this._followUser}
+								onUnfollow={this._unfollowUser}
+								size="large"
+							/>
+						) : null}
+					</div>
+					{this.props.profile.value.authorProfile ? (
+						<div className="controls" data-nosnippet>
+							<HeaderSelector
+								disabled={isListLoading}
+								items={headerSelectorItems}
+								onChange={this._changeView}
+								style="compact"
+								value={this.state.view}
+							/>
+						</div>
+					) : null}
+					{this.renderList()}
+				</Panel>
+				<JsonLd<ProfilePage>
+					item={{
+						'@context': 'https://schema.org',
+						'@type': 'ProfilePage',
+						description: `Join Readup to read with ${this.props.profile.value.userName}`,
+						name: this.props.profile.value.userName,
+					}}
+				/>
 			</div>
 		);
 	}

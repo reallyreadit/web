@@ -208,101 +208,100 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<ScreenContainer className="my-feed-screen_921ddo">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+				{this.state.newItemCount ? (
+					<UpdateBanner
+						isBusy={this.state.isLoadingNewItems}
+						onClick={this._loadNewItems}
+						text={`Show ${this.state.newItemCount} new ${formatCountable(
+							this.state.newItemCount,
+							'post'
+						)}`}
+					/>
+				) : null}
+				{this.props.profile.isLoading ? (
+					<LoadingOverlay />
 				) : (
-					<>
-						{this.state.newItemCount ? (
-							<UpdateBanner
-								isBusy={this.state.isLoadingNewItems}
-								onClick={this._loadNewItems}
-								text={`Show ${this.state.newItemCount} new ${formatCountable(
-									this.state.newItemCount,
-									'post'
-								)}`}
+					<div className="followings">
+						{this.props.profile.value.followeeCount ? (
+							<Link
+								className="following-count"
+								onClick={this._showFollowees}
+								text={this._getFolloweesText()}
 							/>
-						) : null}
-						{this.props.profile.isLoading ? (
-							<LoadingOverlay position="static" />
 						) : (
-							<div className="followings">
-								{this.props.profile.value.followeeCount ? (
-									<Link
-										className="following-count"
-										onClick={this._showFollowees}
-										text={this._getFolloweesText()}
-									/>
-								) : (
-									<div className="following-count">
-										{this._getFolloweesText()}
-									</div>
-								)}{' '}
-								|{' '}
-								{this.props.profile.value.followerCount ? (
-									<Link
-										badge={
-											this.isOwnProfile() &&
-											this.props.userAccount.followerAlertCount
-										}
-										className="following-count"
-										onClick={this._showFollowers}
-										text={this._getFollowersText()}
-									/>
-								) : (
-									<div className="following-count">
-										{this._getFollowersText()}
-									</div>
-								)}
+							<div className="following-count">
+								{this._getFolloweesText()}
+							</div>
+						)}{' '}
+						|{' '}
+						{this.props.profile.value.followerCount ? (
+							<Link
+								badge={
+									this.isOwnProfile() &&
+									this.props.userAccount.followerAlertCount
+								}
+								className="following-count"
+								onClick={this._showFollowers}
+								text={this._getFollowersText()}
+							/>
+						) : (
+							<div className="following-count">
+								{this._getFollowersText()}
 							</div>
 						)}
-						{this.state.posts.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : this.state.posts.value.items.length ? (
-							<>
-								<List>
-									{this.state.posts.value.items.map((post) => (
-										<li key={post.date}>
-											<PostDetails
-												deviceType={this.props.deviceType}
-												onCloseDialog={this.props.onCloseDialog}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onOpenDialog={this.props.onOpenDialog}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onPost={this.props.onPostArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												onViewThread={this.props.onViewThread}
-												post={post}
-												user={this.props.userAccount}
-											/>
-										</li>
-									))}
-								</List>
-								<PageSelector
-									pageNumber={this.state.posts.value.pageNumber}
-									pageCount={this.state.posts.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						) : (
-							<CenteringContainer>
-								<StickyNote>
-									<strong>Follow readers who interest you.</strong>
-									<span>
-										Their posts will appear here, as well as posts from people
-										who commented on articles that you read.
-									</span>
-								</StickyNote>
-							</CenteringContainer>
-						)}
+					</div>
+				)}
+				{this.state.posts.isLoading ? (
+					<LoadingOverlay />
+				) : this.state.posts.value.items.length ? (
+					<>
+						<List>
+							{this.state.posts.value.items.map((post) => (
+								<li key={post.date}>
+									<PostDetails
+										deviceType={this.props.deviceType}
+										onCloseDialog={this.props.onCloseDialog}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onOpenDialog={this.props.onOpenDialog}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onPost={this.props.onPostArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										onViewThread={this.props.onViewThread}
+										post={post}
+										user={this.props.userAccount}
+									/>
+								</li>
+							))}
+						</List>
+						<PageSelector
+							pageNumber={this.state.posts.value.pageNumber}
+							pageCount={this.state.posts.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
+				) : (
+					<CenteringContainer>
+						<StickyNote>
+							<strong>Follow readers who interest you.</strong>
+							<span>
+								Their posts will appear here, as well as posts from people
+								who commented on articles that you read.
+							</span>
+						</StickyNote>
+					</CenteringContainer>
 				)}
 			</ScreenContainer>
 		);

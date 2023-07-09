@@ -153,7 +153,7 @@ export class PostList extends React.Component<Props> {
 	}
 	public render() {
 		if (this.props.posts.isLoading) {
-			return <LoadingOverlay position="static" />;
+			return <LoadingOverlay  />;
 		}
 		if (!this.props.posts.value || !this.props.posts.value.items.length) {
 			return (
