@@ -94,7 +94,7 @@ export class ArticleList extends React.Component<Props> {
 		}
 		if (!this.props.articles.value || !this.props.articles.value.items.length) {
 			return (
-				<InfoBox position="static" style="normal">
+				<InfoBox style="normal">
 					{!this.props.articles.value
 						? 'Error loading posts.'
 						: this.props.emptyListMessage}

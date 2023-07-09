@@ -365,7 +365,7 @@ export class ProfileScreen extends AbstractFollowable<Props, State> {
 		}
 		if (!this.props.profile.value) {
 			return (
-				<InfoBox position="absolute" style="normal">
+				<InfoBox style="normal">
 					<p>Profile not found.</p>
 				</InfoBox>
 			);

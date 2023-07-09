@@ -164,7 +164,7 @@ class AuthorScreen extends React.Component<Props, State> {
 		}
 		if (!this.props.profile.value) {
 			return (
-				<InfoBox position="absolute" style="normal">
+				<InfoBox style="normal">
 					<p>Author not found.</p>
 				</InfoBox>
 			);
@@ -178,11 +178,11 @@ class AuthorScreen extends React.Component<Props, State> {
 					{this.state.articles.isLoading ? (
 						<LoadingOverlay />
 					) : !this.state.articles.value ? (
-						<InfoBox position="static" style="normal">
+						<InfoBox style="normal">
 							<p>Error loading articles.</p>
 						</InfoBox>
 					) : !this.state.articles.value.items.length ? (
-						<InfoBox position="static" style="normal">
+						<InfoBox style="normal">
 							<p>No articles found.</p>
 						</InfoBox>
 					) : (

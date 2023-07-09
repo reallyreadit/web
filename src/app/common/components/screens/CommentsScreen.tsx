@@ -91,7 +91,7 @@ export default class CommentsScreen extends React.PureComponent<Props> {
 		}
 		if (!(this.props.article.value && this.props.comments.value)) {
 			return (
-				<InfoBox position="absolute" style="normal">
+				<InfoBox style="normal">
 					{!this.props.article.value ? (
 						<p>Article not found.</p>
 					) : (

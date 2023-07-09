@@ -60,7 +60,7 @@ class ReadScreen extends React.PureComponent<Props> {
 		}
 		if (!this.props.article.value) {
 			return (
-				<InfoBox position="absolute" style="normal">
+				<InfoBox style="normal">
 					<p>Article not found.</p>
 				</InfoBox>
 			);

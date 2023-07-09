@@ -157,7 +157,7 @@ export class PostList extends React.Component<Props> {
 		}
 		if (!this.props.posts.value || !this.props.posts.value.items.length) {
 			return (
-				<InfoBox position="static" style="normal">
+				<InfoBox style="normal">
 					{!this.props.posts.value
 						? 'Error loading posts.'
 						: this.props.emptyListMessage}

@@ -17,12 +17,10 @@ export default (props: {
 	children: React.ReactNode;
 	className?: ClassValue;
 	icon?: IconName;
-	position: 'absolute' | 'static';
 	style: 'normal' | 'warning' | 'success';
 }) => (
 	<div
 		className={classNames('info-box_8xzdd8', props.className, {
-			absolute: props.position === 'absolute',
 			success: props.style === 'success',
 			warning: props.style === 'warning',
 		})}

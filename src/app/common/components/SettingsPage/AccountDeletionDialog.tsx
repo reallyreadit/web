@@ -57,7 +57,7 @@ export class AccountDeletionDialog extends FieldsetDialog<
 	protected renderFields() {
 		return (
 			<>
-				<InfoBox position="static" style="warning">
+				<InfoBox style="warning">
 					<p>
 						Type the words DELETE MY ACCOUNT to confirm that you want to
 						permenantly delete your account.

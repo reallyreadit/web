@@ -370,7 +370,7 @@ export default class AuthorLeaderboards extends React.Component<Props> {
 			</div>
 		) : (
 			<ContentBox>
-				<InfoBox position="static" style="normal">
+				<InfoBox style="normal">
 					Error loading report.
 				</InfoBox>
 			</ContentBox>
