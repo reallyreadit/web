@@ -2,7 +2,6 @@ import ReaderContentScriptApi from './ReaderContentScriptApi';
 import ServerApi from './ServerApi';
 import WebAppApi from './WebAppApi';
 import { createUrl } from '../../common/HttpEndpoint';
-import SemanticVersion from '../../common/SemanticVersion';
 import { createCommentThread } from '../../common/models/social/Post';
 import { sessionIdCookieKey } from '../../common/cookies';
 import {
@@ -57,13 +56,6 @@ const serverApi = new ServerApi({
 			user: null,
 		});
 		await readerContentScriptApi.userSignedOut();
-	},
-	onUserUpdated: async (user) => {
-		setIcon({
-			user,
-		});
-		await readerContentScriptApi.userUpdated(user);
-		await webAppApi.userUpdated(user);
 	},
 });
 
@@ -265,6 +257,8 @@ async function openReaderInCurrentTab(articleUrl: string) {
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(async (details) => {
 	console.log(`[EventPage] installed, reason: ${details.reason}`);
+	// clear all alarms (temporary debugging for BAI failure investigation)
+	await chrome.alarms.clearAll();
 	// ensure sameSite is set on sessionId and sessionKey cookies
 	const cookieNames = [window.reallyreadit.extension.config.cookieName, sessionIdCookieKey];
 	for (const cookieName of cookieNames) {
@@ -346,42 +340,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 		}
 	}
 });
-// create alarms
-chrome.alarms.getAll(chromeAlarms => {
-	const
-		registeredAlarms: { [key: string]: (number | null) } = {},
-		allowedAlarms = {
-			'updateContentParser': 120,
-			[ServerApi.alarms.checkNotifications]: 2.5,
-			[ServerApi.alarms.getBlacklist]: 120
-		};
-	let startTime = Date.now();
-	for (const alarm of chromeAlarms) {
-		registeredAlarms[alarm.name] = alarm.periodInMinutes;
-	}
-	if (!chrome.notifications) {
-		delete allowedAlarms[ServerApi.alarms.checkNotifications];
-	}
-	for (const alarm in allowedAlarms) {
-		const createAlarm = () => {
-			chrome.alarms.create(alarm, {
-				when: startTime,
-				periodInMinutes: allowedAlarms[alarm],
-			});
-			startTime += 1000 * 60;
-		};
-		if (!(alarm in registeredAlarms)) {
-			createAlarm();
-		} else if (allowedAlarms[alarm] !== registeredAlarms[alarm]) {
-			chrome.alarms.clear(alarm, createAlarm);
-		}
-	}
-	for (const alarm in registeredAlarms) {
-		if (!(alarm in allowedAlarms)) {
-			chrome.alarms.clear(alarm, () => { });
-		}
-	}
-});
 chrome.runtime.onStartup.addListener(async () => {
 	console.log('[EventPage] startup');
 	// update icon
@@ -451,34 +409,6 @@ chrome.action.onClicked.addListener(async (tab) => {
 		});
 		return;
 	}
-	// blacklisted
-	const blacklist = await serverApi.getBlacklist();
-	if (blacklist.some((regex) => regex.test(tab.url))) {
-		await chrome.scripting.executeScript({
-			target: {
-				tabId: tab.id,
-			},
-			func: () => {
-				// Note: don't use TS features like the ? operator here, or the ... operator.
-				// TS transpiles these, but this function is executed in a different context
-				// from the current context where it is defined.
-				if (!(window.reallyreadit && window.reallyreadit.alertContentScript)) {
-					window.reallyreadit = Object.assign(window.reallyreadit, {
-						alertContentScript: {
-							alertContent: 'No article detected on this web page.',
-						},
-					});
-					chrome.runtime.sendMessage({
-						from: 'contentScriptInitializer',
-						to: 'eventPage',
-						type: 'injectAlert',
-					});
-				} else if (!window.reallyreadit.alertContentScript.isActive) {
-					window.reallyreadit.alertContentScript.display();
-				}
-			},
-		});
-	}
 
 	// open article, starring if that is the setting
 	chrome.storage.local.get(
@@ -516,73 +446,5 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 				files: ['/content-scripts/reader/bundle.js'],
 			});
 			break;
-	}
-});
-chrome.alarms.onAlarm.addListener(async (alarm) => {
-	if (alarm.name === 'updateContentParser') {
-		const currentVersion = SemanticVersion.greatest(
-			...[
-				window.reallyreadit.extension.config.version.common.contentParser,
-				(await chrome.storage.local.get('contentParserVersion'))[
-					'contentParserVersion'
-				],
-			]
-				.filter((string) => !!string)
-				.map((versionString) => new SemanticVersion(versionString))
-		);
-		console.log(
-			`chrome.alarms.onAlarm (updateContentParser: checking for new version. current version: ${currentVersion.toString()})`
-		);
-		fetch(
-			createUrl(
-				window.reallyreadit.extension.config.staticServer,
-				'/extension/content-parser.txt'
-			)
-		)
-			.then((res) => res.text())
-			.then((text) => {
-				const newVersionInfo = text
-					.split('\n')
-					.filter((line) => !!line)
-					.map((fileName) => ({
-						fileName,
-						version: new SemanticVersion(fileName),
-					}))
-					.find((versionInfo) =>
-						currentVersion.canUpgradeTo(versionInfo.version)
-					);
-				if (newVersionInfo) {
-					console.log(
-						`chrome.alarms.onAlarm (updateContentParser: updating to version: ${newVersionInfo.version.toString()})`
-					);
-					fetch(
-						createUrl(
-							window.reallyreadit.extension.config.staticServer,
-							`/extension/content-parser/${newVersionInfo.fileName}`
-						)
-					)
-						.then((res) => res.text())
-						.then(async (text) => {
-							await chrome.storage.local.set({ contentParserScript: text });
-							await chrome.storage.local.set({
-								contentParserVersion: newVersionInfo.version.toString(),
-							});
-						})
-						.catch(() => {
-							console.log(
-								'chrome.alarms.onAlarm (updateContentParser: error updating to new version)'
-							);
-						});
-				} else {
-					console.log(
-						'chrome.alarms.onAlarm (updateContentParser: no new version)'
-					);
-				}
-			})
-			.catch(() => {
-				console.log(
-					'chrome.alarms.onAlarm (updateContentParser: error checking for new version)'
-				);
-			});
 	}
 });
