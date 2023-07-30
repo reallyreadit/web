@@ -17,7 +17,6 @@ import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
-import RankCallout from './RankCallout';
 import Button from '../../../../../common/components/Button';
 import SelectList from '../../../../../common/components/SelectList';
 import LoadingOverlay from '../LoadingOverlay';
@@ -144,9 +143,6 @@ export default class AotdView extends React.Component<{
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}
-									rankCallout={
-										index === 0 && !this.props.user ? <RankCallout /> : null
-									}
 									user={this.props.user}
 								/>
 							</li>
