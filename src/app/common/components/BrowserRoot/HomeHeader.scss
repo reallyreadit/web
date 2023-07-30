@@ -16,160 +16,109 @@
 @import '../../../../common/styles/config';
 
 .home-header_2afwll {
-	padding: 10px;
-	position: relative;
-}
-
-.home-header_2afwll {
-	display: flex;
-	flex-direction: column;
-	// justify-content: space-between;
-	padding: 18px 18px;
+	background-color: var(--nav-background-color);
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
+	border-bottom-color: var(--nav-border-color);
 }
 
-// mobile menu container
-.home-header_2afwll > .menu-container {
-	flex-direction: column;
-	// align-items: flex-start;
+.home-header_2afwll > .content {
+	display: flex;
+	justify-content: space-between;
+	padding: 15px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+
+.home-header_2afwll > .content > .left {
+	flex: 1 1 auto;
+	display: flex;
 	align-items: center;
-
-	display: none;
-	&.open {
-		display: flex;
-	}
-}
-.home-header_2afwll.responsive > .menu-container {
-	@media screen and (max-width: 767px) {
-		&.open {
-			> a {
-				font-size: 24px;
-			}
-
-			> *:not(:last-child) {
-				margin-bottom: 20px;
-			}
-
-			position: absolute;
-			width: 100%;
-			box-sizing: border-box;
-			z-index: 2;
-			background: var(--nav-background-color);
-			height: calc(100vh - 76px);
-			top: 100%;
-			left: 0;
-			margin-top: 0;
-			padding-top: 20px;
-		}
-	}
 }
 
-.home-header_2afwll a {
-	cursor: pointer;
+.home-header_2afwll > .content > .left > .logo {
+	display: block;
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 32px;
+	width: 61px;
+}
+
+.home-header_2afwll > .content > .left > .links > .link_ke15oa {
+	font-family: 'Museo Sans (500)';
 	text-decoration: none;
+	margin-left: 1em;
 
 	&:hover,
 	&.active {
-		font-family: 'Museo Sans (700)';
+		border-bottom: 1px solid;
 	}
 }
 
-.home-header_2afwll > .menu-controls-container {
+.home-header_2afwll > .content > .right {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
 }
 
-.home-header_2afwll > .menu-controls-container > .logo {
-	display: block;
-	width: 74px;
-	height: 41px;
-	background-size: contain;
-	background-repeat: no-repeat;
+.home-header_2afwll > .content > .right > .menu {
+	display: none;
 }
 
-.home-header_2afwll > .menu-controls-container > .mobile-menu-toggle {
-	display: block;
-	width: 74px;
-	height: 41px;
+.home-header_2afwll > .content > .right > .menu > .children > .icon_rour3d {
+	cursor: pointer;
 }
 
-// icon styles
-.home-header_2afwll > .menu-container {
-	> a > span > .icon_rour3d {
-		display: block;
-		font-size: 26px;
-		cursor: pointer;
+.home-header_2afwll > .content > .right > .menu > .menu > .content {
+	display: flex;
+	flex-flow: column;
+	position: relative;
+	padding: 0.75em;
+	background: var(--content-background-color);
+}
+
+.home-header_2afwll > .content > .right > .menu > .menu > .content > .link_ke15oa {
+	display: inline-flex;
+	align-items: center;
+	height: 32px;
+	padding: 0 10px;
+	font-family: 'Museo Sans (500)';
+	text-decoration: none;
+
+	&.active {
+		display: none;
 	}
 }
-.home-header_2afwll > .menu-container > .button_ovrlmi {
-	margin-left: 10px;
-}
 
-// desktop styles
-@mixin desktop-styles($qualifier: '') {
-	// reset mobile change
-	// TODO: test this if replacing Header.tsx
-	// .home-header_2afwll:not(.menu) > .menu-container {
-	// 	margin-top: 0;
-	// }
-
-	.home-header_2afwll#{$qualifier} > .menu-controls-container > .logo {
-		width: 114px;
-		height: 60px;
-		background-size: contain;
-		background-repeat: no-repeat;
+@media screen and (max-width: 699px) {
+	.home-header_2afwll > .content > .left {
+		justify-content: space-between;
 	}
 
-	.home-header_2afwll#{$qualifier}
-		> .menu-controls-container
-		> .mobile-menu-toggle {
+	.home-header_2afwll > .content > .left > .links > .link_ke15oa {
+		margin-left: 0;
+		margin-right: 0.5em;
+
+		&.active {
+			border-bottom: none;
+		}
+
+		&:not(.active) {
+			display: none;
+		}
+	}
+
+	.home-header_2afwll > .content > .right > .log-in {
 		display: none;
 	}
 
-	.home-header_2afwll#{$qualifier} {
-		flex: 0 0 auto;
-		flex-direction: row;
-		display: flex;
-		justify-content: space-between;
-		padding: 20px 30px;
-		border-bottom-width: 1px;
-		border-bottom-style: solid;
-	}
-
-	.home-header_2afwll#{$qualifier} > .menu-container {
-		display: flex;
-		flex-direction: row;
-		// align-items: center; // vertical center here
-
-		> a:not(:first-child) {
-			margin-left: 32px;
-		}
-
-		> button:nth-of-type(1) {
-			margin-left: 40px;
-		}
+	.home-header_2afwll > .content > .right > .menu {
+		display: inline-block;
 	}
 }
-
-@media screen and (min-width: 768px) {
-	@include desktop-styles();
-}
-
-@include desktop-styles(':not(.responsive)');
 
 @include theme using ($root, $scheme) {
-	#{$root} .home-header_2afwll {
-		@include theme-colors(
-			$scheme,
-			(
-				'border-bottom-color': $nav-border-color,
-				'background-color': $nav-background-color,
-			)
-		);
-	}
-	#{$root} .home-header_2afwll > .menu-controls-container > .logo {
+	#{$root} .home-header_2afwll > .content > .left > .logo {
 		@if $scheme == light {
 			background-image: url(create-url(
 				map-get($readup-config, 'static-server'),

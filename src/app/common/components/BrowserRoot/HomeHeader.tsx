@@ -9,8 +9,8 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import classNames from 'classnames';
-import Icon from '../../../../common/components/Icon';
+// import classNames from 'classnames';
+// import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
@@ -21,9 +21,10 @@ import {
 	Screen,
 } from '../../../common/components/Root';
 import Link from '../../../../common/components/Link';
-import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
+import { DeviceType } from '../../../../common/DeviceType';
 import UserAccount from '../../../../common/models/UserAccount';
-import GetStartedButton from './GetStartedButton';
+import Popover, { MenuState, MenuPosition } from '../../../../common/components/Popover';
+import Icon from '../../../../common/components/Icon';
 
 interface Props {
 	currentScreen: Screen;
@@ -41,23 +42,31 @@ interface Props {
 }
 
 type State = {
-	menuOpen: boolean;
+	menuState: MenuState
 };
 
 const analyticsAction = 'Header';
 
-export default class HomeHeader extends React.PureComponent<Props, State> {
+export default class HomeHeader extends React.Component<Props, State> {
 	state: State = {
-		menuOpen: false,
+		menuState: MenuState.Closed,
 	};
 
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		this.props.onViewHome();
 	};
 
-	private _toggleMenu() {
-		this.setState((prevState) => ({ menuOpen: !prevState.menuOpen }));
-	}
+	private readonly _openMenu = () => {
+		this.setState({ menuState: MenuState.Opened });
+	};
+
+	private readonly _beginClosingMenu = () => {
+		this.setState({ menuState: MenuState.Closing });
+	};
+
+	private readonly _closeMenu = () => {
+		this.setState({ menuState: MenuState.Closed });
+	};
 
 	private readonly _openSignInPrompt = () => {
 		this.props.onOpenSignInPrompt(analyticsAction);
@@ -70,7 +79,7 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 	) {
 		// prevent default navigation synchronously
 		event?.preventDefault();
-		this.setState({ menuOpen: false }, () => {
+		this.setState({ menuState: MenuState.Closing }, () => {
 			// perform navigation asynchrounsly
 			navFunction(event);
 		});
@@ -82,104 +91,85 @@ export default class HomeHeader extends React.PureComponent<Props, State> {
 
 	public render() {
 		const menuLinks = [
-			// TODO: this causes the app to crash due to this.state.blogPosts.value is undefined
-			// maybe the URL format is unexpected?
-			// {
-			// 	screenKey: ScreenKey.Home,
-			// 	linkText: 'How it works',
-			// 	navFunction: () => { window.location.href = "/#how-it-works" }
-			// },
 			{
-				screenKey: ScreenKey.About,
-				linkText: 'About',
+				screenKey: ScreenKey.Home,
+				linkText: 'Article of the Day',
 			},
 			{
-				screenKey: ScreenKey.Faq,
-				linkText: 'FAQ',
+				screenKey: ScreenKey.Leaderboards,
+				linkText: 'Leaderboards',
 			},
-		];
-
-		return (
-			<header className="home-header_2afwll responsive">
-				<div className="menu-controls-container">
-					<a
-						className="logo"
-						href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
-						onClick={(event) =>
-							this.pageNavigation(this._handleLogoClick, event)
-						}
-					></a>
-					<Icon
-						className="mobile-menu-toggle"
-						name={this.state.menuOpen ? 'cross' : 'menu'}
-						onClick={this._toggleMenu.bind(this)}
-					/>
-				</div>
-				<div
-					className={classNames('menu-container', {
-						open: this.state.menuOpen,
-					})}
+			{
+				screenKey: ScreenKey.MyReads,
+				linkText: 'My Reads',
+			},
+			{
+				screenKey: ScreenKey.MyFeed,
+				linkText: 'My Feed',
+			},
+		].map((link) => (
+				<Link
+					key={link.linkText}
+					screen={link.screenKey}
+					className={
+						(this.props.currentScreen && this.props.currentScreen.key) ===
+							link.screenKey
+							? 'active'
+							: ''
+					}
+					onClick={(navRef: NavReference) =>
+						this.pageNavigation(this.props.onNavTo.bind(this, navRef))
+					}
 				>
-					<>
-						{menuLinks.map((link) => (
-							<Link
-								key={link.linkText}
-								screen={link.screenKey}
-								className={
-									(this.props.currentScreen && this.props.currentScreen.key) ===
-									link.screenKey
-										? 'active'
-										: ''
-								}
-								onClick={(navRef: NavReference) =>
-									this.pageNavigation(this.props.onNavTo.bind(this, navRef))
-								}
-							>
-								{link.linkText}
-							</Link>
-						))}
-						<Link
-							href="https://github.com/reallyreadit"
-							onClick={this.props.onNavTo}
+					{link.linkText}
+				</Link>
+			));
+		const logInButton = (
+			<Button
+				className="log-in"
+				text="Log In"
+				onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+			/>
+		);
+		return (
+			<header className="home-header_2afwll">
+				<div className="content">
+					<div className="left">
+						<a
+							className="logo"
+							href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+							onClick={(event) =>
+								this.pageNavigation(this._handleLogoClick, event)
+							}
+						></a>
+						<div
+							className="links"
 						>
-							<Icon name="github"></Icon>
-						</Link>
-						{!isMobileDevice(this.props.deviceType) ? (
-							<Button
-								text="Log In"
-								size="large"
-								onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+							{menuLinks}
+						</div>
+					</div>
+					<div className="right">
+						{logInButton}
+						<Popover
+							className="menu"
+							menuChildren={
+								<span className="content">
+									{menuLinks}
+									{logInButton}
+								</span>
+							}
+							menuPosition={MenuPosition.BottomRight}
+							menuState={this.state.menuState}
+							onBeginClosing={this._beginClosingMenu}
+							onClose={this._closeMenu}
+							onOpen={this._openMenu}
+						>
+							<Icon
+								display="block"
+								name="chevron-down"
 							/>
-						) : null}
-						{this.props.deviceType !== DeviceType.Android ? (
-							<GetStartedButton
-								analyticsAction={analyticsAction}
-								deviceType={this.props.deviceType}
-								iosPromptType="download"
-								location={this.props.currentScreen.location}
-								onBeginOnboarding={(analyticsAction: string) =>
-									this.pageNavigation(() =>
-										this.props.onBeginOnboarding(analyticsAction)
-									)
-								}
-								onCopyAppReferrerTextToClipboard={
-									this.props.onCopyAppReferrerTextToClipboard
-								}
-								onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-								onOpenNewPlatformNotificationRequestDialog={
-									this.props.onOpenNewPlatformNotificationRequestDialog
-								}
-								size="large"
-							/>
-						) : null}
-						{/* TODO PROXY EXT */}
-						{/* <Button
-							text="Download App"
-							size="large"
-							intent="loud"
-							onClick={(ev) => this.pageNavigation(() => this.props.onNavTo({ key: ScreenKey.Download }, { method: NavMethod.ReplaceAll }), ev)}
-						/> */}
-					</>
+						</Popover>
+					</div>
 				</div>
 			</header>
 		);
