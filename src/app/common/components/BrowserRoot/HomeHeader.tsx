@@ -18,7 +18,6 @@ import Button from '../../../../common/components/Button';
 import {
 	NavOptions,
 	NavReference,
-	Screen,
 	NavMethod,
 } from '../../../common/components/Root';
 import Link from '../../../../common/components/Link';
@@ -28,7 +27,6 @@ import Popover, { MenuState, MenuPosition } from '../../../../common/components/
 import Icon from '../../../../common/components/Icon';
 
 interface Props {
-	currentScreen: Screen;
 	deviceType: DeviceType;
 	onBeginOnboarding: (analyticsAction: string) => void;
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
@@ -39,6 +37,8 @@ interface Props {
 	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onViewHome: () => void;
 	onViewNotifications: () => void;
+	rootScreenKey: ScreenKey;
+	topScreenTitle: string,
 	user: UserAccount | null;
 }
 
@@ -60,6 +60,7 @@ export default class HomeHeader extends React.Component<Props, State> {
 
 	private readonly _handleLinkClick = (ref: NavReference) => {
 		this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
+		this._beginClosingMenu();
 	};
 
 	private readonly _openMenu = () => {
@@ -105,7 +106,7 @@ export default class HomeHeader extends React.Component<Props, State> {
 					key={link.linkText}
 					screen={link.screenKey}
 					className={
-						(this.props.currentScreen && this.props.currentScreen.key) ===
+						this.props.rootScreenKey ===
 							link.screenKey
 							? 'active'
 							: ''
@@ -153,8 +154,8 @@ export default class HomeHeader extends React.Component<Props, State> {
 							onClose={this._closeMenu}
 							onOpen={this._openMenu}
 						>
+							<span className="label">{this.props.topScreenTitle}</span>
 							<Icon
-								display="block"
 								name="chevron-down"
 							/>
 						</Popover>

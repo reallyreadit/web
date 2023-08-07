@@ -65,15 +65,22 @@
 	display: none;
 }
 
+.home-header_2afwll > .content > .right > .menu > .children > .label,
 .home-header_2afwll > .content > .right > .menu > .children > .icon_rour3d {
+	vertical-align: middle;
 	cursor: pointer;
+}
+
+.home-header_2afwll > .content > .right > .menu > .children > .label {
+	font-family: 'Museo Sans (500)';
+	margin-right: 0.5em;
 }
 
 .home-header_2afwll > .content > .right > .menu > .menu > .content {
 	display: flex;
 	flex-flow: column;
 	position: relative;
-	padding: 0.75em;
+	padding: 0.75em 0;
 	background: var(--content-background-color);
 }
 
@@ -81,33 +88,22 @@
 	display: inline-flex;
 	align-items: center;
 	height: 32px;
-	padding: 0 10px;
+	padding: 0 1em;
 	font-family: 'Museo Sans (500)';
 	text-decoration: none;
 
 	&.active {
-		display: none;
+		background-color: var(--button-selected-background-color);
+		color: var(--button-selected-text-color);
 	}
 }
 
+.home-header_2afwll > .content > .right > .menu > .menu > .content > .log-in {
+	margin: 0 calc(1em - 10px);
+}
+
 @media screen and (max-width: 699px) {
-	.home-header_2afwll > .content > .left {
-		justify-content: space-between;
-	}
-
-	.home-header_2afwll > .content > .left > .links > .link_ke15oa {
-		margin-left: 0;
-		margin-right: 0.5em;
-
-		&.active {
-			border-bottom: none;
-		}
-
-		&:not(.active) {
-			display: none;
-		}
-	}
-
+	.home-header_2afwll > .content > .left > .links,
 	.home-header_2afwll > .content > .right > .log-in {
 		display: none;
 	}
