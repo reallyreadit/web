@@ -1372,7 +1372,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewHome={this._viewHome}
 							onViewNotifications={this._viewNotifications}
 							onNavTo={this._navTo}
-							// navTo uses the Push navigation method, so the current screen is the last one
 							currentScreen={this.state.screens[0]}
 							user={this.state.user}
 						/>

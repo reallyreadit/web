@@ -19,6 +19,7 @@ import {
 	NavOptions,
 	NavReference,
 	Screen,
+	NavMethod,
 } from '../../../common/components/Root';
 import Link from '../../../../common/components/Link';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -53,7 +54,12 @@ export default class HomeHeader extends React.Component<Props, State> {
 	};
 
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
+		e.preventDefault();
 		this.props.onViewHome();
+	};
+
+	private readonly _handleLinkClick = (ref: NavReference) => {
+		this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
 	};
 
 	private readonly _openMenu = () => {
@@ -71,19 +77,6 @@ export default class HomeHeader extends React.Component<Props, State> {
 	private readonly _openSignInPrompt = () => {
 		this.props.onOpenSignInPrompt(analyticsAction);
 	};
-
-	// capture the page navigation and close the mobile menu
-	private pageNavigation(
-		navFunction: (e: React.MouseEvent) => void,
-		event?: React.MouseEvent
-	) {
-		// prevent default navigation synchronously
-		event?.preventDefault();
-		this.setState({ menuState: MenuState.Closing }, () => {
-			// perform navigation asynchrounsly
-			navFunction(event);
-		});
-	}
 
 	constructor(props: Props) {
 		super(props);
@@ -117,9 +110,7 @@ export default class HomeHeader extends React.Component<Props, State> {
 							? 'active'
 							: ''
 					}
-					onClick={(navRef: NavReference) =>
-						this.pageNavigation(this.props.onNavTo.bind(this, navRef))
-					}
+					onClick={this._handleLinkClick}
 				>
 					{link.linkText}
 				</Link>
@@ -128,7 +119,7 @@ export default class HomeHeader extends React.Component<Props, State> {
 			<Button
 				className="log-in"
 				text="Log In"
-				onClick={this.pageNavigation.bind(this, this._openSignInPrompt)}
+				onClick={this._openSignInPrompt}
 			/>
 		);
 		return (
@@ -138,9 +129,7 @@ export default class HomeHeader extends React.Component<Props, State> {
 						<a
 							className="logo"
 							href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
-							onClick={(event) =>
-								this.pageNavigation(this._handleLogoClick, event)
-							}
+							onClick={this._handleLogoClick}
 						></a>
 						<div
 							className="links"
