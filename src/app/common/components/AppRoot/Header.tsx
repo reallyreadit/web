@@ -85,7 +85,7 @@ export default (props: {
 				{props.currentScreen.key === ScreenKey.Profile &&
 				findRouteByKey(routes, ScreenKey.Profile)
 					.getPathParams(props.currentScreen.location.path)
-					['userName'].toLowerCase() === props.user.name.toLowerCase() ? (
+					['userName'].toLowerCase() === props.user?.name.toLowerCase() ? (
 					<div className="menu-button" onClick={props.onViewSettings}>
 						<Icon name="gear2" />
 					</div>
