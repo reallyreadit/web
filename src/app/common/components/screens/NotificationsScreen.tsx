@@ -244,7 +244,9 @@ export default function createNotificationsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Replies',
+			title: {
+				default: 'Replies'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<NotificationsScreen

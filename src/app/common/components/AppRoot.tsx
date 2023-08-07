@@ -30,7 +30,7 @@ import UserAccount, {
 } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import createCommentsScreenFactory from './AppRoot/CommentsScreen';
+import createCommentsScreenFactory from './screens/CommentsScreen';
 import createContenderScreenFactory from './AppRoot/ContendersScreen';
 import createHomeScreenFactory from './AppRoot/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
@@ -52,10 +52,10 @@ import {
 } from '../../../common/sharing/ShareEvent';
 import SemanticVersion from '../../../common/SemanticVersion';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
-import createProfileScreenFactory from './AppRoot/ProfileScreen';
+import createProfileScreenFactory from './screens/ProfileScreen';
 import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import createAotdHistoryScreenFactory from './AppRoot/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
 import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
 import OrientationWizard from './AppRoot/OrientationWizard';
@@ -74,12 +74,10 @@ import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
+import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
-import AuthorProfile from '../../../common/models/authors/AuthorProfile';
-import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
-import createBlogScreenFactory from './AppRoot/BlogScreen';
+import createBlogScreenFactory from './screens/BlogScreen';
 import {
 	TweetWebIntentParams,
 	createTweetWebIntentUrl,
@@ -149,11 +147,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			}
 		);
 	};
-	private readonly _createAuthorScreenTitle = (
-		profile: Fetchable<AuthorProfile>
-	) =>
-		formatFetchable(profile, (_) => 'Writer', 'Loading...', 'Author not found');
-	private readonly _createFaqScreenTitle = () => 'Help';
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -498,7 +491,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onCopyAppReferrerTextToClipboard: this._noop,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onCreateTitle: this._createAuthorScreenTitle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog: this._noop,
 				onGetAuthorArticles: this.props.serverApi.getAuthorArticles,
@@ -548,7 +540,10 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
+				deviceType: DeviceType.Ios,
+				onBeginOnboarding: this._noop,
 				onCloseDialog: this._dialog.closeDialog,
+				onCopyAppReferrerTextToClipboard: this._noop,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onDeleteComment: this._deleteComment,
@@ -556,6 +551,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onGetComments: this.props.serverApi.getComments,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenNewPlatformNotificationRequestDialog: this._noop,
 				onPostArticle: this._openPostDialog,
 				onPostComment: this._postComment,
 				onPostCommentAddendum: this._postCommentAddendum,
@@ -566,6 +562,8 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onRegisterCommentPostedHandler: this._registerCommentPostedEventHandler,
 				onRegisterCommentUpdatedHandler:
 					this._registerCommentUpdatedEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
+				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
@@ -593,7 +591,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
 				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog:
 					this._openNewPlatformNotificationRequestDialog,
@@ -726,8 +723,11 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
+				deviceType: DeviceType.Ios,
+				onBeginOnboarding: this._noop,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
+				onCopyAppReferrerTextToClipboard: this._noop,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onFollowUser: this._followUser,
@@ -738,6 +738,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onGetProfile: this.props.serverApi.getProfile,
 				onNavTo: this._navTo,
 				onOpenDialog: this._dialog.openDialog,
+				onOpenNewPlatformNotificationRequestDialog: this._noop,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,

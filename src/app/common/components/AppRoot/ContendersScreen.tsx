@@ -202,7 +202,9 @@ export default function <TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Contenders',
+			title: {
+				default: 'Contenders'
+			},
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<ContendersScreen

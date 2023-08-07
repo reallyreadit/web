@@ -28,9 +28,9 @@ import Rating from '../../../../common/models/Rating';
 import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-import * as classNames from 'classnames';
 import { DeviceType } from '../../../../common/DeviceType';
-import { NavReference } from '../Root';
+import { NavReference, SharedState, Screen } from '../Root';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 export interface Props {
 	deviceType: DeviceType;
@@ -54,7 +54,6 @@ export interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
-	title?: string;
 	user: UserAccount | null;
 }
 interface State {
@@ -63,7 +62,7 @@ interface State {
 	maxLength: number | null;
 	minLength: number | null;
 }
-export default class BlogScreen extends React.Component<Props, State> {
+class BlogScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
@@ -147,11 +146,6 @@ export default class BlogScreen extends React.Component<Props, State> {
 		}
 		return (
 			<ScreenContainer className="blog-screen_61pk1b">
-				<div className="controls">
-					<h1 className={classNames({ 'has-title': !!this.props.title })}>
-						{this.props.title}
-					</h1>
-				</div>
 				{this.state.articles.isLoading ? (
 					<LoadingOverlay />
 				) : (
@@ -187,4 +181,28 @@ export default class BlogScreen extends React.Component<Props, State> {
 			</ScreenContainer>
 		);
 	}
+}
+
+export default function createBlogScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+) {
+	return {
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: {
+				default: 'From the Readup Blog'
+			},
+		}),
+		render: (state: Screen, sharedState: SharedState) => (
+			<BlogScreen
+				{...{
+					...deps,
+					user: sharedState.user,
+				}}
+			/>
+		),
+	};
 }

@@ -19,7 +19,6 @@ import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import {
-	formatFetchable,
 	formatList,
 	formatCountable,
 } from '../../../../common/format';
@@ -295,6 +294,21 @@ class ReadScreen extends React.PureComponent<Props> {
 		);
 	}
 }
+function createTitle(article: Fetchable<UserArticle>) {
+	if (article.isLoading) {
+		return {
+			default: 'Loading...'
+		};
+	}
+	if (!article.value) {
+		return {
+			default: 'Article not found'
+		};
+	}
+	return {
+		default: article.value.title
+	};
+}
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: Pick<
@@ -330,11 +344,7 @@ export default function createReadScreenFactory<TScreenKey>(
 						id,
 						produce((currentState: Screen<Fetchable<UserArticle>>) => {
 							currentState.componentState = article;
-							if (article.value) {
-								currentState.title = article.value.title;
-							} else {
-								currentState.title = 'Article not found';
-							}
+							currentState.title = createTitle(article);
 						})
 					);
 				}
@@ -344,12 +354,7 @@ export default function createReadScreenFactory<TScreenKey>(
 				componentState: article,
 				key,
 				location,
-				title: formatFetchable(
-					article,
-					(article) => article.title,
-					'Loading...',
-					'Article not found.'
-				),
+				title: createTitle(article),
 			};
 		},
 		render: (

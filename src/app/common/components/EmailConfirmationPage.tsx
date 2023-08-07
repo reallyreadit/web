@@ -47,7 +47,9 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 			id,
 			key,
 			location,
-			title: 'Email Confirmation',
+			title: {
+				default: 'Email Confirmation'
+			},
 		}),
 		render: (state: Screen) => (
 			<EmailConfirmationPage

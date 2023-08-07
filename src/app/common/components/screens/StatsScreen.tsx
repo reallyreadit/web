@@ -261,7 +261,9 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey, deps: Props) {
 			id,
 			key,
 			location,
-			title: 'My Stats',
+			title: {
+				default: 'My Stats'
+			},
 		}),
 		render: () => <StatsScreen {...deps} />,
 	};

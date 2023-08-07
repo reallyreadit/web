@@ -194,7 +194,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'About',
+			title: {
+				default: 'About'
+			},
 		}),
 		render: () => React.createElement(teamPage, services),
 	};

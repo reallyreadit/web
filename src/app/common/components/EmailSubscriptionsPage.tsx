@@ -39,7 +39,9 @@ export function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Notification Preferences',
+			title: {
+				default: 'Notification Preferences'
+			},
 		}),
 		render: (state: Screen) => (
 			<EmailSubscriptionPage

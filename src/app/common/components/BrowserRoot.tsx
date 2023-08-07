@@ -30,7 +30,7 @@ import UserAccount, {
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import Menu from './BrowserRoot/Menu';
-import createCommentsScreenFactory from './BrowserRoot/CommentsScreen';
+import createCommentsScreenFactory from './screens/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
@@ -60,11 +60,11 @@ import {
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
 import createMyReadsScreenFactory from './screens/MyReadsScreen';
-import createProfileScreenFactory from './BrowserRoot/ProfileScreen';
+import createProfileScreenFactory from './screens/ProfileScreen';
 import Post from '../../../common/models/social/Post';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
-import createAotdHistoryScreenFactory from './BrowserRoot/AotdHistoryScreen';
+import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
@@ -90,15 +90,13 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import DisplayPreference, {
 	getClientDefaultDisplayPreference,
 } from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet, formatFetchable } from '../../../common/format';
+import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
-import AuthorProfile from '../../../common/models/authors/AuthorProfile';
-import Fetchable from '../../../common/Fetchable';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
-import createBlogScreenFactory from './BrowserRoot/BlogScreen';
+import createBlogScreenFactory from './screens/BlogScreen';
 import {
 	TweetWebIntentParams,
 	openTweetComposerBrowserWindow,
@@ -106,6 +104,7 @@ import {
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import Header from './BrowserRoot/Header';
+import { ScreenTitle } from '../../../common/ScreenTitle';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase;
@@ -189,16 +188,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// screens
-	private readonly _createAuthorScreenTitle = (
-		profile: Fetchable<AuthorProfile>
-	) =>
-		formatFetchable(
-			profile,
-			(profile) => `${profile.name} • Readup`,
-			'Loading...',
-			'Author not found'
-		);
-	private readonly _createFaqScreenTitle = () => 'Frequently Asked Questions';
 	private readonly _viewAdminPage = () => {
 		this.setScreenState({
 			key: ScreenKey.Admin,
@@ -515,7 +504,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onCreateTitle: (profile) => this._createAuthorScreenTitle(profile),
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog:
 					this._openNewPlatformNotificationRequestDialog,
@@ -587,7 +575,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewProfile: this._viewProfile,
 			}),
 			[ScreenKey.Faq]: createFaqScreenFactory(ScreenKey.Faq, {
-				onCreateTitle: this._createFaqScreenTitle,
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog:
 					this._openNewPlatformNotificationRequestDialog,
@@ -1020,22 +1007,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 			const screen = this.createScreen(options.key, options.urlParams, {
 					isReplacement: options.method === NavMethod.Replace,
 				}),
+				historyTitle = screen.title.seo ?? screen.title.default,
 				historyUrl = screen.location.path + (screen.location.queryString || '');
 			switch (options.method) {
 				case NavMethod.Push:
 					screens = [...this.state.screens, screen];
-					window.history.pushState(null, screen.title, historyUrl);
+					window.history.pushState(null, historyTitle, historyUrl);
 					break;
 				case NavMethod.Replace:
 					screens = this.state.screens.slice();
 					screens.splice(options.screenIndex, 1, screen);
 					if (options.screenIndex === screens.length - 1) {
-						window.history.replaceState(null, screen.title, historyUrl);
+						window.history.replaceState(null, historyTitle, historyUrl);
 					}
 					break;
 				case NavMethod.ReplaceAll:
 					screens = [screen];
-					window.history.pushState(null, screen.title, historyUrl);
+					window.history.pushState(null, historyTitle, historyUrl);
 					break;
 			}
 		}
@@ -1199,8 +1187,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onDisplayPreferenceChanged(preference, eventSource);
 	}
-	protected onLocationChanged(path: string, title?: string) {
-		window.history.replaceState(null, title || window.document.title, path);
+	protected onLocationChanged(path: string, title?: ScreenTitle) {
+		window.history.replaceState(null, title?.seo ?? title?.default ?? window.document.title, path);
 		if (title) {
 			this.props.browserApi.setTitle(title);
 		}
@@ -1214,7 +1202,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		}
 		super.onNotificationPreferenceChanged(preference);
 	}
-	protected onTitleChanged(title: string) {
+	protected onTitleChanged(title: ScreenTitle) {
 		this.props.browserApi.setTitle(title);
 	}
 	protected onUserSignedIn(
@@ -1373,7 +1361,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 							onViewNotifications={this._viewNotifications}
 							onNavTo={this._navTo}
 							rootScreenKey={this.state.screens[0].key}
-							topScreenTitle={this.state.screens[this.state.screens.length - 1].title}
+							topScreenTitle={this.state.screens[this.state.screens.length - 1].title.default}
 							user={this.state.user}
 						/>
 					)}

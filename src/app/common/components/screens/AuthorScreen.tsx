@@ -233,7 +233,6 @@ type Dependencies<TScreenKey> = Pick<
 	Props,
 	Exclude<keyof Props, 'authorSlug' | 'location' | 'profile' | 'user'>
 > & {
-	onCreateTitle: (profile: Fetchable<AuthorProfile>) => string;
 	onGetAuthorProfile: FetchFunctionWithParams<
 		AuthorProfileRequest,
 		AuthorProfile
@@ -249,6 +248,22 @@ function getSlug(location: RouteLocation) {
 	return findRouteByKey(routes, ScreenKey.Author).getPathParams(location.path)[
 		'slug'
 	];
+}
+function createTitle(profile: Fetchable<AuthorProfile>) {
+	if (profile.isLoading) {
+		return {
+			default: 'Loading...'
+		};
+	}
+	if (!profile.value) {
+		return {
+			default: 'Author not found'
+		};
+	}
+	return {
+		default: 'Writer',
+		seo: `${profile.value.name} • Readup`
+	};
 }
 export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
@@ -271,7 +286,7 @@ export default function createScreenFactory<TScreenKey>(
 							id,
 							produce((currentState: Screen<Fetchable<AuthorProfile>>) => {
 								currentState.componentState = profile;
-								currentState.title = deps.onCreateTitle(profile);
+								currentState.title = createTitle(profile);
 							})
 						);
 					}
@@ -282,7 +297,7 @@ export default function createScreenFactory<TScreenKey>(
 				componentState: profile,
 				key,
 				location,
-				title: deps.onCreateTitle(profile),
+				title: createTitle(profile),
 			};
 		},
 		render: (

@@ -271,7 +271,9 @@ export default function createSearchScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Search',
+			title: {
+				default: 'Search'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<SearchScreen

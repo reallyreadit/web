@@ -307,7 +307,10 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Readup: Social Reading',
+			title: {
+				default: 'Article of the Day',
+				seo: 'Readup: Social Reading'
+			},
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<HomeScreen

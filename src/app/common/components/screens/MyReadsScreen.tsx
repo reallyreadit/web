@@ -365,7 +365,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'My Reads',
+			title: {
+				default: 'My Reads'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyReadsScreen

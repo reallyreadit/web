@@ -200,7 +200,9 @@ export default function createBestEverScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Top of all time',
+			title: {
+				default: 'Top of all time'
+			},
 		}),
 		render: (state: Screen, sharedState: SharedState) => (
 			<BestEverScreen

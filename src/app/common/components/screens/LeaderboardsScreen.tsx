@@ -273,7 +273,6 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		return (
 			<div className="leaderboards-screen_wuzsob">
 				<Panel className="main">
-					{!this.props.user ? <h1>Leaderboards</h1> : null}
 					<HeaderSelector
 						disabled={
 							this.state.authorLeaderboards?.isLoading ||
@@ -320,7 +319,9 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Leaderboards',
+			title: {
+				default: 'Leaderboards'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<LeaderboardsScreen

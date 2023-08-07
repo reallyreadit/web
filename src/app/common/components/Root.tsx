@@ -93,8 +93,8 @@ import {
 } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { ArticleStarredEvent } from '../AppApi';
-import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
+import { ScreenTitle } from '../../../common/ScreenTitle';
 
 export interface Props {
 	captcha: CaptchaBase;
@@ -148,7 +148,7 @@ export interface Screen<T = any> {
 	componentState?: T;
 	key: ScreenKey;
 	location: RouteLocation;
-	title?: string;
+	title: ScreenTitle;
 	isReplacement?: boolean;
 }
 export interface ScreenFactory<TSharedState> {
@@ -781,14 +781,6 @@ export default abstract class Root<
 				onShowToast: this._toaster.addToast,
 				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle,
 			}),
-			[ScreenKey.Download]: createDownloadPageFactory(ScreenKey.Download, {
-				onOpenDialog: this._dialog.openDialog,
-				onCloseDialog: this._dialog.closeDialog,
-				onOpenNewPlatformNotificationRequestDialog:
-					this._openNewPlatformNotificationRequestDialog,
-				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onNavTo: this._navTo,
-			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(
 				ScreenKey.EmailConfirmation
 			),
@@ -960,7 +952,7 @@ export default abstract class Root<
 			displayTheme: preference.theme,
 		});
 	}
-	protected onLocationChanged(path: string, title?: string) {}
+	protected onLocationChanged(path: string, title?: ScreenTitle) {}
 	protected onNotificationPreferenceChanged(
 		preference: NotificationPreference
 	) {
@@ -969,7 +961,7 @@ export default abstract class Root<
 			preference
 		);
 	}
-	protected onTitleChanged(title: string) {}
+	protected onTitleChanged(title: ScreenTitle) {}
 	protected onUserSignedIn(
 		userProfile: WebAppUserProfile,
 		eventType: SignInEventType,

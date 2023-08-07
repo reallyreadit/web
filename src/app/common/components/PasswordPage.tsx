@@ -33,7 +33,9 @@ export function createScreenFactory<TScreenKey>(key: TScreenKey) {
 			id,
 			key,
 			location,
-			title: 'Password Reset',
+			title: {
+				default: 'Password Reset'
+			},
 		}),
 		render: (state: Screen) => {
 			const [, action, result] = state.location.path.match(

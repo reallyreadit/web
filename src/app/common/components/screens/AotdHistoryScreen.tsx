@@ -30,7 +30,7 @@ import HeaderSelector from '../HeaderSelector';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
 import CommunityReadSort from '../../../../common/models/CommunityReadSort';
-import { NavOptions, NavReference } from '../Root';
+import { NavOptions, NavReference, Screen, SharedState } from '../Root';
 import { DeviceType } from '../../../../common/DeviceType';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
@@ -69,7 +69,6 @@ export interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
-	title?: string;
 	user: UserAccount | null;
 }
 interface State {
@@ -79,7 +78,7 @@ interface State {
 	maxLength: number | null;
 	minLength: number | null;
 }
-export default class AotdHistoryScreen extends React.Component<Props, State> {
+class AotdHistoryScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changeList = (value: string) => {
 		const view = value as View;
@@ -208,7 +207,6 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 		}
 		return (
 			<ScreenContainer className="aotd-history-screen_lpelxe">
-				{this.props.title ? <h1>{this.props.title}</h1> : null}
 				<div className="controls">
 					<HeaderSelector
 						disabled={this.state.articles.isLoading}
@@ -252,4 +250,29 @@ export default class AotdHistoryScreen extends React.Component<Props, State> {
 			</ScreenContainer>
 		);
 	}
+}
+
+export default function createAotdHistoryScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'location' | 'user'>>
+) {
+	return {
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: {
+				default: 'Winners'
+			},
+		}),
+		render: (state: Screen, sharedState: SharedState) => (
+			<AotdHistoryScreen
+				{...{
+					...deps,
+					location: state.location,
+					user: sharedState.user,
+				}}
+			/>
+		),
+	};
 }

@@ -50,7 +50,9 @@ import { PostList } from '../PostList';
 import HeaderSelector from '../HeaderSelector';
 import { ArticleList } from '../ArticleList';
 import { ShareChannelData } from '../../../../common/sharing/ShareData';
-import AbstractFollowable from '../AbstractFollowable';
+import AbstractFollowable, { reloadProfile, updateProfile } from '../AbstractFollowable';
+import { SharedState, Screen } from '../Root';
+import produce from 'immer';
 
 interface Props {
 	deviceType: DeviceType;
@@ -145,7 +147,7 @@ const headerSelectorItems = [
 	},
 ];
 
-export class ProfileScreen extends AbstractFollowable<Props, State> {
+class ProfileScreen extends AbstractFollowable<Props, State> {
 	private readonly _changeArticles = (
 		articles: Fetchable<PageResult<UserArticle>>
 	) => {
@@ -457,5 +459,101 @@ export function getPathParams(location: RouteLocation) {
 				? pathParams['highlightedId']
 				: null,
 		userName: pathParams['userName'],
+	};
+}
+function createTitle(profile: Fetchable<Profile>, user: UserAccount | null) {
+	if (profile.isLoading) {
+		return {
+			default: 'Loading...'
+		};
+	}
+	if (!profile.value) {
+		return {
+			default: 'Profile not found'
+		};
+	}
+	return {
+		default: profile.value.userName === user?.name
+			? 'My Profile'
+			: profile.value.authorProfile
+				? 'Writer'
+				: 'Reader',
+		seo: profile.value.userName === user?.name
+			? 'My Profile'
+			: `@${profile.value.userName} • Readup`,
+	};
+}
+
+const createNewScreenState = (
+	result: Fetchable<Profile>,
+	user: UserAccount | null
+) =>
+	produce((currentState: Screen<Fetchable<Profile>>) => {
+		currentState.componentState = result;
+		currentState.title = createTitle(result, user);
+	});
+
+export default function createScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<
+		Deps,
+		Exclude<
+			keyof Deps,
+			| 'location'
+			| 'onReloadProfile'
+			| 'onUpdateProfile'
+			| 'profile'
+			| 'screenId'
+		>
+	> & {
+		onGetProfile: FetchFunctionWithParams<UserNameQuery, Profile>;
+		onSetScreenState: (
+			id: number,
+			getNextState: (currentState: Readonly<Screen>) => Partial<Screen>
+		) => void;
+	}
+) {
+	const factoryHelperDeps = {
+		...deps,
+		createNewScreenState: createNewScreenState,
+	};
+	return {
+		create: (id: number, location: RouteLocation, sharedState: SharedState) => {
+			const profile = deps.onGetProfile(
+				{
+					userName: getPathParams(location).userName,
+				},
+				(result) => {
+					deps.onSetScreenState(
+						id,
+						createNewScreenState(result, sharedState.user)
+					);
+				}
+			);
+			return {
+				id,
+				componentState: profile,
+				key,
+				location,
+				title: createTitle(profile, sharedState.user),
+			};
+		},
+		render: (state: Screen, sharedState: SharedState) => {
+			const pathParams = getPathParams(state.location);
+			return (
+				<ProfileScreen
+					{...{
+						...deps,
+						...pathParams,
+						location: state.location,
+						onReloadProfile: reloadProfile.bind(null, factoryHelperDeps),
+						onUpdateProfile: updateProfile.bind(null, factoryHelperDeps),
+						profile: state.componentState,
+						screenId: state.id,
+						userAccount: sharedState.user,
+					}}
+				/>
+			);
+		},
 	};
 }

@@ -16,6 +16,7 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import * as classNames from 'classnames';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
+import { ScreenTitle } from '../../../../common/ScreenTitle';
 
 export default (props: {
 	content?: React.ReactNode;
@@ -26,7 +27,7 @@ export default (props: {
 	onViewSettings: () => void;
 	selectedRootScreen: Screen;
 	currentScreen: Screen;
-	titles: (React.ReactNode | null)[];
+	titles: ScreenTitle[];
 	user: UserAccount | null;
 }) => {
 	let leftButton: {
@@ -70,7 +71,7 @@ export default (props: {
 				{
 					props.titles[
 						props.titles.length - (props.isTransitioningBack ? 2 : 1)
-					]
+					].default
 				}
 			</div>
 			<div className="right-content ">

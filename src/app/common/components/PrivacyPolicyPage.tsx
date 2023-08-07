@@ -308,7 +308,9 @@ export function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Privacy Policy',
+			title: {
+				default: 'Privacy Policy'
+			},
 		}),
 		render: () => <PrivacyPolicyPage onNavTo={services.onNavTo} />,
 	};

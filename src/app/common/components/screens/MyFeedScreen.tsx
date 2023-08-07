@@ -364,7 +364,9 @@ export default function createMyFeedScreenFactory<TScreenKey>(
 				componentState: profile,
 				key,
 				location,
-				title: 'My Feed',
+				title: {
+					default: 'My Feed'
+				},
 			};
 		},
 		render: (screen: Screen, sharedState: SharedState) => {

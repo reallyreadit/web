@@ -93,7 +93,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Extension Removal Feedback',
+			title: {
+				default: 'Extension Removal Feedback'
+			},
 		}),
 		render: (state: Screen) => (
 			<ExtensionRemovalScreen

@@ -531,7 +531,9 @@ export default function createSettingsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Settings',
+			title: {
+				default: 'Settings'
+			},
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage

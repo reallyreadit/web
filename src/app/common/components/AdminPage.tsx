@@ -399,7 +399,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Admin',
+			title: {
+				default: 'Admin'
+			},
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => {
 			return (

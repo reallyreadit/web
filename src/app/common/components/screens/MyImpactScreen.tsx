@@ -212,7 +212,9 @@ export function createMyImpactScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Author Distribution',
+			title: {
+				default: 'Author Distribution'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyImpactScreen

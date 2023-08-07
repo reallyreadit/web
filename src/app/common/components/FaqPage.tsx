@@ -483,9 +483,7 @@ type Props = {
 	user: UserAccount;
 };
 
-type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>> & {
-	onCreateTitle: () => string;
-};
+type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>>;
 
 const renderSettings = (props: Props): React.ReactElement<Link> | string => {
 	if (props.user) {
@@ -601,7 +599,10 @@ export function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: services.onCreateTitle(),
+			title: {
+				default: 'Help',
+				seo: 'Frequently Asked Questions'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<FaqPage

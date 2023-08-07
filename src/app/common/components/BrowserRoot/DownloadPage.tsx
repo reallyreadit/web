@@ -192,7 +192,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Download Readup',
+			title: {
+				default: 'Download Readup'
+			},
 		}),
 		render: () =>
 			React.createElement(downloadPage, {
