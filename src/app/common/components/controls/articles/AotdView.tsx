@@ -24,7 +24,6 @@ import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import { NavReference } from '../../Root';
 import { DeviceType } from '../../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../../common/sharing/ShareData';
-import Icon from '../../../../../common/components/Icon';
 import MorphingArticleDetails from '../../../../../common/components/MorphingArticleDetails';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
@@ -70,10 +69,6 @@ export default class AotdView extends React.Component<{
 	public render() {
 		return (
 			<div className="aotd-view_hgax0h">
-				<div className="section-header--aotd">
-					<Icon name="trophy" />
-					<label>Article of the Day</label>
-				</div>
 				<div className="aotd">
 					<MorphingArticleDetails
 						article={this.props.aotd}
