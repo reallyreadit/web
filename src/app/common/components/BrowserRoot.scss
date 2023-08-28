@@ -4,6 +4,9 @@
 */
 @import '../../../common/styles/colors';
 
+.browser-root_6tjc3j {
+	background-color: var(--app-background-color);
+}
 .browser-root_6tjc3j > .welcome-message {
 	flex: 0 0 auto;
 	font-family: 'Cambria (Regular)';
@@ -19,6 +22,12 @@
 	position: absolute;
 	right: 12px;
 	font-size: 20px;
+}
+.browser-root_6tjc3j > main {
+	padding: 0 20px 40px 20px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
 }
 .browser-root_6tjc3j > main > .screens > .screen {
 	display: none;
