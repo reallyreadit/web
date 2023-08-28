@@ -15,37 +15,45 @@
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/config';
 
-.home-header_2afwll {
+.home-header_2afwll > .nav {
+	position: relative;
 	background-color: var(--nav-background-color);
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 	border-bottom-color: var(--nav-border-color);
+	z-index: 2;
 }
 
-.home-header_2afwll > .content {
+.home-header_2afwll > .nav > .content {
 	display: flex;
-	justify-content: space-between;
-	padding: 15px;
+	padding: 15px 20px;
 	max-width: 980px;
 	margin: 0 auto;
 	box-sizing: border-box;
 }
 
-.home-header_2afwll > .content > .left {
-	flex: 1 1 auto;
-	display: flex;
-	align-items: center;
-}
-
-.home-header_2afwll > .content > .left > .logo {
+.home-header_2afwll > .nav > .content > .logo {
+	flex: 0 0 auto;
 	display: block;
 	background-size: contain;
 	background-repeat: no-repeat;
 	height: 32px;
 	width: 61px;
+	margin-right: 0.5em;
 }
 
-.home-header_2afwll > .content > .left > .links > .link_ke15oa {
+.home-header_2afwll > .nav > .content > .links {
+	flex: 1 1 auto;
+	display: flex;
+}
+
+.home-header_2afwll > .nav > .content > .links > .pages {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+}
+
+.home-header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
 	font-family: 'Museo Sans (500)';
 	text-decoration: none;
 	margin-left: 1em;
@@ -56,27 +64,17 @@
 	}
 }
 
-.home-header_2afwll > .content > .right {
+.home-header_2afwll > .nav > .content > .links > .auth {
 	display: flex;
 	align-items: center;
 }
 
-.home-header_2afwll > .content > .right > .menu {
+.home-header_2afwll > .nav > .content > .menu-button {
 	display: none;
+	font-size: 1.75em;
 }
 
-.home-header_2afwll > .content > .right > .menu > .children > .label,
-.home-header_2afwll > .content > .right > .menu > .children > .icon_rour3d {
-	vertical-align: middle;
-	cursor: pointer;
-}
-
-.home-header_2afwll > .content > .right > .menu > .children > .label {
-	font-family: 'Museo Sans (500)';
-	margin-right: 0.5em;
-}
-
-.home-header_2afwll > .content > .right > .menu > .menu > .content {
+.home-header_2afwll > .nav > .content > .right > .menu > .menu > .content {
 	display: flex;
 	flex-flow: column;
 	position: relative;
@@ -84,37 +82,95 @@
 	background: var(--content-background-color);
 }
 
-.home-header_2afwll > .content > .right > .menu > .menu > .content > .link_ke15oa {
-	display: inline-flex;
-	align-items: center;
-	height: 32px;
-	padding: 0 1em;
-	font-family: 'Museo Sans (500)';
-	text-decoration: none;
-
-	&.active {
-		background-color: var(--button-selected-background-color);
-		color: var(--button-selected-text-color);
-	}
-}
-
-.home-header_2afwll > .content > .right > .menu > .menu > .content > .log-in {
+.home-header_2afwll > .nav > .content > .right > .menu > .menu > .content > .log-in {
 	margin: 0 calc(1em - 10px);
 }
 
+.home-header_2afwll > .title {
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+}
+
+.home-header_2afwll > .title > .content {
+	padding: 20px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+
+.home-header_2afwll.hide-landscape-title > .title {
+	height: 40px;
+}
+
+.home-header_2afwll.hide-landscape-title > .title > .content {
+	display: none;
+}
+
 @media screen and (max-width: 699px) {
-	.home-header_2afwll > .content > .left > .links,
-	.home-header_2afwll > .content > .right > .log-in {
-		display: none;
+	.home-header_2afwll > .nav > .content {
+		justify-content: space-between;
+    	align-items: center;
 	}
 
-	.home-header_2afwll > .content > .right > .menu {
-		display: inline-block;
+	.home-header_2afwll > .nav > .content > .links {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		flex-flow: column;
+		background-color: var(--nav-background-color);
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: var(--nav-border-color);
+	}
+
+	.home-header_2afwll > .nav.menu-open > .content > .links {
+		display: flex;
+	}
+
+	.home-header_2afwll > .nav > .content > .links > .pages {
+		flex-flow: column;
+	}
+
+	.home-header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0;
+		height: 60px;
+		font-family: 'Museo Sans (700)';
+		font-size: 15pt;
+
+		&.active {
+			border-bottom: none;
+		}
+	}
+
+	.home-header_2afwll > .nav > .content > .links > .auth {
+		justify-content: center;
+	}
+
+	.home-header_2afwll > .nav > .content > .links > .auth > .log-in {
+		height: 60px;
+		font-family: 'Museo Sans (700)';
+		font-size: 15pt;
+	}
+
+	.home-header_2afwll > .nav > .content > .menu-button {
+		display: block;
+	}
+
+	.home-header_2afwll.hide-landscape-title > .title {
+		height: auto;
+	}
+
+	.home-header_2afwll.hide-landscape-title > .title > .content {
+		display: block;
 	}
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .home-header_2afwll > .content > .left > .logo {
+	#{$root} .home-header_2afwll > .nav > .content > .logo {
 		@if $scheme == light {
 			background-image: url(create-url(
 				map-get($readup-config, 'static-server'),
