@@ -32,7 +32,6 @@ import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ScreenContainer from '../ScreenContainer';
 import PageResult from '../../../../common/models/PageResult';
 import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
@@ -238,7 +237,7 @@ class HomeScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="home-screen_1sjipy">
+			<div className="home-screen_1sjipy">
 				{this.state.newAotd ? (
 					<UpdateBanner
 						isBusy={this.state.isLoadingNewItems}
@@ -287,7 +286,7 @@ class HomeScreen extends React.Component<Props, State> {
 						onChange={this._changePage}
 					/>
 				) : null}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

@@ -24,7 +24,6 @@ import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
 import ArticleQuery from '../../../../common/models/articles/ArticleQuery';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import HeaderSelector from '../HeaderSelector';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
@@ -206,7 +205,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="aotd-history-screen_lpelxe">
+			<div className="aotd-history-screen_lpelxe">
 				<div className="controls">
 					<HeaderSelector
 						disabled={this.state.articles.isLoading}
@@ -247,7 +246,7 @@ class AotdHistoryScreen extends React.Component<Props, State> {
 						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

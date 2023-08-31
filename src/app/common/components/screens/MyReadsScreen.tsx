@@ -16,7 +16,6 @@ import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -297,7 +296,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="my-reads-screen_56ihtk">
+			<div className="my-reads-screen_56ihtk">
 				{this.state.newStarsCount ? (
 					<UpdateBanner
 						isBusy
@@ -351,7 +350,7 @@ class MyReadsScreen extends React.Component<Props, State> {
 				) : (
 					<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

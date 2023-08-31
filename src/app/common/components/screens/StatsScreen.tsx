@@ -11,7 +11,6 @@
 import * as React from 'react';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import ScreenContainer from '../ScreenContainer';
 import ReadingTimeTotalsTimeWindow from '../../../../common/models/stats/ReadingTimeTotalsTimeWindow';
 import { FetchFunctionWithParams } from '../../serverApi/ServerApi';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -177,7 +176,7 @@ class StatsScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="stats-screen_mqbxl8">
+			<div className="stats-screen_mqbxl8">
 				<div className="reading-time">
 					<form autoComplete="off">
 						<span className="title">Time Spent Reading</span>
@@ -251,7 +250,7 @@ class StatsScreen extends React.Component<Props, State> {
 					)}
 					<ChartKey item1="Total" item2="To Completion" />
 				</div>
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

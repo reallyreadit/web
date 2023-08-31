@@ -25,7 +25,6 @@ import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
 import { DeviceType } from '../../../../common/DeviceType';
@@ -145,7 +144,7 @@ class BlogScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="blog-screen_61pk1b">
+			<div className="blog-screen_61pk1b">
 				{this.state.articles.isLoading ? (
 					<LoadingOverlay />
 				) : (
@@ -178,7 +177,7 @@ class BlogScreen extends React.Component<Props, State> {
 						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

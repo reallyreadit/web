@@ -15,7 +15,6 @@ import AsyncTracker from '../../../common/AsyncTracker';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { Screen } from './Root';
 import RouteLocation from '../../../common/routing/RouteLocation';
-import ScreenContainer from './ScreenContainer';
 import NotificationPreference from '../../../common/models/notifications/NotificationPreference';
 import NotificationPreferencesControl from './controls/NotificationPreferencesControl';
 
@@ -80,32 +79,30 @@ export default class EmailSubscriptionPage extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<ScreenContainer>
-				<div className="email-subscriptions-page_tqh2pd">
-					{this.state.request ? (
-						this.state.request.isLoading ? (
-							<span>Loading...</span>
-						) : this.state.request.value.isValid ? (
-							<>
-								<div className="address">
-									<span>
-										Notification settings for:{' '}
-										{this.state.request.value.emailAddress}
-									</span>
-								</div>
-								<NotificationPreferencesControl
-									preference={this.state.request.value.preference}
-									onChangeNotificationPreference={this._saveChanges}
-								/>
-							</>
-						) : (
-							<strong>Invalid token</strong>
-						)
+			<div className="email-subscriptions-page_tqh2pd">
+				{this.state.request ? (
+					this.state.request.isLoading ? (
+						<span>Loading...</span>
+					) : this.state.request.value.isValid ? (
+						<>
+							<div className="address">
+								<span>
+									Notification settings for:{' '}
+									{this.state.request.value.emailAddress}
+								</span>
+							</div>
+							<NotificationPreferencesControl
+								preference={this.state.request.value.preference}
+								onChangeNotificationPreference={this._saveChanges}
+							/>
+						</>
 					) : (
 						<strong>Invalid token</strong>
-					)}
-				</div>
-			</ScreenContainer>
+					)
+				) : (
+					<strong>Invalid token</strong>
+				)}
+			</div>
 		);
 	}
 }

@@ -9,7 +9,6 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import {
 	FetchFunction,
@@ -188,14 +187,14 @@ class MyImpactScreen extends React.Component<Props, State> {
 			return <LoadingOverlay />;
 		}
 		return (
-			<ScreenContainer
+			<div
 				className={classNames('my-impact-screen_n8wfkf', {
 					'fade-in':
 						!this.state.hasChangedReportType && this.state.summary.value,
 				})}
 			>
 				{this.renderContent()}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

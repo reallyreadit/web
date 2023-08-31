@@ -9,7 +9,6 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import ScreenContainer from '../ScreenContainer';
 import Post from '../../../../common/models/social/Post';
 import Fetchable from '../../../../common/Fetchable';
 import LoadingOverlay from '../controls/LoadingOverlay';
@@ -181,7 +180,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="notifications-screen_qjaly4">
+			<div className="notifications-screen_qjaly4">
 				{this.state.newItemCount ? (
 					<UpdateBanner
 						isBusy={this.state.isLoadingNewItems}
@@ -231,7 +230,7 @@ class NotificationsScreen extends React.Component<Props, State> {
 						</StickyNote>
 					</CenteringContainer>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

@@ -21,7 +21,6 @@ import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncLink from './controls/AsyncLink';
-import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Fetchable from '../../../common/Fetchable';
 import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
@@ -274,7 +273,7 @@ class SettingsPage extends React.PureComponent<
 	public render() {
 		const user = this.props.user;
 		return (
-			<ScreenContainer className="settings-page_ejwkk">
+			<div className="settings-page_ejwkk">
 				{this.props.user.role === UserAccountRole.Admin ? (
 					<Button
 						onClick={() => this.props.onNavTo({ key: ScreenKey.Admin })}
@@ -518,7 +517,7 @@ class SettingsPage extends React.PureComponent<
 						</div>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

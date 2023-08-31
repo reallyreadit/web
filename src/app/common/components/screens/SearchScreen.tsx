@@ -17,7 +17,6 @@ import CommentThread from '../../../../common/models/CommentThread';
 import UserAccount from '../../../../common/models/UserAccount';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import { SharedState, Screen } from '../Root';
-import ScreenContainer from '../ScreenContainer';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import SearchOptions from '../../../../common/models/articles/SearchOptions';
 import { FetchFunction } from '../../serverApi/ServerApi';
@@ -202,7 +201,7 @@ class SearchScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="search-screen_cdqndl">
+			<div className="search-screen_cdqndl">
 				<ContentBox className="filters">
 					<MultiSelectFilter
 						onChange={this._changeSources}
@@ -257,7 +256,7 @@ class SearchScreen extends React.Component<Props, State> {
 						<div className="no-results">No articles found.</div>
 					)
 				) : null}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

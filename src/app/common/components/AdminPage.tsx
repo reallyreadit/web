@@ -22,7 +22,6 @@ import UserAccount from '../../../common/models/UserAccount';
 import { Intent } from '../../../common/components/Toaster';
 import AsyncTracker from '../../../common/AsyncTracker';
 import { Screen, SharedState, NavReference } from './Root';
-import ScreenContainer from './ScreenContainer';
 import { FetchFunctionWithParams, FetchFunction } from '../serverApi/ServerApi';
 import DailyTotalsReportRow from '../../../common/models/analytics/DailyTotalsReportRow';
 import RouteLocation from '../../../common/routing/RouteLocation';
@@ -176,217 +175,215 @@ class AdminPage extends React.Component<
 	}
 	public render() {
 		return (
-			<ScreenContainer>
-				<div className="admin-page_czkowo">
-					<h2>Stats</h2>
-					<table>
-						<caption>
-							<div className="content">
-								<strong>User Stats</strong>
-							</div>
-						</caption>
-						<tbody>
-							{!this.state.userStats.isLoading ? (
-								this.state.userStats.value ? (
-									[
-										<tr key="total">
-											<th>Total Count</th>
-											<td>{this.state.userStats.value.totalCount}</td>
-										</tr>,
-										<tr key="confirmed">
-											<th>Confirmed Count</th>
-											<td>{this.state.userStats.value.confirmedCount}</td>
-										</tr>,
-									]
-								) : (
-									<tr>
-										<td>Error loading stats.</td>
-									</tr>
-								)
+			<div className="admin-page_czkowo">
+				<h2>Stats</h2>
+				<table>
+					<caption>
+						<div className="content">
+							<strong>User Stats</strong>
+						</div>
+					</caption>
+					<tbody>
+						{!this.state.userStats.isLoading ? (
+							this.state.userStats.value ? (
+								[
+									<tr key="total">
+										<th>Total Count</th>
+										<td>{this.state.userStats.value.totalCount}</td>
+									</tr>,
+									<tr key="confirmed">
+										<th>Confirmed Count</th>
+										<td>{this.state.userStats.value.confirmedCount}</td>
+									</tr>,
+								]
 							) : (
 								<tr>
-									<td>Loading...</td>
+									<td>Error loading stats.</td>
 								</tr>
-							)}
-						</tbody>
-					</table>
-					<h2>Reports</h2>
-					<RevenueReport onGetRevenueReport={this.props.onGetRevenueReport} />
-					<ConversionsReport onGetConversions={this.props.onGetConversions} />
-					<WeeklyUserActivityReport
-						onGetWeeklyUserActivityReport={
-							this.props.onGetWeeklyUserActivityReport
-						}
-					/>
-					<DailyTotalsReport onGetDailyTotals={this.props.onGetDailyTotals} />
-					<SignupsReport onGetSignups={this.props.onGetSignups} />
-					<ArticleIssuesReport
-						onGetArticleIssueReports={this.props.onGetArticleIssueReports}
-					/>
-					<PayoutReport onGetPayoutReport={this.props.onGetPayoutReport} />
-					<h2>Tools</h2>
-					<AuthorUserAccountControl
-						onAssignUserAccountToAuthor={this.props.onAssignUserAccountToAuthor}
-						onShowToast={this.props.onShowToast}
-					/>
-					<ArticleAuthorControl
-						onAssignAuthorToArticle={this.props.onAssignAuthorToArticle}
-						onShowToast={this.props.onShowToast}
-						onUnassignAuthorFromArticle={this.props.onUnassignAuthorFromArticle}
-					/>
-					<table>
-						<caption>
-							<div className="content">
-								<strong>Article Author Assignment Queue</strong>
-								<div>
-									<button onClick={this._fetchAuthorMetadataAssignmentQueue}>
-										Run Report
-									</button>
-								</div>
-							</div>
-						</caption>
-						<thead>
+							)
+						) : (
 							<tr>
-								<th>Title</th>
-								<th>Publisher URL</th>
-								<th>Authors</th>
-								<th>Length</th>
+								<td>Loading...</td>
 							</tr>
-						</thead>
-						<tbody>
-							{this.state.authorMetadataAssignmentQueueResponse ? (
-								this.state.authorMetadataAssignmentQueueResponse.isLoading ? (
-									<tr>
-										<td colSpan={4}>Loading...</td>
-									</tr>
-								) : this.state.authorMetadataAssignmentQueueResponse.value ? (
-									this.state.authorMetadataAssignmentQueueResponse.value
-										.articles.length ? (
-										this.state.authorMetadataAssignmentQueueResponse.value.articles.map(
-											(article) => {
-												const [sourceSlug, articleSlug] =
-													article.slug.split('_');
-												return (
-													<tr key={article.id}>
-														<td>
-															<Link
-																screen={ScreenKey.Comments}
-																params={{ sourceSlug, articleSlug }}
-																onClick={this.props.onNavTo}
-																text={truncateText(article.title, 30)}
-															/>
-														</td>
-														<td>
-															<Link
-																href={article.url}
-																onClick={this.props.onNavTo}
-																text={truncateText(article.url, 30)}
-															/>
-														</td>
-														<td>
-															{article.articleAuthors
-																.map((author) => author.slug)
-																.join(' ')}
-														</td>
-														<td>
-															{calculateEstimatedReadTime(article.wordCount)}{' '}
-															min.
-														</td>
-													</tr>
-												);
-											}
-										)
-									) : (
-										<tr>
-											<td colSpan={4}>Queue is empty. Good job!</td>
-										</tr>
+						)}
+					</tbody>
+				</table>
+				<h2>Reports</h2>
+				<RevenueReport onGetRevenueReport={this.props.onGetRevenueReport} />
+				<ConversionsReport onGetConversions={this.props.onGetConversions} />
+				<WeeklyUserActivityReport
+					onGetWeeklyUserActivityReport={
+						this.props.onGetWeeklyUserActivityReport
+					}
+				/>
+				<DailyTotalsReport onGetDailyTotals={this.props.onGetDailyTotals} />
+				<SignupsReport onGetSignups={this.props.onGetSignups} />
+				<ArticleIssuesReport
+					onGetArticleIssueReports={this.props.onGetArticleIssueReports}
+				/>
+				<PayoutReport onGetPayoutReport={this.props.onGetPayoutReport} />
+				<h2>Tools</h2>
+				<AuthorUserAccountControl
+					onAssignUserAccountToAuthor={this.props.onAssignUserAccountToAuthor}
+					onShowToast={this.props.onShowToast}
+				/>
+				<ArticleAuthorControl
+					onAssignAuthorToArticle={this.props.onAssignAuthorToArticle}
+					onShowToast={this.props.onShowToast}
+					onUnassignAuthorFromArticle={this.props.onUnassignAuthorFromArticle}
+				/>
+				<table>
+					<caption>
+						<div className="content">
+							<strong>Article Author Assignment Queue</strong>
+							<div>
+								<button onClick={this._fetchAuthorMetadataAssignmentQueue}>
+									Run Report
+								</button>
+							</div>
+						</div>
+					</caption>
+					<thead>
+						<tr>
+							<th>Title</th>
+							<th>Publisher URL</th>
+							<th>Authors</th>
+							<th>Length</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.authorMetadataAssignmentQueueResponse ? (
+							this.state.authorMetadataAssignmentQueueResponse.isLoading ? (
+								<tr>
+									<td colSpan={4}>Loading...</td>
+								</tr>
+							) : this.state.authorMetadataAssignmentQueueResponse.value ? (
+								this.state.authorMetadataAssignmentQueueResponse.value
+									.articles.length ? (
+									this.state.authorMetadataAssignmentQueueResponse.value.articles.map(
+										(article) => {
+											const [sourceSlug, articleSlug] =
+												article.slug.split('_');
+											return (
+												<tr key={article.id}>
+													<td>
+														<Link
+															screen={ScreenKey.Comments}
+															params={{ sourceSlug, articleSlug }}
+															onClick={this.props.onNavTo}
+															text={truncateText(article.title, 30)}
+														/>
+													</td>
+													<td>
+														<Link
+															href={article.url}
+															onClick={this.props.onNavTo}
+															text={truncateText(article.url, 30)}
+														/>
+													</td>
+													<td>
+														{article.articleAuthors
+															.map((author) => author.slug)
+															.join(' ')}
+													</td>
+													<td>
+														{calculateEstimatedReadTime(article.wordCount)}{' '}
+														min.
+													</td>
+												</tr>
+											);
+										}
 									)
 								) : (
 									<tr>
-										<td colSpan={4}>Error loading queue.</td>
+										<td colSpan={4}>Queue is empty. Good job!</td>
 									</tr>
 								)
 							) : (
 								<tr>
-									<td colSpan={4}>Click "Run Report" to load queue.</td>
+									<td colSpan={4}>Error loading queue.</td>
 								</tr>
-							)}
-						</tbody>
-					</table>
-					<table>
-						<caption>
-							<div className="content">
-								<strong>Bulk Mailings</strong>
-								<Link
-									iconLeft="plus"
-									text="Create"
-									onClick={this._openCreateMailingDialog}
-								/>
-							</div>
-						</caption>
-						<thead>
+							)
+						) : (
 							<tr>
-								<th>Date Sent</th>
-								<th>Subject</th>
-								<th>Body</th>
-								<th>Type</th>
-								<th>Subscription Status</th>
-								<th>Free-for-life Status</th>
-								<th>User Created After</th>
-								<th>User Created Before</th>
-								<th>Sent By</th>
-								<th>Recipient Count</th>
+								<td colSpan={4}>Click "Run Report" to load queue.</td>
 							</tr>
-						</thead>
-						<tbody>
-							{!this.state.mailings.isLoading ? (
-								this.state.mailings.value ? (
-									this.state.mailings.value.length ? (
-										this.state.mailings.value.map((m) => (
-											<tr key={m.id}>
-												<td>{m.dateSent}</td>
-												<td>{m.subject}</td>
-												<td>{m.body}</td>
-												<td>{m.type}</td>
-												<td>
-													{m.subscriptionStatusFilter != null
-														? bulkMailingSubscriptionStatusLabels[
-																m.subscriptionStatusFilter
-														  ]
-														: 'Any'}
-												</td>
-												<td>
-													{m.freeForLifeFilter != null
-														? m.freeForLifeFilter
-															? 'Free-for-life'
-															: 'Not Free-for-life'
-														: 'Any'}
-												</td>
-												<td>{m.userCreatedAfterFilter}</td>
-												<td>{m.userCreatedBeforeFilter}</td>
-												<td>{m.userAccount}</td>
-												<td>{m.recipientCount}</td>
-											</tr>
-										))
-									) : (
-										<tr>
-											<td colSpan={10}>No mailings found.</td>
+						)}
+					</tbody>
+				</table>
+				<table>
+					<caption>
+						<div className="content">
+							<strong>Bulk Mailings</strong>
+							<Link
+								iconLeft="plus"
+								text="Create"
+								onClick={this._openCreateMailingDialog}
+							/>
+						</div>
+					</caption>
+					<thead>
+						<tr>
+							<th>Date Sent</th>
+							<th>Subject</th>
+							<th>Body</th>
+							<th>Type</th>
+							<th>Subscription Status</th>
+							<th>Free-for-life Status</th>
+							<th>User Created After</th>
+							<th>User Created Before</th>
+							<th>Sent By</th>
+							<th>Recipient Count</th>
+						</tr>
+					</thead>
+					<tbody>
+						{!this.state.mailings.isLoading ? (
+							this.state.mailings.value ? (
+								this.state.mailings.value.length ? (
+									this.state.mailings.value.map((m) => (
+										<tr key={m.id}>
+											<td>{m.dateSent}</td>
+											<td>{m.subject}</td>
+											<td>{m.body}</td>
+											<td>{m.type}</td>
+											<td>
+												{m.subscriptionStatusFilter != null
+													? bulkMailingSubscriptionStatusLabels[
+															m.subscriptionStatusFilter
+														]
+													: 'Any'}
+											</td>
+											<td>
+												{m.freeForLifeFilter != null
+													? m.freeForLifeFilter
+														? 'Free-for-life'
+														: 'Not Free-for-life'
+													: 'Any'}
+											</td>
+											<td>{m.userCreatedAfterFilter}</td>
+											<td>{m.userCreatedBeforeFilter}</td>
+											<td>{m.userAccount}</td>
+											<td>{m.recipientCount}</td>
 										</tr>
-									)
+									))
 								) : (
 									<tr>
-										<td colSpan={10}>Error loading mailings.</td>
+										<td colSpan={10}>No mailings found.</td>
 									</tr>
 								)
 							) : (
 								<tr>
-									<td colSpan={10}>Loading...</td>
+									<td colSpan={10}>Error loading mailings.</td>
 								</tr>
-							)}
-						</tbody>
-					</table>
-				</div>
-			</ScreenContainer>
+							)
+						) : (
+							<tr>
+								<td colSpan={10}>Loading...</td>
+							</tr>
+						)}
+					</tbody>
+				</table>
+			</div>
 		);
 	}
 }

@@ -26,7 +26,6 @@ import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import Alert from '../../../../common/models/notifications/Alert';
 import UpdateBanner from '../../../../common/components/UpdateBanner';
@@ -279,7 +278,7 @@ class HomeScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="home-screen_an7vm5">
+			<div className="home-screen_an7vm5">
 				{/* TODO: this has not been tested yet */}
 				{this.state.newAotd ? (
 					<UpdateBanner
@@ -397,7 +396,7 @@ class HomeScreen extends React.Component<Props, State> {
 						<AsyncLink text="Show more" onClick={this._loadMore} />
 					</div>
 				) : null}
-			</ScreenContainer>
+			</div>
 		);
 	}
 

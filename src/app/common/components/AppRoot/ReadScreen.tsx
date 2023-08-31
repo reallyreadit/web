@@ -21,7 +21,6 @@ import UserAccount from '../../../../common/models/UserAccount';
 import produce from 'immer';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import ScreenContainer from '../ScreenContainer';
 import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 import Button from '../../../../common/components/Button';
 import InfoBox from '../../../../common/components/InfoBox';
@@ -65,7 +64,7 @@ class ReadScreen extends React.PureComponent<Props> {
 			);
 		}
 		return (
-			<ScreenContainer className="read-screen_rfbmah">
+			<div className="read-screen_rfbmah">
 				<div className="spacer" />
 				<div className="read-question">
 					{/* NOTE: trialing the subscription here means that the reader is out of free views,
@@ -139,7 +138,7 @@ class ReadScreen extends React.PureComponent<Props> {
 						</div>
 					</div>
 				</div>
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

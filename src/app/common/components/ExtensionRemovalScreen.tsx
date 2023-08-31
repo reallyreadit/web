@@ -9,7 +9,6 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import ScreenContainer from './ScreenContainer';
 import Button from '../../../common/components/Button';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import { parseQueryString } from '../../../common/routing/queryString';
@@ -54,7 +53,7 @@ class ExtensionRemovalScreen extends React.PureComponent<
 	}
 	public render() {
 		return (
-			<ScreenContainer className="extension-removal-screen_6csgkd">
+			<div className="extension-removal-screen_6csgkd">
 				{!this.props.installationId ||
 				this.state.formSubmissionStatus === 'submitted' ? (
 					<strong>Thank you for your feedback.</strong>
@@ -80,7 +79,7 @@ class ExtensionRemovalScreen extends React.PureComponent<
 						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

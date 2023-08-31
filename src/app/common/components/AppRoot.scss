@@ -49,6 +49,7 @@
 	max-width: 980px;
 	margin: 0 auto;
 	box-sizing: border-box;
+	min-height: 100%;
 }
 
 @include from(tablet-landscape) {

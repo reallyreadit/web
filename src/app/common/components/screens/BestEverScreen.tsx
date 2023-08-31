@@ -22,7 +22,6 @@ import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
@@ -148,7 +147,7 @@ export class BestEverScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="best-ever-screen_bmdeo1">
+			<div className="best-ever-screen_bmdeo1">
 				{this.props.title ? <h1>{this.props.title}</h1> : null}
 				{this.state.communityReads.isLoading ? (
 					<LoadingOverlay />
@@ -186,7 +185,7 @@ export class BestEverScreen extends React.Component<Props, State> {
 						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

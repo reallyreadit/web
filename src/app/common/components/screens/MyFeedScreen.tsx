@@ -24,7 +24,6 @@ import {
 	FetchFunction,
 	FetchFunctionWithParams,
 } from '../../serverApi/ServerApi';
-import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import List from '../controls/List';
 import PostDetails from '../../../../common/components/PostDetails';
@@ -214,7 +213,7 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="my-feed-screen_921ddo">
+			<div className="my-feed-screen_921ddo">
 				{this.state.newItemCount ? (
 					<UpdateBanner
 						isBusy={this.state.isLoadingNewItems}
@@ -303,7 +302,7 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 						</StickyNote>
 					</CenteringContainer>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }

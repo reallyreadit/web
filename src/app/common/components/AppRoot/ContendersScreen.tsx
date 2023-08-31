@@ -24,7 +24,6 @@ import CommunityReadSort from '../../../../common/models/CommunityReadSort';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ArticleUpdatedEvent from '../../../../common/models/ArticleUpdatedEvent';
-import ScreenContainer from '../ScreenContainer';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import Rating from '../../../../common/models/Rating';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
@@ -163,7 +162,7 @@ class ContendersScreen extends React.Component<Props, State> {
 			);
 		}
 		return (
-			<ScreenContainer className="contenders-screen_2yh8r3">
+			<div className="contenders-screen_2yh8r3">
 				<ContendersView
 					articles={this.state.communityReads.value.articles}
 					deviceType={this.props.deviceType}
@@ -189,7 +188,7 @@ class ContendersScreen extends React.Component<Props, State> {
 						<AsyncLink text="Show more" onClick={this._loadMore} />
 					</div>
 				) : null}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
