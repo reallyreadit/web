@@ -640,10 +640,8 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCloseDialog: this._dialog.closeDialog,
 					onCreateAbsoluteUrl: this._createAbsoluteUrl,
 					onCreateStaticContentUrl: this._createStaticContentUrl,
-					onGetAuthorsEarningsReport:
-						this.props.serverApi.getAuthorsEarningsReport,
-					onOpenNewPlatformNotificationRequestDialog:
-						this._openNewPlatformNotificationRequestDialog,
+					onGetAuthorLeaderboards: this.props.serverApi.getAuthorLeaderboards,
+					onOpenNewPlatformNotificationRequestDialog: this._openNewPlatformNotificationRequestDialog,
 					onGetReaderLeaderboards: this.props.serverApi.getLeaderboards,
 					onNavTo: this._navTo,
 					onOpenDialog: this._dialog.openDialog,

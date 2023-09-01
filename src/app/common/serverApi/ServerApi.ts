@@ -71,6 +71,8 @@ import ArticleIssuesReportRow from '../../../common/models/analytics/ArticleIssu
 import AuthorArticleQuery from '../../../common/models/articles/AuthorArticleQuery';
 import AuthorProfileRequest from '../../../common/models/authors/AuthorProfileRequest';
 import AuthorProfile from '../../../common/models/authors/AuthorProfile';
+import AuthorLeaderboardsRequest from '../../../common/models/stats/AuthorLeaderboardsRequest';
+import AuthorRanking from '../../../common/models/AuthorRanking';
 import SearchOptions from '../../../common/models/articles/SearchOptions';
 import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
@@ -83,10 +85,6 @@ import {
 	AuthorUnassignmentRequest,
 } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorMetadataAssignmentQueueResponse } from '../../../common/models/analytics/AuthorMetadataAssignmentQueue';
-import {
-	AuthorsEarningsReportResponse,
-	AuthorsEarningsReportRequest,
-} from '../../../common/models/subscriptions/AuthorEarningsReport';
 import { RevenueReportResponse as AdminRevenueReportResponse } from '../../../common/models/analytics/RevenueReport';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { WeeklyUserActivityReport } from '../../../common/models/analytics/WeeklyUserActivityReport';
@@ -403,6 +401,7 @@ export default abstract class {
 		this.post({ path: '/Social/Unfollow', data });
 
 	// Stats
+	public readonly getAuthorLeaderboards = this.createFetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>('/Stats/AuthorLeaderboards');
 	public readonly getReadingTimeStats = this.createFetchFunctionWithParams<
 		{ timeWindow: ReadingTimeTotalsTimeWindow },
 		ReadingTimeStats
@@ -415,10 +414,6 @@ export default abstract class {
 	}>('/Stats/UserCount');
 
 	// Subscriptions
-	public readonly getAuthorsEarningsReport = this.createFetchFunctionWithParams<
-		AuthorsEarningsReportRequest,
-		AuthorsEarningsReportResponse
-	>('/Subscriptions/AuthorsEarningsReport');
 	public readonly getPayoutReport = this.createFetchFunctionWithParams<
 		PayoutReportRequest,
 		PayoutReportResponse
