@@ -9,43 +9,48 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
-	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow/InstallExtensionStep
-	cssComponentId: install-extension-step_gudkmn
+	componentPath: src/app/common/components/BrowserRoot/OnboardingFlow/ExtensionInstalledStep
+	cssComponentId: extension-installed-step_k3sj2r
 */
-@import '../../../../../common/styles/colors';
+@import '../../../../common/styles/colors';
 
-.install-extension-step_gudkmn {
+.extension-installed-step_k3sj2r {
 	text-align: center;
 }
-.install-extension-step_gudkmn > h1 {
+.extension-installed-step_k3sj2r > h1 {
 	font-size: 30pt;
 	font-family: 'Museo Sans (500)';
 	margin-bottom: 25px;
 }
-.install-extension-step_gudkmn > h2 {
+.extension-installed-step_k3sj2r > h2 {
 	font-size: 20pt;
 	font-family: 'Museo Sans (500)';
+	margin-bottom: 15px;
 }
-.install-extension-step_gudkmn > h2 + h2 {
-	margin-top: 25px;
+.extension-installed-step_k3sj2r > .extension-button-image_dr3we4 {
+	display: block;
+	margin: 0 auto 15px auto;
 }
-.install-extension-step_gudkmn > h3 {
+.extension-installed-step_k3sj2r > h3 {
 	font-size: 15pt;
 	font-family: 'Museo Sans (500)';
 	margin: 25px 0 15px 0;
 }
-.install-extension-step_gudkmn > p {
+.extension-installed-step_k3sj2r > p {
 	margin: 15px 0;
 }
-.install-extension-step_gudkmn > img {
+.extension-installed-step_k3sj2r > img {
 	border-style: solid;
 	border-width: 1px;
-	width: 300px;
-	height: 180px;
+	width: 170px;
+	height: 110px;
+}
+.extension-installed-step_k3sj2r > img + img {
+	margin-left: 25px;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .install-extension-step_gudkmn > img {
+	#{$root} .extension-installed-step_k3sj2r > img {
 		@include theme-colors(
 			$scheme,
 			(

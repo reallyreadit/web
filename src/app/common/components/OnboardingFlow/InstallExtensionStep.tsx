@@ -14,10 +14,10 @@ import {
 	isCompatibleBrowser,
 	getExtensionName,
 	getStoreUrl,
-} from '../../../../../common/DeviceType';
-import Button from '../../../../../common/components/Button';
+} from '../../../../common/DeviceType';
+import Button from '../../../../common/components/Button';
 import * as Cookies from 'js-cookie';
-import { extensionInstallationRedirectPathCookieKey } from '../../../../../common/cookies';
+import { extensionInstallationRedirectPathCookieKey } from '../../../../common/cookies';
 
 interface Props {
 	deviceType: DeviceType;

@@ -9,8 +9,8 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import Button from '../../../../../common/components/Button';
-import InputField from '../../../../../common/components/controls/InputField';
+import Button from '../../../../common/components/Button';
+import InputField from '../../../../common/components/controls/InputField';
 
 interface Props {
 	email: string;

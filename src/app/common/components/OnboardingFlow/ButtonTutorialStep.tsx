@@ -9,8 +9,8 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import AdFreeAnimation from '../AdFreeAnimation';
-import Button from '../../../../../common/components/Button';
+import AdFreeAnimation from '../BrowserRoot/AdFreeAnimation';
+import Button from '../../../../common/components/Button';
 
 export default (props: {
 	onContinue: () => void;

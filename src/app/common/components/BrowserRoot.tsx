@@ -75,7 +75,7 @@ import { extensionInstallationRedirectPathCookieKey } from '../../../common/cook
 import OnboardingFlow, {
 	Props as OnboardingProps,
 	Step as OnboardingStep,
-} from './BrowserRoot/OnboardingFlow';
+} from './OnboardingFlow';
 import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import {

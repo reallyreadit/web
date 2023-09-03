@@ -9,9 +9,9 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import TrackingAnimation from '../../Animations/Tracking/TrackingAnimation';
-import Button from '../../../../../common/components/Button';
-import Link from '../../../../../common/components/Link';
+import TrackingAnimation from '../Animations/Tracking/TrackingAnimation';
+import Button from '../../../../common/components/Button';
+import Link from '../../../../common/components/Link';
 import * as classNames from 'classnames';
 
 interface Props {

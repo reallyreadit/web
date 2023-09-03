@@ -9,32 +9,32 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import UserAccount from '../../../../common/models/UserAccount';
+import UserAccount from '../../../common/models/UserAccount';
 import CreateAccountStep, {
 	Form as CreateAccountForm,
-} from '../../../../common/components/BrowserOnboardingFlow/CreateAccountStep';
-import CaptchaBase from '../../../../common/captcha/CaptchaBase';
+} from '../../../common/components/BrowserOnboardingFlow/CreateAccountStep';
+import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import SignInStep, {
 	Form as SignInForm,
-} from '../../../../common/components/BrowserOnboardingFlow/SignInStep';
-import PasswordResetRequestForm from '../../../../common/models/userAccounts/PasswordResetRequestForm';
-import RequestPasswordResetStep from '../../../../common/components/BrowserOnboardingFlow/RequestPasswordResetStep';
+} from '../../../common/components/BrowserOnboardingFlow/SignInStep';
+import PasswordResetRequestForm from '../../../common/models/userAccounts/PasswordResetRequestForm';
+import RequestPasswordResetStep from '../../../common/components/BrowserOnboardingFlow/RequestPasswordResetStep';
 import CreateAuthServiceAccountStep, {
 	Form as CreateAuthServiceAccountForm,
-} from '../../../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
+} from '../../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import ResetPasswordStep from './OnboardingFlow/ResetPasswordStep';
 import InstallExtensionStep from './OnboardingFlow/InstallExtensionStep';
-import { DeviceType, isCompatibleBrowser } from '../../../../common/DeviceType';
+import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import ExtensionInstalledStep from './OnboardingFlow/ExtensionInstalledStep';
 import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
 import BrowserOnboardingFlow, {
 	BaseProps,
 	ExitReason,
-} from '../../../../common/components/BrowserOnboardingFlow';
-import { Intent } from '../../../../common/components/Toaster';
-import BrowserPopupResponseResponse from '../../../../common/models/auth/BrowserPopupResponseResponse';
-import AuthServiceProvider from '../../../../common/models/auth/AuthServiceProvider';
+} from '../../../common/components/BrowserOnboardingFlow';
+import { Intent } from '../../../common/components/Toaster';
+import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
+import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 
 export enum Step {
 	CreateAccount,
