@@ -78,7 +78,7 @@ import SearchQuery from '../../../common/models/articles/SearchQuery';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
-import { DeviceType, isMobileDevice } from '../../../common/DeviceType';
+import { DeviceType } from '../../../common/DeviceType';
 import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import {
 	AuthorAssignmentRequest,
@@ -118,8 +118,7 @@ export default abstract class {
 		this._reqStore = requestStore;
 		this._clientType = clientType;
 		this._clientVersion = clientVersion;
-		this._shouldIncludeCredentials =
-			clientType === ClientType.App || !isMobileDevice(deviceType);
+		this._shouldIncludeCredentials = true;
 	}
 	private createFetchFunction<TResult>(path: string) {
 		return (callback: (value: Fetchable<TResult>) => void) =>
