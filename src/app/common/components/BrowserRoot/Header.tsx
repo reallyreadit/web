@@ -119,7 +119,7 @@ export default class Header extends React.Component<Props, State> {
 			);
 		});
 		return (
-			<header className={classNames('home-header_2afwll', { 'hide-landscape-title': hideLandscapeTitle })}>
+			<header className={classNames('header_2afwll', { 'hide-landscape-title': hideLandscapeTitle })}>
 				<div className={classNames('nav', { 'menu-open': this.state.isMenuOpen })}>
 					<div className="content">
 						<a

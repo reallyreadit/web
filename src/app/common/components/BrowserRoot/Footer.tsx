@@ -139,16 +139,16 @@ export default class extends React.PureComponent<{
 			},
 		];
 		return (
-			<div className="column-footer_ltflpc" data-nosnippet>
+			<div className="footer_ltflpc" data-nosnippet>
 				<div className="content">
-					<div className="column-footer_ltflpc__links">
+					<div className="footer_ltflpc__links">
 						<Link className="logo" screen={ScreenKey.Home} onClick={navTo} />
 						{links.map((linkSet, i) => (
 							<div
-								className="column-footer_ltflpc__link-set"
+								className="footer_ltflpc__link-set"
 								key={linkSet.toString() + i}
 							>
-								<span className="column-footer_ltflpc__link-set__title">
+								<span className="footer_ltflpc__link-set__title">
 									{linkSet.title}
 								</span>
 								<ul>
