@@ -51,6 +51,7 @@ import UserNameQuery from '../../../../common/models/social/UserNameQuery';
 import Profile from '../../../../common/models/social/Profile';
 import Link from '../../../../common/components/Link';
 import FolloweeCountChange from '../../../../common/models/social/FolloweeCountChange';
+import InfoBox from '../../../../common/components/InfoBox';
 
 interface Props {
 	deviceType: DeviceType;
@@ -67,6 +68,7 @@ interface Props {
 	>;
 	onNavTo: (url: string) => boolean;
 	onOpenDialog: (dialog: React.ReactNode) => void;
+	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onPostArticle: (article: UserArticle) => void;
 	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
 	onReadArticle: (
@@ -123,9 +125,23 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 		});
 		this.fetchPosts(1);
 	};
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt('MyFeed');
+	};
 	constructor(props: Props) {
 		super(props);
-		const posts = this.fetchPosts(1);
+		const posts = props.userAccount ?
+			this.fetchPosts(1) :
+			{
+				isLoading: false,
+				value: {
+					items: [] as Post[],
+					totalCount: 0,
+					pageNumber: 0,
+					pageSize: 0,
+					pageCount: 0
+				}
+			};
 		this.state = {
 			isLoadingNewItems: false,
 			isScreenLoading: posts.isLoading,
@@ -201,12 +217,29 @@ class MyFeedScreen extends AbstractFollowable<Props, State> {
 				});
 				this._hasClearedAlert = false;
 			}
+		} else if (this.props.userAccount) {
+			// Reinitialize on sign in.
+			this.setState({
+				isLoadingNewItems: false,
+				isScreenLoading: true,
+				newItemCount: 0,
+				posts: this.fetchPosts(1),
+			});
 		}
 	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (!this.props.userAccount) {
+			return (
+				<InfoBox style="normal">
+					<p>
+						<Link onClick={this._openSignInPrompt}>Log in</Link> to follow other readers.
+					</p>
+				</InfoBox>
+			);
+		}
 		if (this.state.isScreenLoading) {
 			return (
 				<LoadingOverlay />
@@ -347,17 +380,22 @@ export default function createMyFeedScreenFactory<TScreenKey>(
 	};
 	return {
 		create: (id: number, location: RouteLocation, sharedState: SharedState) => {
-			const profile = deps.onGetProfile(
+			const profile = sharedState.user ?
+				deps.onGetProfile(
+					{
+						userName: sharedState.user.name,
+					},
+					(result) => {
+						deps.onSetScreenState(
+							id,
+							createNewScreenState(result, sharedState.user)
+						);
+					}
+				) :
 				{
-					userName: sharedState.user.name,
-				},
-				(result) => {
-					deps.onSetScreenState(
-						id,
-						createNewScreenState(result, sharedState.user)
-					);
-				}
-			);
+					isLoading: false,
+					value: null
+				};
 			return {
 				id,
 				componentState: profile,
@@ -382,7 +420,7 @@ export default function createMyFeedScreenFactory<TScreenKey>(
 						profile: screen.componentState,
 						screenId: screen.id,
 						userAccount: sharedState.user,
-						userName: sharedState.user.name,
+						userName: sharedState.user?.name,
 					}}
 				/>
 			);

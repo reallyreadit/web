@@ -40,6 +40,7 @@ import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import { ArticleStarredEvent } from '../../AppApi';
 import { AppPlatform } from '../../../../common/AppPlatform';
 import Link from '../../../../common/components/Link';
+import InfoBox from '../../../../common/components/InfoBox';
 
 enum View {
 	History = 'History',
@@ -58,6 +59,7 @@ interface Props {
 	onGetStarredArticles: ArticleFetchFunction;
 	onGetUserArticleHistory: ArticleFetchFunction;
 	onOpenDialog: (element: React.ReactNode) => void;
+	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onCloseDialog: () => void;
 	onNavTo: (ref: NavReference) => void;
 	onPostArticle: (article: UserArticle) => void;
@@ -83,7 +85,7 @@ interface Props {
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
 	screenId: number;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>;
@@ -141,11 +143,25 @@ class MyReadsScreen extends React.Component<Props, State> {
 			</FormDialog>
 		);
 	};
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt('MyReads');
+	};
 	constructor(props: Props) {
 		super(props);
 		const minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(props.view, 1, minLength, maxLength);
+			articles = props.user ?
+				this.fetchArticles(props.view, 1, minLength, maxLength) :
+				{
+					isLoading: false,
+					value: {
+						items: [] as UserArticle[],
+						totalCount: 0,
+						pageNumber: 0,
+						pageSize: 0,
+						pageCount: 0
+					}
+				};
 		this.state = {
 			articles,
 			isChangingList: false,
@@ -286,10 +302,32 @@ class MyReadsScreen extends React.Component<Props, State> {
 			</StickyNote>
 		);
 	}
+	public componentDidUpdate(prevProps: Props) {
+		if (this.props.user && !prevProps.user) {
+			// Reinitialize on sign in.
+			this.setState({
+				articles: this.fetchArticles(this.props.view, 1, null, null),
+				isChangingList: false,
+				isScreenLoading: true,
+				maxLength: null,
+				minLength: null,
+				newStarsCount: 0,
+			});
+		}
+	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (!this.props.user) {
+			return (
+				<InfoBox style="normal">
+					<p>
+						<Link onClick={this._openSignInPrompt}>Log in</Link> to view your saved articles and reading history.
+					</p>
+				</InfoBox>
+			);
+		}
 		if (this.state.isScreenLoading) {
 			return (
 				<LoadingOverlay />

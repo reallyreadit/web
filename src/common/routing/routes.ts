@@ -124,7 +124,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Faq,
 	},
 	{
-		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/my-feed',
 		pathRegExp: /^\/my-feed$/,
 		screenKey: ScreenKey.MyFeed,
@@ -171,7 +170,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {
-			authLevel: UserAccountRole.Regular,
 			createUrl: (params) => {
 				if (
 					params &&
