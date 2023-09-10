@@ -19,7 +19,7 @@ import {
 	NavReference,
 	NavMethod,
 	Screen,
-} from '../../../common/components/Root';
+} from '../Root';
 import Link from '../../../../common/components/Link';
 import { DeviceType } from '../../../../common/DeviceType';
 import UserAccount from '../../../../common/models/UserAccount';
@@ -64,7 +64,7 @@ const menuLinks = [
 	},
 ];
 
-export default class HomeHeader extends React.Component<Props, State> {
+export default class Header extends React.Component<Props, State> {
 	state: State = {
 		isMenuOpen: false
 	};

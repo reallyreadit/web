@@ -15,7 +15,7 @@
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/config';
 
-.home-header_2afwll > .nav {
+.header_2afwll > .nav {
 	position: relative;
 	background-color: var(--nav-background-color);
 	border-bottom-width: 1px;
@@ -24,7 +24,7 @@
 	z-index: 2;
 }
 
-.home-header_2afwll > .nav > .content {
+.header_2afwll > .nav > .content {
 	display: flex;
 	padding: 15px 20px;
 	max-width: 980px;
@@ -32,7 +32,7 @@
 	box-sizing: border-box;
 }
 
-.home-header_2afwll > .nav > .content > .logo {
+.header_2afwll > .nav > .content > .logo {
 	flex: 0 0 auto;
 	display: block;
 	background-size: contain;
@@ -42,18 +42,18 @@
 	margin-right: 0.5em;
 }
 
-.home-header_2afwll > .nav > .content > .links {
+.header_2afwll > .nav > .content > .links {
 	flex: 1 1 auto;
 	display: flex;
 }
 
-.home-header_2afwll > .nav > .content > .links > .pages {
+.header_2afwll > .nav > .content > .links > .pages {
 	flex: 1 1 auto;
 	display: flex;
 	align-items: center;
 }
 
-.home-header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
+.header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
 	font-family: 'Museo Sans (500)';
 	text-decoration: none;
 	margin-left: 1em;
@@ -64,17 +64,17 @@
 	}
 }
 
-.home-header_2afwll > .nav > .content > .links > .auth {
+.header_2afwll > .nav > .content > .links > .auth {
 	display: flex;
 	align-items: center;
 }
 
-.home-header_2afwll > .nav > .content > .menu-button {
+.header_2afwll > .nav > .content > .menu-button {
 	display: none;
 	font-size: 1.75em;
 }
 
-.home-header_2afwll > .nav > .content > .right > .menu > .menu > .content {
+.header_2afwll > .nav > .content > .right > .menu > .menu > .content {
 	display: flex;
 	flex-flow: column;
 	position: relative;
@@ -82,37 +82,37 @@
 	background: var(--content-background-color);
 }
 
-.home-header_2afwll > .nav > .content > .right > .menu > .menu > .content > .log-in {
+.header_2afwll > .nav > .content > .right > .menu > .menu > .content > .log-in {
 	margin: 0 calc(1em - 10px);
 }
 
-.home-header_2afwll > .title {
+.header_2afwll > .title {
 	font-family: 'Museo Sans (700)';
 	font-size: 15pt;
 }
 
-.home-header_2afwll > .title > .content {
+.header_2afwll > .title > .content {
 	padding: 20px;
 	max-width: 980px;
 	margin: 0 auto;
 	box-sizing: border-box;
 }
 
-.home-header_2afwll.hide-landscape-title > .title {
+.header_2afwll.hide-landscape-title > .title {
 	height: 40px;
 }
 
-.home-header_2afwll.hide-landscape-title > .title > .content {
+.header_2afwll.hide-landscape-title > .title > .content {
 	display: none;
 }
 
 @media screen and (max-width: 699px) {
-	.home-header_2afwll > .nav > .content {
+	.header_2afwll > .nav > .content {
 		justify-content: space-between;
     	align-items: center;
 	}
 
-	.home-header_2afwll > .nav > .content > .links {
+	.header_2afwll > .nav > .content > .links {
 		display: none;
 		position: absolute;
 		top: 100%;
@@ -125,15 +125,15 @@
 		border-bottom-color: var(--nav-border-color);
 	}
 
-	.home-header_2afwll > .nav.menu-open > .content > .links {
+	.header_2afwll > .nav.menu-open > .content > .links {
 		display: flex;
 	}
 
-	.home-header_2afwll > .nav > .content > .links > .pages {
+	.header_2afwll > .nav > .content > .links > .pages {
 		flex-flow: column;
 	}
 
-	.home-header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
+	.header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
 		display: inline-flex;
 		align-items: center;
 		margin-left: 0;
@@ -146,31 +146,31 @@
 		}
 	}
 
-	.home-header_2afwll > .nav > .content > .links > .auth {
+	.header_2afwll > .nav > .content > .links > .auth {
 		justify-content: center;
 	}
 
-	.home-header_2afwll > .nav > .content > .links > .auth > .log-in {
+	.header_2afwll > .nav > .content > .links > .auth > .log-in {
 		height: 60px;
 		font-family: 'Museo Sans (700)';
 		font-size: 15pt;
 	}
 
-	.home-header_2afwll > .nav > .content > .menu-button {
+	.header_2afwll > .nav > .content > .menu-button {
 		display: block;
 	}
 
-	.home-header_2afwll.hide-landscape-title > .title {
+	.header_2afwll.hide-landscape-title > .title {
 		height: auto;
 	}
 
-	.home-header_2afwll.hide-landscape-title > .title > .content {
+	.header_2afwll.hide-landscape-title > .title > .content {
 		display: block;
 	}
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .home-header_2afwll > .nav > .content > .logo {
+	#{$root} .header_2afwll > .nav > .content > .logo {
 		@if $scheme == light {
 			background-image: url(create-url(
 				map-get($readup-config, 'static-server'),

@@ -16,7 +16,7 @@
 @import '../../../../common/styles/config';
 @import '../../../../common/styles/breakpoints';
 
-.column-footer_ltflpc {
+.footer_ltflpc {
 	// text-align: center;
 	// TODO: this is duplicated from .content elsewhere, code should be shared.
 
@@ -110,7 +110,7 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .column-footer_ltflpc {
+	#{$root} .footer_ltflpc {
 		@include theme-colors(
 			$scheme,
 			(
@@ -119,7 +119,7 @@
 			)
 		);
 	}
-	#{$root} .column-footer_ltflpc .content .logo {
+	#{$root} .footer_ltflpc .content .logo {
 		@if $scheme == light {
 			background-image: url(create-url(
 				map-get($readup-config, 'static-server'),

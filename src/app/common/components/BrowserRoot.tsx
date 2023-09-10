@@ -23,7 +23,7 @@ import Root, {
 	ReadArticleReference,
 	OnboardingState,
 } from './Root';
-import HomeHeader from './BrowserRoot/HomeHeader';
+import Header from './BrowserRoot/Header';
 import UserAccount, {
 	areEqual as areUsersEqual,
 } from '../../../common/models/UserAccount';
@@ -89,7 +89,7 @@ import DisplayPreference, {
 } from '../../../common/models/userAccounts/DisplayPreference';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
-import ColumnFooter from './BrowserRoot/ColumnFooter';
+import Footer from './BrowserRoot/Footer';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBlogScreenFactory from './screens/BlogScreen';
@@ -1220,7 +1220,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div>
 				) : null}
-				<HomeHeader
+				<Header
 					deviceType={this.props.deviceType}
 					onBeginOnboarding={this._beginOnboarding}
 					onCopyAppReferrerTextToClipboard={
@@ -1246,7 +1246,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						))}
 					</ol>
 				</main>
-				<ColumnFooter
+				<Footer
 					onNavTo={this._navTo}
 					onOpenDialog={this._dialog.openDialog}
 					onCloseDialog={this._dialog.closeDialog}
