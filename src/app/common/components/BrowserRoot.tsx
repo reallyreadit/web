@@ -10,7 +10,6 @@
 
 import * as React from 'react';
 import Toaster, { Intent } from '../../../common/components/Toaster';
-import NavBar from './BrowserRoot/NavBar';
 import Root, {
 	Props as RootProps,
 	State as RootState,
@@ -30,7 +29,6 @@ import UserAccount, {
 } from '../../../common/models/UserAccount';
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
-import Menu from './BrowserRoot/Menu';
 import createCommentsScreenFactory from './screens/CommentsScreen';
 import createHomeScreenFactory from './BrowserRoot/HomeScreen';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
@@ -101,7 +99,6 @@ import {
 } from '../../../common/sharing/twitter';
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
-import Header from './BrowserRoot/Header';
 import { ScreenTitle } from '../../../common/ScreenTitle';
 
 interface Props extends RootProps {
@@ -111,10 +108,8 @@ interface Props extends RootProps {
 }
 interface State extends RootState {
 	isExtensionInstalled: boolean;
-	menuState: MenuState;
 	welcomeMessage: WelcomeMessage | null;
 }
-type MenuState = 'opened' | 'closing' | 'closed';
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
@@ -160,29 +155,12 @@ export default class extends Root<Props, State, SharedState, Events> {
 		);
 	};
 
-	// menu
-	private readonly _closeMenu = () => {
-		this.setState({ menuState: 'closing' });
-	};
-	private readonly _hideMenu = () => {
-		this.setState({ menuState: 'closed' });
-	};
-	private readonly _openMenu = () => {
-		this.setState({ menuState: 'opened' });
-	};
-
 	// welcome message
 	private readonly _dismissWelcomeMessage = () => {
 		this.setState({ welcomeMessage: null });
 	};
 
 	// screens
-	private readonly _viewAdminPage = () => {
-		this.setScreenState({
-			key: ScreenKey.Admin,
-			method: NavMethod.ReplaceAll,
-		});
-	};
 	private readonly _viewAotdHistory = () => {
 		this.setScreenState({
 			key: ScreenKey.AotdHistory,
@@ -198,12 +176,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.Push,
 		});
 	};
-	private readonly _viewFaq = () => {
-		this.setScreenState({
-			key: ScreenKey.Faq,
-			method: NavMethod.ReplaceAll,
-		});
-	};
 	private readonly _viewHome = () => {
 		this.setScreenState({
 			key: ScreenKey.Home,
@@ -216,39 +188,9 @@ export default class extends Root<Props, State, SharedState, Events> {
 			method: NavMethod.ReplaceAll,
 		});
 	};
-	private readonly _viewLeaderboards = () => {
-		this.setScreenState({
-			key: ScreenKey.Leaderboards,
-			method: NavMethod.ReplaceAll,
-		});
-	};
-	private readonly _viewMyReads = () => {
-		this.setScreenState({
-			key: ScreenKey.MyReads,
-			method: NavMethod.ReplaceAll,
-		});
-	};
 	private readonly _viewPrivacyPolicy = () => {
 		this.setScreenState({
 			key: ScreenKey.PrivacyPolicy,
-			method: NavMethod.ReplaceAll,
-		});
-	};
-	private readonly _viewSearch = () => {
-		this.setScreenState({
-			key: ScreenKey.Search,
-			method: NavMethod.ReplaceAll,
-		});
-	};
-	private readonly _viewSettings = () => {
-		this.setScreenState({
-			key: ScreenKey.Settings,
-			method: NavMethod.ReplaceAll,
-		});
-	};
-	private readonly _viewStats = () => {
-		this.setScreenState({
-			key: ScreenKey.Stats,
 			method: NavMethod.ReplaceAll,
 		});
 	};
@@ -796,7 +738,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			...this.state,
 			dialogs: [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
-			menuState: 'closed',
 			onboarding: onboardingState,
 			screens: [locationState.screen],
 			welcomeMessage: welcomeMessage in welcomeMessages ? welcomeMessage : null,
@@ -977,8 +918,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 		this.props.browserApi.setTitle(screens[screens.length - 1].title);
 		// return the new state object
 		return {
-			menuState:
-				this.state.menuState === 'opened' ? 'closing' : ('closed' as MenuState),
 			screens,
 		};
 	}
@@ -1281,46 +1220,24 @@ export default class extends Root<Props, State, SharedState, Events> {
 						/>
 					</div>
 				) : null}
-				{this.state.user != null ? (
-						<Header
-							deviceType={this.props.deviceType}
-							onBeginOnboarding={this._beginOnboarding}
-							onOpenMenu={this._openMenu}
-							onOpenSignInPrompt={this._beginOnboardingAtSignIn}
-							onViewHome={this._viewHome}
-							onViewNotifications={this._viewNotifications}
-							user={this.state.user}
-						/>
-					) : (
-						<HomeHeader
-							deviceType={this.props.deviceType}
-							onBeginOnboarding={this._beginOnboarding}
-							onCopyAppReferrerTextToClipboard={
-								this._copyAppReferrerTextToClipboard
-							}
-							onCreateStaticContentUrl={this._createStaticContentUrl}
-							onOpenMenu={this._openMenu}
-							onOpenNewPlatformNotificationRequestDialog={
-								this._openNewPlatformNotificationRequestDialog
-							}
-							onOpenSignInPrompt={this._beginOnboardingAtSignIn}
-							onViewHome={this._viewHome}
-							onViewNotifications={this._viewNotifications}
-							onNavTo={this._navTo}
-							topScreen={topScreen}
-							user={this.state.user}
-						/>
-					)}
+				<HomeHeader
+					deviceType={this.props.deviceType}
+					onBeginOnboarding={this._beginOnboarding}
+					onCopyAppReferrerTextToClipboard={
+						this._copyAppReferrerTextToClipboard
+					}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
+					onOpenNewPlatformNotificationRequestDialog={
+						this._openNewPlatformNotificationRequestDialog
+					}
+					onOpenSignInPrompt={this._beginOnboardingAtSignIn}
+					onViewHome={this._viewHome}
+					onViewNotifications={this._viewNotifications}
+					onNavTo={this._navTo}
+					topScreen={topScreen}
+					user={this.state.user}
+				/>
 				<main>
-					{this.state.user ? (
-						<NavBar
-							onNavTo={this._navTo}
-							onViewHome={this._viewHome}
-							onViewMyReads={this._viewMyReads}
-							selectedScreen={this.state.screens[0]}
-							user={this.state.user}
-						/>
-					) : null}
 					<ol className="screens">
 						{this.state.screens.map((screen) => (
 							<li className="screen" key={screen.id}>
@@ -1336,22 +1253,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onCreateStaticContentUrl={this._createStaticContentUrl}
 					showWhatIsReadup={topScreen.key !== ScreenKey.Home}
 				/>
-				{this.state.menuState !== 'closed' ? (
-					<Menu
-						isClosing={this.state.menuState === 'closing'}
-						onClose={this._closeMenu}
-						onClosed={this._hideMenu}
-						onViewAdminPage={this._viewAdminPage}
-						onViewFaq={this._viewFaq}
-						onViewLeaderboards={this._viewLeaderboards}
-						onViewProfile={this._viewProfile}
-						onViewSearch={this._viewSearch}
-						onViewSettings={this._viewSettings}
-						onViewStats={this._viewStats}
-						selectedScreen={this.state.screens[0]}
-						userAccount={this.state.user}
-					/>
-				) : null}
 				<DialogManager
 					dialogs={this.state.dialogs}
 					onGetDialogRenderer={this._dialog.getDialogRenderer}

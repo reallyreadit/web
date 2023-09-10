@@ -31,7 +31,6 @@ interface Props {
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
 	onCreateStaticContentUrl: (path: string) => string;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
-	onOpenMenu: () => void;
 	onOpenNewPlatformNotificationRequestDialog: () => void;
 	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onViewHome: () => void;
