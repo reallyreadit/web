@@ -22,6 +22,7 @@ import Root, {
 	NavReference,
 	parseNavReference,
 	ReadArticleReference,
+	OnboardingState,
 } from './Root';
 import HomeHeader from './BrowserRoot/HomeHeader';
 import UserAccount, {
@@ -73,10 +74,8 @@ import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServi
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
 import OnboardingFlow, {
-	Props as OnboardingProps,
 	Step as OnboardingStep,
 } from './OnboardingFlow';
-import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import {
 	AuthServiceBrowserLinkResponse,
@@ -90,7 +89,6 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import DisplayPreference, {
 	getClientDefaultDisplayPreference,
 } from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createUrl } from '../../../common/HttpEndpoint';
 import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import ColumnFooter from './BrowserRoot/ColumnFooter';
@@ -111,18 +109,9 @@ interface Props extends RootProps {
 	deviceType: DeviceType;
 	extensionApi: ExtensionApi;
 }
-type OnboardingState = Pick<
-	OnboardingProps,
-	| 'analyticsAction'
-	| 'authServiceToken'
-	| 'initialAuthenticationStep'
-	| 'passwordResetEmail'
-	| 'passwordResetToken'
->;
 interface State extends RootState {
 	isExtensionInstalled: boolean;
 	menuState: MenuState;
-	onboarding: OnboardingState | null;
 	welcomeMessage: WelcomeMessage | null;
 }
 type MenuState = 'opened' | 'closing' | 'closed';
@@ -299,48 +288,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 	};
 
 	// user account
-	private readonly _beginOnboarding = (analyticsAction: string) => {
-		this.setState({
-			onboarding: {
-				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.CreateAccount,
-			},
-		});
-	};
-	private readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
-		this.setState({
-			onboarding: {
-				analyticsAction,
-				initialAuthenticationStep: OnboardingStep.SignIn,
-			},
-		});
-	};
-	private readonly _endOnboarding = (reason: OnboardingExitReason) => {
-		// Register the orientation and update the user if this is the first completion.
-		if (
-			reason === OnboardingExitReason.Completed &&
-			!this.state.user.dateOrientationCompleted
-		) {
-			this.props.serverApi.registerOrientationCompletion().catch(() => {
-				// ignore. non-critical error path. orientation will just be repeated
-			});
-			// Onboarding will be closed in onUserUpdated when dateOrientationCompleted is first assigned a value.
-			this.onUserUpdated(
-				{
-					...this.state.user,
-					dateOrientationCompleted: formatIsoDateAsDotNet(
-						new Date().toISOString()
-					),
-				},
-				EventSource.Local
-			);
-		} else {
-			// Close onboarding directly.
-			this.setState({
-				onboarding: null,
-			});
-		}
-	};
 	protected readonly _linkAuthServiceAccount = (
 		provider: AuthServiceProvider
 	) => {
@@ -1412,6 +1359,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				{this.state.onboarding ? (
 					<OnboardingFlow
 						analyticsAction={this.state.onboarding.analyticsAction}
+						appPlatform={null}
 						authServiceToken={this.state.onboarding.authServiceToken}
 						captcha={this.props.captcha}
 						deviceType={this.props.deviceType}
@@ -1423,6 +1371,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 						onCreateAccount={this._createAccount}
 						onCreateAuthServiceAccount={this._createAuthServiceAccount}
 						onCreateStaticContentUrl={this._createStaticContentUrl}
+						onRequestNotificationAuthorization={null}
 						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 						onResetPassword={this._resetPassword}
 						onShowToast={this._toaster.addToast}

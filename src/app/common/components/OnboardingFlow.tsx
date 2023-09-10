@@ -33,8 +33,12 @@ import BrowserOnboardingFlow, {
 	ExitReason,
 } from '../../../common/components/BrowserOnboardingFlow';
 import { Intent } from '../../../common/components/Toaster';
-import BrowserPopupResponseResponse from '../../../common/models/auth/BrowserPopupResponseResponse';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
+import ImportStep from './OnboardingFlow/ImportStep';
+import NotificationsStep from './OnboardingFlow/NotificationsStep';
+import NotificationAuthorizationRequestResult from '../../../common/models/app/NotificationAuthorizationRequestResult';
+import { AppPlatform } from '../../../common/AppPlatform';
+import AuthServiceCredentialAuthResponse, { isAuthServiceCredentialAuthTokenResponse } from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 
 export enum Step {
 	CreateAccount,
@@ -47,9 +51,12 @@ export enum Step {
 	ExtensionInstalled,
 	ButtonTutorial,
 	TrackingAnimation,
+	Import,
+	Notifications
 }
 export interface Props extends BaseProps {
 	analyticsAction?: string;
+	appPlatform: AppPlatform | null;
 	authServiceToken?: string;
 	captcha: CaptchaBase;
 	deviceType: DeviceType;
@@ -60,20 +67,22 @@ export interface Props extends BaseProps {
 		form: CreateAuthServiceAccountForm
 	) => Promise<void>;
 	onCreateStaticContentUrl: (path: string) => string;
+	onRequestNotificationAuthorization: () => Promise<NotificationAuthorizationRequestResult>;
 	onRequestPasswordReset: (form: PasswordResetRequestForm) => Promise<void>;
 	onResetPassword: (token: string, email: string) => Promise<void>;
 	onShowToast: (content: React.ReactNode, intent: Intent) => void;
 	onSignIn: (form: SignInForm) => Promise<void>;
 	onSignInWithApple: (
 		analyticsAction: string
-	) => Promise<BrowserPopupResponseResponse>;
+	) => Promise<AuthServiceCredentialAuthResponse>;
 	onSignInWithTwitter: (
 		analyticsAction: string
-	) => Promise<BrowserPopupResponseResponse>;
+	) => Promise<AuthServiceCredentialAuthResponse>;
 	passwordResetEmail?: string;
 	passwordResetToken?: string;
 }
 export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
+	private _authServiceToken: string;
 	private readonly _createAccount = (form: CreateAccountForm) => {
 		return this.props.onCreateAccount(form).then(this._handleAccountCreation);
 	};
@@ -93,6 +102,9 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	private readonly _goToLinkAccountStep = () => {
 		this.goToStep(Step.LinkAccount);
 	};
+	private readonly _goToNotificationsStep = () => {
+		this.goToStep(Step.Notifications);
+	};
 	private readonly _goToPasswordResetRequestStep = () => {
 		this.goToStep(Step.RequestPasswordReset);
 	};
@@ -103,14 +115,18 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		this.goToStep(Step.TrackingAnimation);
 	};
 	private readonly _handleAccountCreation = () => {
-		if (this.props.isExtensionInstalled) {
+		if (this.props.appPlatform != null) {
+			this.goToStep(Step.TrackingAnimation);
+		} else if (this.props.isExtensionInstalled) {
 			this.goToStep(Step.ExtensionInstalled);
 		} else {
 			this.goToStep(Step.InstallExtension);
 		}
 	};
 	private readonly _handleExistingUserAuthentication = () => {
-		if (
+		if (this.props.appPlatform != null) {
+			this.goToStep(Step.TrackingAnimation);
+		} else if (
 			this.props.isExtensionInstalled &&
 			this.props.user.dateOrientationCompleted
 		) {
@@ -120,6 +136,25 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		} else {
 			this.goToStep(Step.ExtensionInstalled);
 		}
+	};
+	private readonly _handleTrackingAnimationStepCompletion = () => {
+		switch (this.props.appPlatform) {
+			case AppPlatform.Ios:
+				this.goToStep(Step.Import);
+				break;
+			case AppPlatform.MacOs:
+				this.goToStep(Step.Notifications);
+				break;
+			default:
+				this._complete();
+				break;
+		}
+	};
+	private readonly _requestNotificationAuthorization = () => {
+		this.props
+			.onRequestNotificationAuthorization()
+			.then(this._complete)
+			.catch(this._complete);
 	};
 	private readonly _resetPassword = (token: string, email: string) => {
 		return this.props.onResetPassword(token, email).then(() => {
@@ -135,12 +170,25 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		provider: AuthServiceProvider,
 		analyticsAction: string
 	) => {
+		let onSignIn: (analyticsAction: string) => Promise<AuthServiceCredentialAuthResponse>;
 		switch (provider) {
 			case AuthServiceProvider.Apple:
-				return this.props.onSignInWithApple(analyticsAction);
+				onSignIn = this.props.onSignInWithApple;
+				break;
 			case AuthServiceProvider.Twitter:
-				return this.props.onSignInWithTwitter(analyticsAction);
+				onSignIn = this.props.onSignInWithTwitter;
+				break;
+			default:
+				throw new Error('Unexpected auth service provider.');
 		}
+		return onSignIn(analyticsAction).then(res => {
+			if (isAuthServiceCredentialAuthTokenResponse(res)) {
+				this._authServiceToken = res.authServiceToken;
+				this.goToStep(Step.CreateAuthServiceAccount);
+			} else {
+				this._handleExistingUserAuthentication();
+			}
+		});
 	};
 	private readonly _stepMap = {
 		[Step.CreateAccount]: (_: UserAccount) => (
@@ -166,7 +214,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.CreateAuthServiceAccount]: (_: UserAccount) => (
 			<CreateAuthServiceAccountStep
 				analyticsAction={this.props.analyticsAction}
-				authServiceToken={this.props.authServiceToken}
+				authServiceToken={this._authServiceToken}
 				onCreateAuthServiceAccount={this._createAuthServiceAccount}
 				onLinkExistingAccount={this._goToLinkAccountStep}
 			/>
@@ -174,7 +222,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		[Step.LinkAccount]: (_: UserAccount) => (
 			<SignInStep
 				analyticsAction={this.props.analyticsAction}
-				authServiceToken={this.props.authServiceToken}
+				authServiceToken={this._authServiceToken}
 				onRequestPasswordReset={this._goToPasswordResetRequestStep}
 				onShowToast={this.props.onShowToast}
 				onSignIn={this._signIn}
@@ -182,7 +230,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		),
 		[Step.RequestPasswordReset]: (_: UserAccount) => (
 			<RequestPasswordResetStep
-				authServiceToken={this.props.authServiceToken}
+				authServiceToken={this._authServiceToken}
 				captcha={this.props.captcha}
 				onRequestPasswordReset={this.props.onRequestPasswordReset}
 			/>
@@ -211,11 +259,24 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<ButtonTutorialStep onContinue={this._goToTrackingAnimationStep} />
 		),
 		[Step.TrackingAnimation]: (_: UserAccount) => (
-			<TrackingAnimationStep onContinue={this._complete} />
+			<TrackingAnimationStep onContinue={this._handleTrackingAnimationStepCompletion} />
 		),
+		[Step.Import]: (_: UserAccount) => (
+			<ImportStep
+				onContinue={this._goToNotificationsStep}
+				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+			/>
+		),
+		[Step.Notifications]: (_: UserAccount) => (
+			<NotificationsStep
+				onRequestAuthorization={this._requestNotificationAuthorization}
+				onSkip={this._complete}
+			/>
+		)
 	};
 	constructor(props: Props) {
 		super(props);
+		this._authServiceToken = props.authServiceToken;
 		this.state = {
 			...this.state,
 			step: !props.user
@@ -226,9 +287,11 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 					: props.initialAuthenticationStep != null
 					? props.initialAuthenticationStep
 					: Step.CreateAccount
+				: props.appPlatform != null
+				? Step.TrackingAnimation
 				: !props.isExtensionInstalled
-				? Step.InstallExtension
-				: Step.ExtensionInstalled,
+					? Step.InstallExtension
+					: Step.ExtensionInstalled,
 		};
 	}
 	protected getStepRenderer(step: Step) {

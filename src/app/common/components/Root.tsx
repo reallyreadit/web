@@ -70,7 +70,6 @@ import CommentAddendumForm from '../../../common/models/social/CommentAddendumFo
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 import { Form as CreateAccountDialogForm } from './CreateAccountDialog';
-import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceAccountDialog';
 import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
 import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalyticsForm';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
@@ -95,6 +94,13 @@ import { AuthorEmailVerificationRequest } from '../../../common/models/userAccou
 import { ArticleStarredEvent } from '../AppApi';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
 import { ScreenTitle } from '../../../common/ScreenTitle';
+import {
+	Props as OnboardingProps,
+	Step as OnboardingStep,
+} from './OnboardingFlow';
+import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
+import { formatIsoDateAsDotNet } from '../../../common/format';
+import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 
 export interface Props {
 	captcha: CaptchaBase;
@@ -163,8 +169,17 @@ export interface ScreenFactory<TSharedState> {
 		sharedState: TSharedState
 	) => React.ReactNode;
 }
+export type OnboardingState = Pick<
+	OnboardingProps,
+	| 'analyticsAction'
+	| 'authServiceToken'
+	| 'initialAuthenticationStep'
+	| 'passwordResetEmail'
+	| 'passwordResetToken'
+>;
 export type State = {
 	displayTheme: DisplayTheme | null;
+	onboarding: OnboardingState | null;
 	screens: Screen[];
 	user: UserAccount | null;
 } & ToasterState &
@@ -567,6 +582,48 @@ export default abstract class Root<
 	});
 
 	// user account
+	protected readonly _beginOnboarding = (analyticsAction: string) => {
+		this.setState({
+			onboarding: {
+				analyticsAction,
+				initialAuthenticationStep: OnboardingStep.CreateAccount,
+			},
+		});
+	};
+	protected readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
+		this.setState({
+			onboarding: {
+				analyticsAction,
+				initialAuthenticationStep: OnboardingStep.SignIn,
+			},
+		});
+	};
+	protected readonly _endOnboarding = (reason: OnboardingExitReason) => {
+		// Register the orientation and update the user if this is the first completion.
+		if (
+			reason === OnboardingExitReason.Completed &&
+			!this.state.user.dateOrientationCompleted
+		) {
+			this.props.serverApi.registerOrientationCompletion().catch(() => {
+				// ignore. non-critical error path. orientation will just be repeated
+			});
+			// Onboarding will be closed in onUserUpdated when dateOrientationCompleted is first assigned a value.
+			this.onUserUpdated(
+				{
+					...this.state.user,
+					dateOrientationCompleted: formatIsoDateAsDotNet(
+						new Date().toISOString()
+					),
+				},
+				EventSource.Local
+			);
+		} else {
+			// Close onboarding directly.
+			this.setState({
+				onboarding: null,
+			});
+		}
+	};
 	protected readonly _changeDisplayPreference = (
 		preference: DisplayPreference
 	) => {
@@ -623,7 +680,7 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _createAuthServiceAccount = (
-		form: CreateAuthServiceAccountDialogForm
+		form: Pick<AuthServiceAccountForm, 'token' | 'name'>
 	) => {
 		return this.props.serverApi
 			.createAuthServiceAccount({

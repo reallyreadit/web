@@ -57,8 +57,7 @@ import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
-import CreateAuthServiceAccountDialog from './CreateAuthServiceAccountDialog';
-import OrientationWizard from './AppRoot/OrientationWizard';
+import OnboardingFlow from './OnboardingFlow';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createSettingsScreenFactory from './SettingsPage';
@@ -74,7 +73,6 @@ import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { formatIsoDateAsDotNet } from '../../../common/format';
 import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './screens/BlogScreen';
@@ -89,6 +87,7 @@ import { ShareChannelData } from '../../../common/sharing/ShareData';
 import NavBar from './AppRoot/NavBar';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBestEverScreenFactory from './screens/BestEverScreen';
+import AppleIdCredential from '../../../common/models/app/AppleIdCredential';
 
 interface Props extends RootProps {
 	appApi: AppApi;
@@ -103,8 +102,6 @@ export interface AuthStatus {
 	step: AuthStep;
 }
 interface State extends RootState {
-	authStatus: AuthStatus | null;
-	isInOrientation: boolean;
 	isPoppingScreen: boolean;
 }
 interface Events extends RootEvents {
@@ -112,7 +109,6 @@ interface Events extends RootEvents {
 }
 export default class extends Root<Props, State, RootSharedState, Events> {
 	private _isUpdateAvailable: boolean = false;
-	private _signInLocation: RouteLocation | null;
 	private readonly _noop = () => {
 		// no-op
 	};
@@ -130,23 +126,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 	};
 
 	// screens
-	private readonly _completeOrientation = () => {
-		this.props.serverApi.registerOrientationCompletion().catch(() => {
-			// ignore. non-critical error path. orientation will just be repeated
-		});
-		this.onUserUpdated(
-			{
-				...this.state.user,
-				dateOrientationCompleted: formatIsoDateAsDotNet(
-					new Date().toISOString()
-				),
-			},
-			EventSource.Local,
-			{
-				isInOrientation: false,
-			}
-		);
-	};
 	private readonly _handleScreenAnimationEnd = (ev: React.AnimationEvent) => {
 		if (ev.animationName === 'app-root_vc3j5h-screen-slide-out') {
 			// copy the screens array minus the top screen
@@ -265,17 +244,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 	private readonly _handleAuthServiceCredentialAuthResponse = (
 		response: AuthServiceCredentialAuthResponse
 	) => {
-		if (isAuthServiceCredentialAuthTokenResponse(response)) {
-			this._dialog.openDialog(
-				<CreateAuthServiceAccountDialog
-					onCloseDialog={this._dialog.closeDialog}
-					onCreateAuthServiceAccount={this._createAuthServiceAccount}
-					onLinkExistingAccount={this._openLinkAuthServiceAccountDialog}
-					onShowToast={this._toaster.addToast}
-					token={response.authServiceToken}
-				/>
-			);
-		} else {
+		if (!isAuthServiceCredentialAuthTokenResponse(response)) {
 			this.onUserSignedIn(
 				{
 					displayPreference: response.displayPreference,
@@ -285,9 +254,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				EventSource.Local
 			);
 		}
-		this.setState({
-			authStatus: null,
-		});
+		return response;
 	};
 	protected readonly _linkAuthServiceAccount = (
 		provider: AuthServiceProvider
@@ -359,86 +326,71 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				);
 			});
 	};
-	// private readonly _signInWithApple = () => {
-	// 	this.props.appApi.getDeviceInfo().then((deviceInfo) => {
-	// 		if (
-	// 			!isAppleAppPlatform(deviceInfo.appPlatform) ||
-	// 			deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) >= 0
-	// 		) {
-	// 			this.props.appApi.requestAppleIdCredential();
-	// 		} else {
-	// 			this.openAppUpdateRequiredDialog('5.4');
-	// 		}
-	// 	});
-	// };
-	// private readonly _signInWithTwitter = () => {
-	// 	return new Promise((resolve) => {
-	// 		this.props.appApi
-	// 			.getDeviceInfo()
-	// 			.then((deviceInfo) => {
-	// 				if (
-	// 					isAppleAppPlatform(deviceInfo.appPlatform) &&
-	// 					deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
-	// 				) {
-	// 					this.openAppUpdateRequiredDialog('5.7');
-	// 					throw 'Unsupported';
-	// 				}
-	// 			})
-	// 			.then(this.props.serverApi.requestTwitterWebViewRequestToken)
-	// 			.then((token) => {
-	// 				this.setState(
-	// 					{
-	// 						authStatus: {
-	// 							provider: AuthServiceProvider.Twitter,
-	// 							step: AuthStep.Authenticating,
-	// 						},
-	// 					},
-	// 					resolve
-	// 				);
-	// 				const url = new URL('https://api.twitter.com/oauth/authorize');
-	// 				url.searchParams.set('oauth_token', token.value);
-	// 				return this.props.appApi.requestWebAuthentication({
-	// 					authUrl: url.href,
-	// 					callbackScheme: 'readup',
-	// 				});
-	// 			})
-	// 			.then((webAuthResponse) => {
-	// 				if (!webAuthResponse.callbackURL) {
-	// 					if (webAuthResponse.error === 'Unsupported') {
-	// 						this.openIosUpdateRequiredDialog('13');
-	// 					}
-	// 					throw webAuthResponse.error ?? 'Unknown';
-	// 				}
-	// 				const url = new URL(webAuthResponse.callbackURL);
-	// 				if (url.searchParams.has('denied')) {
-	// 					throw 'Cancelled';
-	// 				}
-	// 				return this.props.serverApi
-	// 					.authenticateTwitterCredential({
-	// 						oauthToken: url.searchParams.get('oauth_token'),
-	// 						oauthVerifier: url.searchParams.get('oauth_verifier'),
-	// 						analytics: this.getSignUpAnalyticsForm(null),
-	// 						pushDevice: this.getPushDeviceForm(),
-	// 					})
-	// 					.then(this._handleAuthServiceCredentialAuthResponse);
-	// 			})
-	// 			.catch((error) => {
-	// 				let authStatus: AuthStatus | null;
-	// 				if (error !== 'Unsupported' && error !== 'Cancelled') {
-	// 					authStatus = {
-	// 						provider: AuthServiceProvider.Twitter,
-	// 						step: AuthStep.Error,
-	// 					};
-	// 				}
-	// 				this.setState(
-	// 					{
-	// 						authStatus,
-	// 					},
-	// 					resolve
-	// 				);
-	// 			});
-	// 	});
-	// };
+	private readonly _signInWithApple = () => this.props.appApi
+		.getDeviceInfo()
+		.then((deviceInfo) => {
+			if (
+				isAppleAppPlatform(deviceInfo.appPlatform) &&
+				deviceInfo.appVersion.compareTo(new SemanticVersion('5.4.1')) < 0
+			) {
+				throw new Error('Readup must be updated in the App Store to version 5.4 or greater to use this feature.');
+			}
+			return new Promise<AuthServiceCredentialAuthResponse>(resolve => {
+				const listener = (credential: AppleIdCredential) => {
+					this.props.appApi.removeListener('authenticateAppleIdCredential', listener);
+					this.props.serverApi
+						.authenticateAppleIdCredential({
+							...credential,
+							analytics: this.getSignUpAnalyticsForm(null),
+							pushDevice: this.getPushDeviceForm(),
+						})
+						.then(this._handleAuthServiceCredentialAuthResponse)
+						.then(resolve);
+				};
+				this.props.appApi.addListener('authenticateAppleIdCredential', listener);
+				this.props.appApi.requestAppleIdCredential();
+			});
+		});
+	private readonly _signInWithTwitter = () => this.props.appApi
+		.getDeviceInfo()
+		.then((deviceInfo) => {
+			if (
+				isAppleAppPlatform(deviceInfo.appPlatform) &&
+				deviceInfo.appVersion.compareTo(new SemanticVersion('5.7.1')) < 0
+			) {
+				throw new Error('Readup must be updated in the App Store to version 5.7 or greater to use this feature.');
+			}
+		})
+		.then(this.props.serverApi.requestTwitterWebViewRequestToken)
+		.then((token) => {
+			const url = new URL('https://api.twitter.com/oauth/authorize');
+			url.searchParams.set('oauth_token', token.value);
+			return this.props.appApi.requestWebAuthentication({
+				authUrl: url.href,
+				callbackScheme: 'readup',
+			});
+		})
+		.then((webAuthResponse) => {
+			if (!webAuthResponse.callbackURL) {
+				if (webAuthResponse.error === 'Unsupported') {
+					throw new Error('iOS 13 or greater is required to use this feature.');
+				} else {
+					throw new Error(webAuthResponse.error ?? 'Unknown');
+				}
+			}
+			const url = new URL(webAuthResponse.callbackURL);
+			if (url.searchParams.has('denied')) {
+				throw new Error('Authentication cancelled.');
+			}
+			return this.props.serverApi
+				.authenticateTwitterCredential({
+					oauthToken: url.searchParams.get('oauth_token'),
+					oauthVerifier: url.searchParams.get('oauth_verifier'),
+					analytics: this.getSignUpAnalyticsForm(null),
+					pushDevice: this.getPushDeviceForm(),
+				})
+				.then(this._handleAuthServiceCredentialAuthResponse);
+		});
 
 	// window
 	private readonly _handleVisibilityChange = () => {
@@ -818,10 +770,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		this.state = {
 			...this.state,
 			dialogs: dialog ? [this._dialog.createDialog(dialog)] : [],
-			authStatus: null,
-			isInOrientation: props.initialUserProfile
-				? !props.initialUserProfile.userAccount.dateOrientationCompleted
-				: false,
+			onboarding: props.initialUserProfile && !props.initialUserProfile.userAccount.dateOrientationCompleted ? { } : null,
 			isPoppingScreen: false,
 			screens,
 		};
@@ -872,29 +821,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 					}
 				}
 				this.onArticleUpdated(event);
-			})
-			.addListener('authenticateAppleIdCredential', (credential) => {
-				this.setState({
-					authStatus: {
-						provider: AuthServiceProvider.Apple,
-						step: AuthStep.Authenticating,
-					},
-				});
-				this.props.serverApi
-					.authenticateAppleIdCredential({
-						...credential,
-						analytics: this.getSignUpAnalyticsForm(null),
-						pushDevice: this.getPushDeviceForm(),
-					})
-					.then(this._handleAuthServiceCredentialAuthResponse)
-					.catch(() => {
-						this.setState({
-							authStatus: {
-								provider: AuthServiceProvider.Apple,
-								step: AuthStep.Error,
-							},
-						});
-					});
 			})
 			.addListener('authServiceAccountLinked', (association) => {
 				if (
@@ -1041,17 +967,12 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		);
 		if (route.screenKey === ScreenKey.Read) {
 			dialog = null;
-			if (user) {
-				screens = [
-					this.createScreen(
-						ScreenKey.Comments,
-						route.getPathParams(location.path)
-					),
-				];
-			} else {
-				this._signInLocation = location;
-				screens = [];
-			}
+			screens = [
+				this.createScreen(
+					ScreenKey.Comments,
+					route.getPathParams(location.path)
+				),
+			];
 		} else {
 			const locationState = this.getLocationDependentState(location);
 			screens = [locationState.screen];
@@ -1198,53 +1119,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		if (profile.displayPreference) {
 			this.props.appApi.displayPreferenceChanged(profile.displayPreference);
 		}
-		// set screen
-		let screen: Screen;
-		if (!this._signInLocation) {
-			screen = this.createScreen(ScreenKey.Home);
-		} else {
-			const route = findRouteByLocation(
-				routes,
-				this._signInLocation,
-				unroutableQueryStringKeys
-			);
-			// We need to use the stateless canRead function here because the new user state isn't
-			// set until this function returns.
-			if (route.screenKey === ScreenKey.Read) {
-				const articlePathParams = route.getPathParams(
-						this._signInLocation.path
-					),
-					articleRef = {
-						slug: createArticleSlug(articlePathParams),
-					};
-				screen = this.createScreen(ScreenKey.Comments, articlePathParams);
-				this.props.appApi.readArticle(articleRef);
-			} else {
-				screen = this.getLocationDependentState(this._signInLocation).screen;
-			}
-			this._signInLocation = null;
-		}
-		// enter orientation for new users
-		let isInOrientation: boolean;
-		if (eventType === SignInEventType.NewUser) {
-			if (
-				!isAppleAppPlatform(this.props.appApi.deviceInfo.appPlatform) ||
-				this.props.appApi.deviceInfo.appVersion.compareTo(
-					new SemanticVersion('5.5.1')
-				) >= 0
-			) {
-				isInOrientation = true;
-			} else {
-				isInOrientation = false;
-				this.props.appApi.requestNotificationAuthorization();
-			}
-		} else {
-			isInOrientation = !profile.userAccount.dateOrientationCompleted;
-		}
-		return super.onUserSignedIn(profile, eventType, eventSource, {
-			isInOrientation,
-			screens: [screen],
-		});
+		return super.onUserSignedIn(profile, eventType, eventSource);
 	}
 	protected onUserSignedOut() {
 		// sync auth state with app
@@ -1347,14 +1222,31 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 						selectedScreen={this.state.screens[0]}
 						user={this.state.user}
 					/>
-					{this.state.isInOrientation ? (
-						<OrientationWizard
+					{this.state.onboarding ? (
+						<OnboardingFlow
+							analyticsAction={this.state.onboarding.analyticsAction}
 							appPlatform={this.props.appApi.deviceInfo.appPlatform}
-							onComplete={this._completeOrientation}
-							onCreateStaticContentUrl={this._createStaticContentUrl}
-							onRequestNotificationAuthorization={
-								this._requestNotificationAuthorization
+							authServiceToken={this.state.onboarding.authServiceToken}
+							captcha={this.props.captcha}
+							deviceType={DeviceType.Ios}
+							initialAuthenticationStep={
+								this.state.onboarding.initialAuthenticationStep
 							}
+							isExtensionInstalled={false}
+							onClose={this._endOnboarding}
+							onCreateAccount={this._createAccount}
+							onCreateAuthServiceAccount={this._createAuthServiceAccount}
+							onCreateStaticContentUrl={this._createStaticContentUrl}
+							onRequestNotificationAuthorization={this._requestNotificationAuthorization}
+							onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+							onResetPassword={this._resetPassword}
+							onShowToast={this._toaster.addToast}
+							onSignIn={this._signIn}
+							onSignInWithApple={this._signInWithApple}
+							onSignInWithTwitter={this._signInWithTwitter}
+							passwordResetEmail={this.state.onboarding.passwordResetEmail}
+							passwordResetToken={this.state.onboarding.passwordResetToken}
+							user={this.state.user}
 						/>
 					) : null}
 				</>

@@ -17,10 +17,6 @@ import SignInForm from '../../models/userAccounts/SignInForm';
 import FormPartition from '../controls/FormPartition';
 import AuthServiceButton from '../AuthServiceButton';
 import AuthServiceProvider from '../../models/auth/AuthServiceProvider';
-import BrowserPopupResponseResponse from '../../models/auth/BrowserPopupResponseResponse';
-import AuthenticationError, {
-	errorMessage as authenticationErrorMessage,
-} from '../../models/auth/AuthenticationError';
 import { Intent } from '../Toaster';
 import { getPromiseErrorMessage } from '../../format';
 
@@ -38,7 +34,7 @@ interface Props {
 	onSignInWithAuthService?: (
 		provider: AuthServiceProvider,
 		analyticsAction: string
-	) => Promise<BrowserPopupResponseResponse>;
+	) => Promise<any>;
 }
 enum GlobalError {
 	Unknown,
@@ -127,17 +123,6 @@ export default class SignInStep extends React.PureComponent<Props, State> {
 	private readonly _signInWithAuthService = (provider: AuthServiceProvider) => {
 		return this.props
 			.onSignInWithAuthService(provider, this.props.analyticsAction)
-			.then((response) => {
-				if (response.error != null) {
-					this.props.onShowToast(
-						authenticationErrorMessage[response.error],
-						response.error === AuthenticationError.Cancelled
-							? Intent.Neutral
-							: Intent.Danger
-					);
-				}
-				return response;
-			})
 			.catch((reason) => {
 				this.props.onShowToast(getPromiseErrorMessage(reason), Intent.Danger);
 			});
