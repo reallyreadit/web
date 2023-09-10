@@ -134,11 +134,36 @@ export default class Header extends React.Component<Props, State> {
 								{linkElements}
 							</div>
 							<div className="auth">
-								<Button
-									className="log-in"
-									text="Log In"
-									onClick={this._openSignInPrompt}
-								/>
+								{this.props.user ?
+									<>
+										<Link
+											screen={ScreenKey.Notifications}
+											onClick={this._handleLinkClick}
+											iconLeft='bell'
+										>
+											My Replies
+										</Link>
+										<Link
+											screen={ScreenKey.Profile}
+											params={{ userName: this.props.user.name }}
+											onClick={this._handleLinkClick}
+											iconLeft='user'
+										>
+											My Profile
+										</Link>
+										<Link
+											screen={ScreenKey.Settings}
+											onClick={this._handleLinkClick}
+											iconLeft='gear2'
+										>
+											Settings
+										</Link>
+									</> :
+									<Button
+										className="log-in"
+										text="Log In"
+										onClick={this._openSignInPrompt}
+									/>}
 							</div>
 						</div>
 						<Icon
