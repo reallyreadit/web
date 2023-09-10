@@ -1183,6 +1183,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 							content={headerContent}
 							isTransitioningBack={this.state.isPoppingScreen}
 							onBack={this._popScreen}
+							onOpenSignInPrompt={this._beginOnboardingAtSignIn}
 							onViewNotifications={this._viewNotifications}
 							onViewProfile={this._viewProfile}
 							onViewSettings={this._viewSettings}
