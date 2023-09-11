@@ -298,13 +298,6 @@ class SettingsPage extends React.PureComponent<
 				>
 					View your personal reading stats
 				</SettingsLink>
-				<SettingsLink
-					iconName="pie-chart"
-					screenKey={ScreenKey.MyImpact}
-					onNavTo={this.props.onNavTo}
-				>
-					<div>View your author distribution stats</div>
-				</SettingsLink>
 				{this.state.settings.isLoading ? (
 					<LoadingOverlay />
 				) : (

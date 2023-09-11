@@ -79,7 +79,6 @@ import DisplayPreference from '../../../common/models/userAccounts/DisplayPrefer
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import CommentCreationResponse from '../../../common/models/social/CommentCreationResponse';
 import { DeviceType } from '../../../common/DeviceType';
-import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import {
 	AuthorAssignmentRequest,
 	AuthorUnassignmentRequest,
@@ -417,10 +416,6 @@ export default abstract class {
 		PayoutReportRequest,
 		PayoutReportResponse
 	>('/Subscriptions/PayoutReport');
-	public readonly getSubscriptionDistributionSummary =
-		this.createFetchFunction<SubscriptionDistributionSummaryResponse>(
-			'/Subscriptions/DistributionSummary'
-		);
 
 	// UserAccounts
 	public readonly changeDisplayPreference = (data: DisplayPreference) =>

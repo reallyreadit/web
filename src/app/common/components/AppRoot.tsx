@@ -73,7 +73,6 @@ import createSearchScreenFactory from './screens/SearchScreen';
 import EventSource from '../EventSource';
 import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
-import { createMyImpactScreenFactory } from './screens/MyImpactScreen';
 import { createScreenFactory as createFaqScreenFactory } from './FaqPage';
 import createBlogScreenFactory from './screens/BlogScreen';
 import {
@@ -219,20 +218,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		this.props.appApi.openExternalUrlUsingSystem(
 			createTweetWebIntentUrl(params)
 		);
-	};
-	private readonly _openTweetComposerWithCompletionHandler = (
-		params: TweetWebIntentParams
-	) => {
-		this.props.appApi.openExternalUrlUsingSystem(
-			createTweetWebIntentUrl(params)
-		);
-		return new Promise<void>((resolve, reject) => {
-			const resolveWhenActive = () => {
-				this.props.appApi.removeListener('didBecomeActive', resolveWhenActive);
-				resolve();
-			};
-			this.props.appApi.addListener('didBecomeActive', resolveWhenActive);
-		});
 	};
 
 	// updates
@@ -637,18 +622,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread,
-			}),
-			[ScreenKey.MyImpact]: createMyImpactScreenFactory(ScreenKey.MyImpact, {
-				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onGetSubscriptionDistributionSummary:
-					this._getSubscriptionDistributionSummary,
-				onGetUserArticleHistory: this.props.serverApi.getUserArticleHistory,
-				onNavTo: this._navTo,
-				onOpenTweetComposerWithCompletionHandler:
-					this._openTweetComposerWithCompletionHandler,
-				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
-				onShowToast: this._toaster.addToast,
-				onViewAuthor: this._viewAuthor,
 			}),
 			[ScreenKey.MyReads]: createMyReadsScreenFactory(ScreenKey.MyReads, {
 				appPlatform: this.props.appApi.deviceInfo.appPlatform,

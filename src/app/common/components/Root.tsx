@@ -84,7 +84,6 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import {
 	AuthorAssignmentRequest,
@@ -563,13 +562,6 @@ export default abstract class Root<
 			}
 		}
 	};
-
-	// subscriptions
-	protected readonly _getSubscriptionDistributionSummary = (
-		callback: (
-			result: Fetchable<SubscriptionDistributionSummaryResponse>
-		) => void
-	) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
 
 	// toasts
 	protected readonly _toaster = new ToasterService({
