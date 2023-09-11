@@ -1144,16 +1144,17 @@ export default class extends Root<Props, State, SharedState, Events> {
 			this.props.browserApi.userSignedOut();
 			this.props.extensionApi.userSignedOut();
 		}
-		const screenAuthLevel = findRouteByKey(
-			routes,
-			this.state.screens[0].key
-		).authLevel;
+		// check to see if any of the screens require authentication
 		let supplementaryState: Partial<State>;
-		if (screenAuthLevel != null) {
-			supplementaryState = this.changeScreen({
-				key: ScreenKey.Home,
-				method: NavMethod.ReplaceAll,
-			});
+		for (const screen of this.state.screens) {
+			const route = findRouteByKey(routes, screen.key);
+			if (route.authLevel != null) {
+				supplementaryState = this.changeScreen({
+					key: ScreenKey.Home,
+					method: NavMethod.ReplaceAll,
+				});
+				break;
+			}
 		}
 		return super.onUserSignedOut(supplementaryState);
 	}

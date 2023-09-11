@@ -44,7 +44,7 @@ import {
 import ClientType from '../ClientType';
 import UpdateToast from './UpdateToast';
 import routes, { createArticleSlug } from '../../../common/routing/routes';
-import { findRouteByLocation } from '../../../common/routing/Route';
+import { findRouteByLocation, findRouteByKey } from '../../../common/routing/Route';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import {
 	ShareEvent,
@@ -1135,9 +1135,18 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		} else {
 			this.props.appApi.syncAuthCookie();
 		}
-		return super.onUserSignedOut({
-			screens: [],
-		});
+		// check to see if any of the screens require authentication
+		let supplementaryState: Partial<State>;
+		for (const screen of this.state.screens) {
+			const route = findRouteByKey(routes, screen.key);
+			if (route.authLevel != null) {
+				supplementaryState = {
+					screens: [this.createScreen(ScreenKey.Home)]
+				};
+				break;
+			}
+		}
+		return super.onUserSignedOut(supplementaryState);
 	}
 
 	protected readArticle(
