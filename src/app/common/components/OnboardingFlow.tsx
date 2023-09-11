@@ -125,7 +125,11 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	};
 	private readonly _handleExistingUserAuthentication = () => {
 		if (this.props.appPlatform != null) {
-			this.goToStep(Step.TrackingAnimation);
+			if (this.props.user.dateOrientationCompleted == null) {
+				this.goToStep(Step.TrackingAnimation);
+			} else {
+				this._beginClosing(ExitReason.ExistingUserAuthenticated);
+			}
 		} else if (
 			this.props.isExtensionInstalled &&
 			this.props.user.dateOrientationCompleted
