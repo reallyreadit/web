@@ -55,7 +55,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						onClick={this.props.onViewLeaderboards}
 					>
 						<Icon name="podium" />
-						<label>Contenders</label>
+						<label>Leaderboards</label>
 					</button>
 				</li>
 				<li>
