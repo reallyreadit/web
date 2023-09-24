@@ -150,8 +150,8 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			slug,
 		});
 	};
-	private readonly _viewContenders = () => {
-		this.replaceAllScreens(ScreenKey.Contenders);
+	private readonly _viewLeaderboards = () => {
+		this.replaceAllScreens(ScreenKey.Leaderboards);
 	};
 	private readonly _viewHome = () => {
 		this.replaceAllScreens(ScreenKey.Home);
@@ -1162,7 +1162,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				<>
 					<NavBar
 						onNavTo={this._navTo}
-						onViewContenders={this._viewContenders}
+						onViewLeaderboards={this._viewLeaderboards}
 						onViewHome={this._viewHome}
 						onViewMyFeed={this._viewMyFeed}
 						onViewMyReads={this._viewMyReads}
@@ -1209,7 +1209,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 						</ol>
 					</div>
 					<NavTray
-						onViewContenders={this._viewContenders}
+						onViewLeaderboards={this._viewLeaderboards}
 						onViewHome={this._viewHome}
 						onViewMyFeed={this._viewMyFeed}
 						onViewMyReads={this._viewMyReads}

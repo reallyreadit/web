@@ -18,7 +18,7 @@ import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
 
 interface Props {
-	onViewContenders: () => void;
+	onViewLeaderboards: () => void;
 	onViewHome: () => void;
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
@@ -48,11 +48,11 @@ export default class NavTray extends React.PureComponent<Props> {
 				<li>
 					<button
 						className={
-							this.props.selectedScreen.key === ScreenKey.Contenders
+							this.props.selectedScreen.key === ScreenKey.Leaderboards
 								? 'selected'
 								: null
 						}
-						onClick={this.props.onViewContenders}
+						onClick={this.props.onViewLeaderboards}
 					>
 						<Icon name="podium" />
 						<label>Contenders</label>

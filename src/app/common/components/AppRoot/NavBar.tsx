@@ -19,14 +19,14 @@ import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
 
-const contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
+const leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl(),
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void;
-	onViewContenders: () => void;
+	onViewLeaderboards: () => void;
 	onViewHome: () => void;
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
@@ -56,15 +56,15 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={contendersUrl}
-							onClick={this.props.onViewContenders}
+							href={leaderboardsUrl}
+							onClick={this.props.onViewLeaderboards}
 							state={
-								this.props.selectedScreen.key === ScreenKey.Contenders
+								this.props.selectedScreen.key === ScreenKey.Leaderboards
 									? 'selected'
 									: 'normal'
 							}
 							iconLeft="podium"
-							text="Contenders"
+							text="Leaderboards"
 							size="x-large"
 							display="block"
 						/>
