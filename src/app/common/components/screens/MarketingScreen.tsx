@@ -12,59 +12,27 @@ import * as React from 'react';
 import { JsonLd } from 'react-schemaorg';
 import { Corporation } from 'schema-dts';
 import AsyncTracker from '../../../../common/AsyncTracker';
-import { DeviceType } from '../../../../common/DeviceType';
 import Fetchable from '../../../../common/Fetchable';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-import CommunityReads from '../../../../common/models/CommunityReads';
 import PageResult from '../../../../common/models/PageResult';
-import Rating from '../../../../common/models/Rating';
-import UserAccount from '../../../../common/models/UserAccount';
 import UserArticle from '../../../../common/models/UserArticle';
-import { ShareEvent } from '../../../../common/sharing/ShareEvent';
-import ShareResponse from '../../../../common/sharing/ShareResponse';
 import {
-	FetchFunction,
 	FetchFunctionWithParams,
 } from '../../serverApi/ServerApi';
-import RouteLocation from '../../../../common/routing/RouteLocation';
-import HomePanel from './HomePanel';
-import ImageAndText from './ImageAndText';
-import QuoteCard from './QuoteCard';
+import HomePanel from '../HomePanel';
+import ImageAndText from './MarketingScreen/ImageAndText';
+import QuoteCard from './MarketingScreen/QuoteCard';
 import { NavOptions, NavReference } from '../Root';
 import Link from '../../../../common/components/Link';
-import DownloadSection from './MarketingScreen/DownloadSection';
-import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import Icon from '../../../../common/components/Icon';
-import GetStartedButton from './GetStartedButton';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 interface Props {
-	communityReads: Fetchable<CommunityReads>;
-	deviceType: DeviceType;
-	location: RouteLocation;
-	onBeginOnboarding: (analyticsAction: string) => void;
-	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
-	onCreateAbsoluteUrl: (path: string) => string;
 	onCreateStaticContentUrl: (path: string) => string;
 	onGetPublisherArticles: FetchFunctionWithParams<
 		PublisherArticleQuery,
 		PageResult<UserArticle>
 	>;
-	onGetUserCount: FetchFunction<{ userCount: number }>;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
-	onOpenNewPlatformNotificationRequestDialog: () => void;
-	onPostArticle: (article: UserArticle) => void;
-	onRateArticle: (article: UserArticle, score: number) => Promise<Rating>;
-	onReadArticle: (
-		article: UserArticle,
-		e: React.MouseEvent<HTMLElement>
-	) => void;
-	onShare: (data: ShareEvent) => ShareResponse;
-	onShareViaChannel: (data: ShareChannelData) => void;
-	onToggleArticleStar: (article: UserArticle) => Promise<void>;
-	onViewAotdHistory: () => void;
-	onViewComments: (article: UserArticle) => void;
-	onViewProfile: (userName: string) => void;
-	onViewAuthor: (slug: string, name: string) => void;
-	user: UserAccount | null;
 }
 export interface Quote {
 	quote: string;
@@ -74,7 +42,7 @@ export interface Quote {
 	commentId: string;
 }
 
-export default class MarketingScreen extends React.Component<
+class MarketingScreen extends React.Component<
 	Props,
 	{
 		blogPosts: Fetchable<PageResult<UserArticle>>;
@@ -251,20 +219,6 @@ export default class MarketingScreen extends React.Component<
 							<br />
 							Join our community today!
 						</p>
-						<GetStartedButton
-							analyticsAction="home-hero-download"
-							iosPromptType='download'
-							deviceType={this.props.deviceType}
-							location={this.props.location}
-							onBeginOnboarding={this.props.onBeginOnboarding}
-							onCopyAppReferrerTextToClipboard={
-								this.props.onCopyAppReferrerTextToClipboard
-							}
-							onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-							onOpenNewPlatformNotificationRequestDialog={
-								this.props.onOpenNewPlatformNotificationRequestDialog
-							}
-						/>
 					</div>
 					<img
 						className="home-hero-image__image"
@@ -285,22 +239,6 @@ export default class MarketingScreen extends React.Component<
 							type="contained"
 						/>
 					))}
-				</HomePanel>
-				<HomePanel data-nosnippet className="get-readup">
-					<h2 className="heading-regular">Get Readup</h2>
-					<DownloadSection
-						onNavTo={this.props.onNavTo}
-						deviceType={this.props.deviceType}
-						onCopyAppReferrerTextToClipboard={
-							this.props.onCopyAppReferrerTextToClipboard
-						}
-						onOpenNewPlatformNotificationRequestDialog={
-							this.props.onOpenNewPlatformNotificationRequestDialog
-						}
-						location={this.props.location}
-						onBeginOnboarding={this.props.onBeginOnboarding}
-						onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
-					/>
 				</HomePanel>
 				<HomePanel data-nosnippet className="quote-panel">
 					<h2 className="heading-regular">What our readers say</h2>
@@ -393,4 +331,27 @@ export default class MarketingScreen extends React.Component<
 			</div>
 		);
 	}
+}
+export function createScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Props
+) {
+	return {
+		create: (
+			id: number,
+			location: RouteLocation,
+		) => ({
+			id,
+			key,
+			location,
+			title: {
+				default: 'What is Readup?'
+			},
+		}),
+		render: () => (
+			<MarketingScreen
+				{...deps}
+			/>
+		),
+	};
 }

@@ -36,7 +36,7 @@ import { createScreenFactory as createPrivacyPolicyScreenFactory } from './Priva
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import createTeamPageFactory from './AboutPage';
+import { createScreenFactory as createMarketingScreenFactory } from './screens/MarketingScreen';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
@@ -858,8 +858,9 @@ export default abstract class Root<
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			}),
-			[ScreenKey.About]: createTeamPageFactory(ScreenKey.About, {
+			[ScreenKey.About]: createMarketingScreenFactory(ScreenKey.About, {
 				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onNavTo: this._navTo,
 			}),
 		};

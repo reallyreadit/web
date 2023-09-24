@@ -9,11 +9,11 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 import * as React from 'react';
-import Card from './Card';
-import { Quote } from './MarketingScreen';
-import { NavReference } from '../Root';
-import Link from '../../../../common/components/Link';
-import ScreenKey from '../../../../common/routing/ScreenKey';
+import Card from '../../BrowserRoot/Card';
+import { Quote } from '../MarketingScreen';
+import { NavReference } from '../../Root';
+import Link from '../../../../../common/components/Link';
+import ScreenKey from '../../../../../common/routing/ScreenKey';
 
 export default (props: {
 	quote: Quote;

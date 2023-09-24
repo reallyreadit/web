@@ -20,7 +20,7 @@ import {
 // import Link from '../../../../common/components/Link';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import DownloadButton from './DownloadButton';
-import HomeHero from './HomeHero';
+import HomeHero from '../HomeHero';
 import { NavReference, NavOptions } from '../Root';
 import Link from '../../../../common/components/Link';
 import { SafariExtensionDialog } from './SafariExtensionDialog';
