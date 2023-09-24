@@ -45,6 +45,20 @@ export default class extends React.PureComponent<{
 		const links: LinkSet[] = [
 			// TODO: can we import the slug from a single place?
 			{
+				title: 'Learn more',
+				sublinks: [
+					<Link key="about" screen={ScreenKey.About} onClick={navTo}>
+						What is Readup?
+					</Link>,
+					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>
+						F.A.Q.
+					</Link>,
+					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>
+						Privacy Policy
+					</Link>,
+				],
+			},
+			{
 				title: 'Organization',
 				sublinks: [
 					<Link
@@ -57,27 +71,15 @@ export default class extends React.PureComponent<{
 					<DiscordInviteLink key="contact" onClick={navTo}>
 						Discord Community
 					</DiscordInviteLink>,
-					<Link key="privacy" screen={ScreenKey.PrivacyPolicy} onClick={navTo}>
-						Privacy Policy
-					</Link>,
-				],
-			},
-			{
-				title: 'Learn more',
-				sublinks: [
-					<Link key="about" screen={ScreenKey.About} onClick={navTo}>
-						About
-					</Link>,
-					this.props.showWhatIsReadup ? (
-						<Link key="home" screen={ScreenKey.Home} onClick={navTo}>
-							What is Readup?
-						</Link>
-					) : null,
-					<Link key="faq" screen={ScreenKey.Faq} onClick={navTo}>
-						FAQ
+					<Link
+						key="github"
+						href="https://github.com/reallyreadit"
+						onClick={navTo}
+					>
+						Source Code
 					</Link>,
 					<Link key="blog" href="https://blog.readup.org" onClick={navTo}>
-						Blog
+						The Readup Blog
 					</Link>,
 				],
 			},
