@@ -30,7 +30,7 @@ import UserAccount, {
 import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './screens/CommentsScreen';
-import createHomeScreenFactory from './BrowserRoot/HomeScreen';
+import createHomeScreenFactory from './screens/HomeScreen';
 import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';

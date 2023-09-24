@@ -32,7 +32,7 @@ import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './screens/CommentsScreen';
 import createContenderScreenFactory from './AppRoot/ContendersScreen';
-import createHomeScreenFactory from './AppRoot/HomeScreen';
+import createHomeScreenFactory from './screens/HomeScreen';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import classNames from 'classnames';
 import AppApi from '../AppApi';
@@ -534,18 +534,27 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
+				onBeginOnboarding: this._beginOnboarding,
 				onClearAlerts: this._clearAlerts,
+				onCopyAppReferrerTextToClipboard: this._noop,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
-				onGetAotdHistory: this.props.serverApi.getAotdHistory,
+				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetCommunityReads: this.props.serverApi.getCommunityReads,
+				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
+				onGetUserCount: this.props.serverApi.getUserCount,
 				onNavTo: this._navTo,
+				onOpenNewPlatformNotificationRequestDialog:
+					this._openNewPlatformNotificationRequestDialog,
 				onPostArticle: this._openPostDialog,
 				onRateArticle: this._rateArticle,
 				onReadArticle: this._readArticle,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
+				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
 				onToggleArticleStar: this._toggleArticleStar,
+				onViewAotdHistory: this._viewAotdHistory,
+				onViewAuthor: this._viewAuthor,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 			}),
