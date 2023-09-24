@@ -126,15 +126,6 @@ export default class extends React.PureComponent<{
 							</Link>
 						);
 					}),
-
-					<Link
-						key="desktop"
-						screen={ScreenKey.Download}
-						onClick={this.props.onNavTo}
-					>
-						<Icon name='arrow-down' />
-						Desktop Apps
-					</Link>,
 				],
 			},
 		];

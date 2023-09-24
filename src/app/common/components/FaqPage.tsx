@@ -88,26 +88,9 @@ const faqs: FaqCategory[] = [
 				question: 'How do I get started on my computer?',
 				answer: (
 					<p>
-						Download the app for{' '}
-						<Link
-							href="https://apps.apple.com/us/app/readup-social-reading/id1441825432"
-							onClick={props.onNavTo}
-						>
-							Mac
-						</Link>
-						,{' '}
-						<Link
-							href="https://static.readup.org/downloads/windows/ReadupSetup.exe"
-							onClick={props.onNavTo}
-						>
-							Windows
-						</Link>{' '}
-						or{' '}
-						<Link
-							href="https://static.readup.org/downloads/linux/latest"
-							onClick={props.onNavTo}
-						>
-							Linux
+						Get the browser extesion for your browser from our{' '}
+						<Link screen={ScreenKey.Download} onClick={props.onNavTo}>
+							Downloads page
 						</Link>
 						.
 					</p>
