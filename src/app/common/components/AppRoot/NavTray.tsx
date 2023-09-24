@@ -80,7 +80,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						}
 						onClick={this.props.onViewMyFeed}
 					>
-						<Icon badge={this.props.user?.followerAlertCount ?? 0} name="candy" />
+						<Icon badge={this.props.user?.followerAlertCount ?? 0} name="group-circle" />
 						<label>My Feed</label>
 					</button>
 				</li>

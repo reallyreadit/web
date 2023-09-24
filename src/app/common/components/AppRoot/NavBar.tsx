@@ -94,7 +94,7 @@ export default class NavBar extends React.PureComponent<Props> {
 									? 'selected'
 									: 'normal'
 							}
-							iconLeft="candy"
+							iconLeft="group-circle"
 							text="My Feed"
 							size="x-large"
 							display="block"
