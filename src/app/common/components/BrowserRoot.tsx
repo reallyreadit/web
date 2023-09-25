@@ -724,8 +724,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||
 			(props.initialUserProfile &&
-				(!props.extensionApi.isInstalled ||
-					!props.initialUserProfile.userAccount.dateOrientationCompleted) &&
+				!props.initialUserProfile.userAccount.dateOrientationCompleted &&
 				isCompatibleBrowser(props.deviceType) &&
 				route.screenKey !== ScreenKey.EmailSubscriptions &&
 				route.screenKey !== ScreenKey.ExtensionRemoval &&
