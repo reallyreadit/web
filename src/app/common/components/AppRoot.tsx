@@ -79,7 +79,6 @@ import {
 	TweetWebIntentParams,
 	createTweetWebIntentUrl,
 } from '../../../common/sharing/twitter';
-import createReadScreenFactory from './AppRoot/ReadScreen';
 import { AppPlatform, isAppleAppPlatform } from '../../../common/AppPlatform';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
@@ -691,16 +690,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 				onViewThread: this._viewThread,
-			}),
-			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
-				deviceType: DeviceType.Ios,
-				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onGetArticle: this.props.serverApi.getArticle,
-				onNavTo: this._navTo,
-				onOpenNewPlatformNotificationRequestDialog:
-					this._openNewPlatformNotificationRequestDialog,
-				onReadArticle: this._readArticle,
-				onSetScreenState: this._setScreenState,
 			}),
 			[ScreenKey.Search]: createSearchScreenFactory(ScreenKey.Search, {
 				deviceType: DeviceType.Ios,
