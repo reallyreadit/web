@@ -192,13 +192,12 @@ class ReadScreen extends React.PureComponent<Props> {
 										<div className="choice__details">
 											<div>
 												<h2>
-													Read it on Readup,
-													<br /> the app for reading.
+													Read it on Readup
 												</h2>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
 												<ul className="info dashed">
-													<li>Better reading</li>
 													<li>100% ad-free</li>
+													<li>Unlock comments after reading</li>
 												</ul>
 											</div>
 											{/* If not logged in & on desktop: suggest to Get Started */}
