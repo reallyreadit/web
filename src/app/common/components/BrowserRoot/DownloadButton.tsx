@@ -54,9 +54,8 @@ export default class DownloadButton extends React.Component<Props> {
 
 	private _openInApp = () => {
 		if (isShowInAppProps(this.props) && this.props.showOpenInApp) {
-			let targetUrl;
 			if (this.props.deviceType === DeviceType.Ios) {
-				targetUrl = createUrl(
+				window.location.href = createUrl(
 					{
 						host: 'reallyread.it',
 						protocol: 'https',
@@ -66,17 +65,6 @@ export default class DownloadButton extends React.Component<Props> {
 						[deviceTypeQueryStringKey]: DeviceType.Ios,
 					}
 				);
-			} else {
-				targetUrl = createUrl(
-					{
-						host: window.location.host,
-						protocol: 'readup',
-					},
-					this.props.location.path
-				);
-			}
-			if (targetUrl) {
-				window.location.href = targetUrl;
 			}
 		}
 	};
