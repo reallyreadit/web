@@ -250,6 +250,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			<InstallExtensionStep
 				deviceType={this.props.deviceType}
 				onCreateStaticContentUrl={this.props.onCreateStaticContentUrl}
+				onSkip={this._goToTrackingAnimationStep}
 			/>
 		),
 		[Step.ExtensionInstalled]: (_: UserAccount) => (

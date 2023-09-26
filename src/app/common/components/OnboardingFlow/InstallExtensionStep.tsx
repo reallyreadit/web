@@ -18,10 +18,12 @@ import {
 import Button from '../../../../common/components/Button';
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../../common/cookies';
+import Link from '../../../../common/components/Link';
 
 interface Props {
 	deviceType: DeviceType;
 	onCreateStaticContentUrl: (path: string) => string;
+	onSkip: () => void
 }
 export default class InstallExtensionStep extends React.PureComponent<Props> {
 	private readonly _addExtension = (event: React.MouseEvent) => {
@@ -113,6 +115,7 @@ export default class InstallExtensionStep extends React.PureComponent<Props> {
 						</h2>
 					</>
 				)}
+				<Link className="skip" onClick={this.props.onSkip}>Skip</Link>
 			</div>
 		);
 	}

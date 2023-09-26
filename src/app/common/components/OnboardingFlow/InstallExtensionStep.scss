@@ -43,6 +43,11 @@
 	width: 300px;
 	height: 180px;
 }
+.install-extension-step_gudkmn > .skip {
+	display: block;
+    margin-top: 1em;
+    color: var(--text-muted-color);
+}
 
 @include theme using ($root, $scheme) {
 	#{$root} .install-extension-step_gudkmn > img {
