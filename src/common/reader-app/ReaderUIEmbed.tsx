@@ -252,6 +252,7 @@ export default class ReaderUIEmbed extends React.Component<
 						onShare={this._handleShareRequest}
 						onShareViaChannel={this._handleShareChannelRequest}
 						onToggleStar={this.props.onToggleStar}
+						user={this.props.user}
 					/>
 				</div>
 				<DialogManager
