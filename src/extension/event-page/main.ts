@@ -195,9 +195,11 @@ async function openReaderInTab(
 	const displayPreference = await serverApi.getDisplayPreferenceFromCache();
 	const baseURL = chrome.runtime.getURL(
 		`/${
-			displayPreference.theme === DisplayTheme.Light
-				? 'reader.html'
-				: 'reader-dark.html'
+			displayPreference
+				? displayPreference.theme === DisplayTheme.Light
+					? 'reader-light.html'
+					: 'reader-dark.html'
+				: 'reader.html'
 		}`
 	);
 	const searchParams = new URLSearchParams({
