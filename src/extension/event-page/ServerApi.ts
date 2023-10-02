@@ -2,7 +2,6 @@ import UserArticle from '../../common/models/UserArticle';
 import ParseResult from '../../common/reading/ParseResult';
 import ReadStateCommitData from '../../common/reading/ReadStateCommitData';
 import ReadupRequest from './Request';
-import { Cached, cache, isExpired } from './Cached';
 import { createUrl } from '../../common/HttpEndpoint';
 import { createQueryString } from '../../common/routing/queryString';
 import ArticleLookupResult from '../../common/models/ArticleLookupResult';
@@ -10,9 +9,7 @@ import CommentThread from '../../common/models/CommentThread';
 import CommentForm from '../../common/models/social/CommentForm';
 import PostForm from '../../common/models/social/PostForm';
 import Post from '../../common/models/social/Post';
-import UserAccount, { areEqual } from '../../common/models/UserAccount';
-import NotificationsQueryResult from '../common/models/NotificationsQueryResult';
-import DisplayedNotification from './DisplayedNotification';
+import UserAccount from '../../common/models/UserAccount';
 import Rating from '../../common/models/Rating';
 import CommentAddendumForm from '../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../common/models/social/CommentRevisionForm';
@@ -23,7 +20,6 @@ import DisplayPreference, {
 	areEqual as areDisplayPreferencesEqual,
 	getClientDefaultDisplayPreference,
 } from '../../common/models/userAccounts/DisplayPreference';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
@@ -38,137 +34,27 @@ function getCustomHeaders() {
  * An API for the event page to communicate with Readup's resource API.
  */
 export default class ServerApi {
-	public static alarms = {
-		checkNotifications: 'ServerApi.checkNotifications',
-		getBlacklist: 'ServerApi.getBlacklist',
-	};
-
 	// handlers
 	private readonly _onDisplayPreferenceChanged: (
 		preference: DisplayPreference
 	) => void;
 	private readonly _onUserSignedOut: () => void;
-	private readonly _onUserUpdated: (user: UserAccount) => void;
 	constructor(handlers: {
 		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
 		onUserSignedOut: () => void;
-		onUserUpdated: (user: UserAccount) => void;
 	}) {
-		// alarms
-		chrome.alarms.onAlarm.addListener(async (alarm) => {
-			const isAuthenticated = await this.isAuthenticated();
-			if (isAuthenticated) {
-				return;
-			}
-			switch (alarm.name) {
-				case ServerApi.alarms.checkNotifications:
-					await this.checkNotifications();
-					break;
-				case ServerApi.alarms.getBlacklist:
-					await this.checkBlacklistCache();
-					break;
-			}
-		});
-		// notifications
-		if (chrome.notifications) {
-			chrome.notifications.onClicked.addListener(async (id) => {
-				await chrome.tabs.create({
-					url: createUrl(
-						window.reallyreadit.extension.config.apiServer,
-						'/Extension/Notification/' + id
-					),
-				});
-			});
-		}
 		// handlers
 		this._onDisplayPreferenceChanged = handlers.onDisplayPreferenceChanged;
 		this._onUserSignedOut = handlers.onUserSignedOut;
-		this._onUserUpdated = handlers.onUserUpdated;
 	}
 
-	private async getNotificationsFromStorage() {
-		const result = await chrome.storage.local.get('displayedNotifications');
-		return (result['displayedNotifications'] || []) as DisplayedNotification[];
-	}
 	public async getDisplayPreferenceFromStorage() {
 		const result = await chrome.storage.local.get('displayPreference');
 		return result['displayPreference'] as DisplayPreference | null;
 	}
-	private async getBlacklistFromStorage() {
-		const result = await chrome.storage.local.get('blacklist');
-		return (result['blacklist'] || {
-			value: [],
-			timestamp: 0,
-			expirationTimespan: 0,
-		}) as Cached<string[]>;
-	}
 	public async getUserFromStorage() {
 		const result = await chrome.storage.local.get('user');
 		return result['user'] as UserAccount | null;
-	}
-	private async checkNotifications() {
-		if (!chrome.notifications) {
-			return;
-		}
-		chrome.notifications.getAll(async (chromeNotifications) => {
-			const now = Date.now(),
-				displayedNotificationExpiration = now - 2 * 60 * 1000,
-				currentNotifications = (await this.getNotificationsFromStorage()).filter(notification => notification.date >= displayedNotificationExpiration);
-			try {
-				const result = await this.fetchJson<NotificationsQueryResult>({
-					method: 'GET',
-					path: '/Extension/Notifications',
-					data: {
-						ids: Object.keys(chromeNotifications).concat(
-							currentNotifications
-								.filter(
-									(notification) => !(notification.id in chromeNotifications)
-								)
-								.map((notification) => notification.id)
-						),
-					},
-				});
-				for (const id of result.cleared) {
-					chrome.notifications.clear(id);
-					const index = currentNotifications.findIndex(notification => notification.id === id);
-					if (index !== -1) {
-						currentNotifications.splice(index, 1);
-					}
-				}
-				for (const notification of result.created) {
-					chrome.notifications.create(notification.id, {
-						type: 'basic',
-						iconUrl: chrome.runtime.getURL('icons/icon-128.png'),
-						title: notification.title,
-						message: notification.message,
-						isClickable: true,
-					});
-					currentNotifications.push({
-						id: notification.id,
-						date: Date.now(),
-					});
-				}
-				await chrome.storage.local.set({ 'displayedNotifications': currentNotifications });
-				const currentUser = await this.getUser();
-				if (!areEqual(currentUser, result.user)) {
-					await chrome.storage.local.set({ 'user': result.user });
-					// don't broadcast on sign in order to avoid sending stale data
-					if (currentUser) {
-						console.log(`[ServerApi] user updated (notification check)`);
-						this._onUserUpdated(result.user);
-					}
-				}
-			} catch { }
-		});
-	}
-	private async checkBlacklistCache() {
-		const blacklist = await this.getBlacklistFromStorage();
-		if (isExpired(blacklist)) {
-			try {
-				const rules = await this.fetchJson<string[]>({ method: 'GET', path: '/Extension/Blacklist' });
-				await chrome.storage.local.set({ 'blacklist': cache(rules, 719000) });
-			} catch { }
-		}
 	}
 	private async fetchJson<T>(request: ReadupRequest) {
 		const _this = this;
@@ -335,12 +221,6 @@ export default class ServerApi {
 		const result = await chrome.storage.local.get('user');
 		return result['user'] as UserAccount | null;
 	}
-	public async getBlacklist() {
-		const blacklist = await this.getBlacklistFromStorage();
-		return blacklist.value.map(
-			(pattern) => new RegExp(pattern)
-		);
-	}
 	public rateArticle(articleId: number, score: number) {
 		return this.fetchJson<{
 			article: UserArticle;
@@ -384,18 +264,10 @@ export default class ServerApi {
 			data,
 		});
 	}
-	public async userSignedIn(profile: WebAppUserProfile) {
-		await chrome.storage.local.set({
-			'user': profile.userAccount,
-			'displayPreference': profile.displayPreference
-		});
-		await this.checkNotifications();
-	}
 	public async userSignedOut() {
 		await chrome.storage.local.set({
 			'user': null,
 			'displayPreference': null,
-			'displayedNotifications': []
 		});
 	}
 	public async userUpdated(user: UserAccount) {

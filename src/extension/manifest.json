@@ -61,8 +61,6 @@
 	},
 	"permissions": [
 		"cookies",
-		"alarms",
-		"notifications",
 		"scripting",
 		"storage",
 		"declarativeNetRequest"
