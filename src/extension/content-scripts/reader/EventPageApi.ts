@@ -146,6 +146,7 @@ export default class EventPageApi {
 		}
 		window.clearInterval(this._loadingAnimationInterval);
 		this._loadingAnimationInterval = null;
+		sendMessage('loadingAnimationTick', 0);
 	}
 	public registerPage(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>(

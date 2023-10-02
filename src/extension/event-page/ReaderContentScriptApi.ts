@@ -102,6 +102,7 @@ export default class ReaderContentScriptApi {
 						const tick = message.data as number;
 						if (tick === 0) {
 							await this._badge.setDefault(sender.tab.id);
+							return;
 						}
 						await this._badge.setLoading(sender.tab.id, tick);
 					})();
