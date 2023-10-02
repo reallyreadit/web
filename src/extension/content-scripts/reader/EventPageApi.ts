@@ -88,7 +88,8 @@ export default class EventPageApi {
 			// Don't answer messages from content scripts.
 			// TODO: Explore full consequences of running this messaging service in a chrome-extension://... page instead of a regular http(s)://... web page and refactor as required.
 			if (message.to) {
-				return;
+				// return true so that other handlers will have an opportunity to respond
+				return true;
 			}
 			switch (message.type) {
 				case 'articleUpdated':
@@ -116,6 +117,7 @@ export default class EventPageApi {
 			// always send a response because the sender must use a callback in order to
 			// check for runtime errors and an error will be triggered if the port is closed
 			sendResponse();
+			return false;
 		});
 	}
 	public getDisplayPreference() {

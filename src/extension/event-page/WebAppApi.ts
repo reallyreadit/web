@@ -26,52 +26,58 @@ export default class WebAppApi {
 		onUserUpdated: (user: UserAccount) => void;
 	}) {
 		// listen for messages from content script
-		chrome.runtime.onMessage.addListener((message, sender) => {
+		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (
-				message.to === 'eventPage' &&
-				message.from === 'webAppContentScript'
+				message.to !== 'eventPage' ||
+				message.from !== 'webAppContentScript'
 			) {
-				console.log(
-					`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`
-				);
-				switch (message.type) {
-					case 'articleUpdated':
-						handlers.onArticleUpdated(message.data);
-						break;
-					case 'authServiceLinkCompleted':
-						handlers.onAuthServiceLinkCompleted(message.data);
-						break;
-					case 'commentPosted':
-						handlers.onCommentPosted(message.data);
-						break;
-					case 'commentUpdated':
-						handlers.onCommentUpdated(message.data);
-						break;
-					case 'displayPreferenceChanged':
-						handlers.onDisplayPreferenceChanged(message.data);
-						break;
-					case 'registerPage':
-						this.addTab(sender.tab.id);
-						break;
-					case 'readArticle':
-						handlers.onReadArticle(message.data);
-						break;
-					case 'unregisterPage':
-						// sender.tab is undefined in Firefox
-						// tab won't be removed until a messaging error occurs
-						this.removeTab(sender?.tab?.id);
-						break;
-					case 'userSignedIn':
-						handlers.onUserSignedIn(message.data);
-						break;
-					case 'userSignedOut':
-						handlers.onUserSignedOut();
-						break;
-					case 'userUpdated':
-						handlers.onUserUpdated(message.data);
-						break;
-				}
+				// return true so that other handlers will have an opportunity to respond
+				return true;
 			}
+			console.log(
+				`[WebAppApi] received ${message.type} message from tab # ${sender.tab?.id}`
+			);
+			switch (message.type) {
+				case 'articleUpdated':
+					handlers.onArticleUpdated(message.data);
+					break;
+				case 'authServiceLinkCompleted':
+					handlers.onAuthServiceLinkCompleted(message.data);
+					break;
+				case 'commentPosted':
+					handlers.onCommentPosted(message.data);
+					break;
+				case 'commentUpdated':
+					handlers.onCommentUpdated(message.data);
+					break;
+				case 'displayPreferenceChanged':
+					handlers.onDisplayPreferenceChanged(message.data);
+					break;
+				case 'registerPage':
+					this.addTab(sender.tab.id);
+					break;
+				case 'readArticle':
+					handlers.onReadArticle(message.data);
+					break;
+				case 'unregisterPage':
+					// sender.tab is undefined in Firefox
+					// tab won't be removed until a messaging error occurs
+					this.removeTab(sender?.tab?.id);
+					break;
+				case 'userSignedIn':
+					handlers.onUserSignedIn(message.data);
+					break;
+				case 'userSignedOut':
+					handlers.onUserSignedOut();
+					break;
+				case 'userUpdated':
+					handlers.onUserUpdated(message.data);
+					break;
+			}
+			// always send a response because the sender must use a callback in order to
+			// check for runtime errors and an error will be triggered if the port is closed
+			sendResponse();
+			return false;
 		});
 	}
 	private async getTabIds() {

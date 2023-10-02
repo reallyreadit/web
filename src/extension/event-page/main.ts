@@ -366,12 +366,13 @@ chrome.action.onClicked.addListener(async (tab) => {
 		}
 	);
 });
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (
 		message.from !== 'contentScriptInitializer' ||
 		message.to !== 'eventPage'
 	) {
-		return;
+		// return true so that other handlers will have an opportunity to respond
+		return true;
 	}
 	switch (message.type) {
 		case 'injectAlert':
@@ -391,4 +392,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 			});
 			break;
 	}
+	// always send a response because the sender must use a callback in order to
+	// check for runtime errors and an error will be triggered if the port is closed
+	sendResponse();
+	return false;
 });
