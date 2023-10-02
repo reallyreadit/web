@@ -9,7 +9,6 @@ import {
 	extensionAuthQueryStringKey,
 } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import UserAccount from '../../common/models/UserAccount';
 import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
 import {
 	ExtensionOptionKey,
@@ -19,28 +18,6 @@ import {
 
 // NOTE: `window` does not exist in service workers.
 // All window config references are replaced at compile time by Webpack's DefinePlugin
-
-// browser action icon
-function setIcon(state: {
-	user: UserAccount | null;
-}) {
-	const placeholder = '{SIZE}';
-	let pathTemplate = '/icons/';
-	if (state.user) {
-		pathTemplate += `icon-${placeholder}.png`;
-	} else {
-		pathTemplate += `icon-${placeholder}-warning.png`;
-	}
-	chrome.action.setIcon({
-		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
-			(paths, size) => {
-				paths[size] = pathTemplate.replace(placeholder, size.toString());
-				return paths;
-			},
-			{}
-		),
-	});
-}
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -52,9 +29,6 @@ const serverApi = new ServerApi({
 		await webAppApi.displayPreferenceChanged(preference);
 	},
 	onUserSignedOut: async () => {
-		setIcon({
-			user: null,
-		});
 		await readerContentScriptApi.userSignedOut();
 	},
 });
@@ -181,23 +155,12 @@ const webAppApi = new WebAppApi({
 		// update readers
 		await readerContentScriptApi.commentUpdated(comment);
 	},
-	onUserSignedIn: async (profile) => {
-		setIcon({
-			user: profile.userAccount,
-		});
-		await serverApi.userSignedIn(profile);
-	},
+	onUserSignedIn: async (profile) => { },
 	onUserSignedOut: async () => {
-		setIcon({
-			user: null,
-		});
 		await serverApi.userSignedOut();
 		await readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: async (user) => {
-		setIcon({
-			user,
-		});
 		// update server cache
 		await serverApi.userUpdated(user);
 		// update readers
@@ -281,10 +244,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	}
 	// initialize settings
 	await chrome.storage.local.set({ debug: JSON.stringify(false) });
-	// update icon
-	setIcon({
-		user: await serverApi.getUser(),
-	});
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -340,10 +299,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 chrome.runtime.onStartup.addListener(async () => {
 	console.log('[EventPage] startup');
-	// update icon
-	setIcon({
-		user: await serverApi.getUser(),
-	});
 	// initialize tabs
 	await readerContentScriptApi.clearTabs();
 	await webAppApi.clearTabs();
