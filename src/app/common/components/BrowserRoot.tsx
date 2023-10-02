@@ -51,7 +51,6 @@ import {
 	messageQueryStringKey,
 	authServiceTokenQueryStringKey,
 	extensionInstalledQueryStringKey,
-	extensionAuthQueryStringKey,
 	createQueryString,
 	appReferralQueryStringKey,
 	subscribeQueryStringKey,
@@ -71,9 +70,7 @@ import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
 import * as Cookies from 'js-cookie';
 import { extensionInstallationRedirectPathCookieKey } from '../../../common/cookies';
-import OnboardingFlow, {
-	Step as OnboardingStep,
-} from './OnboardingFlow';
+import OnboardingFlow from './OnboardingFlow';
 import ShareForm from '../../../common/models/analytics/ShareForm';
 import {
 	AuthServiceBrowserLinkResponse,
@@ -716,10 +713,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			onboardingState = {
 				passwordResetEmail: queryStringParams['email'],
 				passwordResetToken: queryStringParams['token'],
-			};
-		} else if (extensionAuthQueryStringKey in queryStringParams) {
-			onboardingState = {
-				initialAuthenticationStep: OnboardingStep.CreateAccount,
 			};
 		} else if (
 			extensionInstalledQueryStringKey in queryStringParams ||

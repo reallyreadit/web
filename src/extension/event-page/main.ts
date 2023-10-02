@@ -6,7 +6,6 @@ import { createCommentThread } from '../../common/models/social/Post';
 import { sessionIdCookieKey } from '../../common/cookies';
 import {
 	extensionInstalledQueryStringKey,
-	extensionAuthQueryStringKey,
 } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
@@ -305,16 +304,6 @@ chrome.runtime.onStartup.addListener(async () => {
 	await webAppApi.injectContentScripts();
 });
 chrome.action.onClicked.addListener(async (tab) => {
-	// check if we're logged in
-	const isAuthenticated = await serverApi.isAuthenticated();
-	if (!isAuthenticated) {
-		await chrome.tabs.create({
-			url: createUrl(window.reallyreadit.extension.config.webServer, null, {
-				[extensionAuthQueryStringKey]: null,
-			}),
-		});
-		return;
-	}
 	// check which type of page we're looking at
 	if (!tab.url) {
 		return;
