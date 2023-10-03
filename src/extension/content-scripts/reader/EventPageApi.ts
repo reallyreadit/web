@@ -136,9 +136,14 @@ export default class EventPageApi {
 			return;
 		}
 		let tick = 0;
+		const rate = 150;
 		this._loadingAnimationInterval = window.setInterval(() => {
-			sendMessage('loadingAnimationTick', tick++);
-		}, 150);
+			if (tick * rate > 1000 * 30) {
+				this.stopLoadingAnimation();
+				return;
+			}
+			sendMessage('loadingAnimationTick', ++tick);
+		}, rate);
 	}
 	public stopLoadingAnimation() {
 		if (this._loadingAnimationInterval == null) {
