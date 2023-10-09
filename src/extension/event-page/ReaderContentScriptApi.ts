@@ -21,6 +21,8 @@ import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { ExtensionOptions } from '../options-page/ExtensionOptions';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 interface ReaderContentScriptTab {
 	articleId: number | null;
@@ -35,10 +37,13 @@ export default class ReaderContentScriptApi {
 	constructor(params: {
 		badgeApi: BrowserActionBadgeApi;
 		onGetDisplayPreference: () => Promise<DisplayPreference | null>;
+		onGetDisplayPreferenceFromCache: () => Promise<DisplayPreference | null>;
+		onGetExtensionOptions: () => Promise<ExtensionOptions>;
+		onGetUserAccountFromCache: () => Promise<UserAccount | null>;
 		onChangeDisplayPreference: (
 			preference: DisplayPreference
 		) => Promise<DisplayPreference>;
-		onRegisterPage: (
+		onGetUserArticle: (
 			tabId: number,
 			data: ParseResult
 		) => Promise<ArticleLookupResult>;
@@ -85,6 +90,24 @@ export default class ReaderContentScriptApi {
 						sendResponse
 					);
 					return true;
+				case 'getDisplayPreferenceFromCache':
+					createMessageResponseHandler(
+						params.onGetDisplayPreferenceFromCache(),
+						sendResponse
+					);
+					return true;
+				case 'getExtensionOptions':
+					createMessageResponseHandler(
+						params.onGetExtensionOptions(),
+						sendResponse
+					);
+					return true;
+				case 'getUserAccountFromCache':
+					createMessageResponseHandler(
+						params.onGetUserAccountFromCache(),
+						sendResponse
+					);
+					return true;
 				case 'changeDisplayPreference':
 					createMessageResponseHandler(
 						(async () => {
@@ -114,8 +137,15 @@ export default class ReaderContentScriptApi {
 								articleId: null,
 								id: sender.tab.id,
 							});
+						})(),
+						sendResponse
+					);
+					return true;
+				case 'getUserArticle':
+					createMessageResponseHandler(
+						(async () => {
 							try {
-								const result = await params.onRegisterPage(sender.tab.id, message.data);
+								const result = await params.onGetUserArticle(sender.tab.id, message.data);
 								await this.setTab({
 									articleId: result.userArticle.id,
 									id: sender.tab.id,
@@ -374,7 +404,12 @@ export default class ReaderContentScriptApi {
 			data: preference,
 		});
 	}
-
+	public async userSignedIn(profile: WebAppUserProfile) {
+		await this.sendMessageToAllTabs({
+			type: 'userSignedIn',
+			data: profile,
+		});
+	}
 	public async userSignedOut() {
 		await this.sendMessageToAllTabs({
 			type: 'userSignedOut',
@@ -383,7 +418,6 @@ export default class ReaderContentScriptApi {
 		for (const tab of tabs) {
 			await this._badge.setDefault(tab.id);
 		}
-		await this.clearTabs();
 	}
 	public async userUpdated(user: UserAccount) {
 		await this.sendMessageToAllTabs({

@@ -1,6 +1,6 @@
 import Page from '../../../common/reading/Page';
 import EventPageApi from './EventPageApi';
-import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata';
+import parseDocumentMetadata, { MetadataParseResult } from '../../../common/reading/parseDocumentMetadata';
 import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
@@ -22,7 +22,7 @@ import ScrollService from '../../../common/services/ScrollService';
 import UserAccount from '../../../common/models/UserAccount';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
 import { parseQueryString } from '../../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../../common/ParserDocumentLocation';
@@ -50,18 +50,16 @@ import { mergeComment, updateComment } from '../../../common/comments';
 import { createArticleSlug } from '../../../common/routing/routes';
 import UserPage from '../../../common/models/UserPage';
 import { createUrl } from '../../../common/HttpEndpoint';
+import { ExtensionOptionKey } from '../../options-page/ExtensionOptions';
+import ParseResult from '../../../common/contentParsing/ParseResult';
 
 // TODO PROXY EXT: taken from the native reader
 // our case is similar to
 // ensure the rest also respects this documentLocation
 
 const {
-	url,
-	displayPreference: queryDisplayPreference,
-	star,
+	url
 } = parseQueryString(window.location.search);
-
-const starOnOpen = star === 'true';
 
 let documentLocation: ParserDocumentLocation = new URL(url);
 
@@ -70,15 +68,17 @@ let documentLocation: ParserDocumentLocation = new URL(url);
 let deviceType: DeviceType = DeviceType.DesktopChrome;
 
 // TODO PROXY EXT: native article, fill these vars
-let displayPreference: DisplayPreference = JSON.parse(
-	queryDisplayPreference
-) as DisplayPreference;
-let article: UserArticle;
-let page: Page;
-let userPage: UserPage;
-let user: UserAccount;
+let displayPreference: DisplayPreference | null;
+let article: UserArticle | null;
+let page: Page | null;
+let userPage: UserPage | null;
+let user: UserAccount | null;
 let contentRoot: HTMLElement;
 let scrollRoot: HTMLElement;
+
+// These global parse results are assigned during initialization and never change afterwards.
+let metadataParseResult: MetadataParseResult;
+let contentParseResult: ParseResult;
 
 // globals
 let authServiceLinkCompletionHandler: (
@@ -510,14 +510,16 @@ const eventPageApi = new EventPageApi({
 			displayPreference = preference;
 		}
 	},
-	onUserSignedOut: () => {
-		reader.unloadPage();
-		// TODO PROXY EXT Native does not have this error handler
-		console.error('You were signed out in another tab.');
-		// showError('You were signed out in another tab.');
+	onUserSignedIn: async () => {
+		eventPageApi.startLoadingAnimation();
+		await loadUserArticle();
+		eventPageApi.stopLoadingAnimation();
 	},
-	onUserUpdated: (user) => {
-		updateUser(user);
+	onUserSignedOut: async () => {
+		await unloadUserArticle();
+	},
+	onUserUpdated: (updatedUser) => {
+		updateUser(updatedUser);
 	},
 });
 
@@ -731,15 +733,17 @@ async function processArticleContent(doc: Document) {
 // eventPageApi.getDisplayPreference().then(
 // 	async (cachedDisplayPreference) => {
 async function initialize() {
+	eventPageApi.registerPage();
+
 	eventPageApi.startLoadingAnimation();
 
 	await fetchAndInjectArticle();
 
-	const metadataParseResult = parseDocumentMetadata({
+	metadataParseResult = parseDocumentMetadata({
 		url: documentLocation,
 	});
 
-	const contentParseResult = parseDocumentContent({
+	contentParseResult = parseDocumentContent({
 		url: documentLocation,
 	});
 
@@ -771,17 +775,19 @@ async function initialize() {
 		}`;
 	document.head.insertAdjacentElement('beforeend', styleElement);
 
+	// Set the global user object before rendering the UI.
+	user = await eventPageApi.getUserAccountFromCache();
+
 	// insert React UI
 	insertEmbed();
 
 	// Update the display preference (re-renders the first time)
 	// Sets the font and background color.
+	displayPreference = await eventPageApi.getDisplayPreferenceFromCache();
+	if (displayPreference == null) {
+		displayPreference = await eventPageApi.changeDisplayPreference(getClientDefaultDisplayPreference());
+	}
 	updateDisplayPreference(displayPreference);
-
-	// Overwrite the cached copy that was given as a URL parameter, if needed.
-	eventPageApi
-		.getDisplayPreference()
-		.then((displayPreference) => updateDisplayPreference(displayPreference));
 
 	// See build/targets/extension/contentScripts/reader.js
 	// We need to load these here (after document pruning and styling)
@@ -796,28 +802,45 @@ async function initialize() {
 	);
 	procesLazyImages(publisherConfig?.imageStrategy);
 
-	// ArticleLookupResult
-	const result = await eventPageApi.registerPage(
-		createPageParseResult(metadataParseResult, contentParseResult)
-	);
+	// PROXY EXT NOTE: native doesn't have this, still needed?
+	// Intercept mouseup event on article content to prevent article scripts
+	// from handling click events.
+	document
+		.getElementById('com_readup_article_content')
+		.addEventListener('mouseup', (event) => {
+			event.stopPropagation();
+		});
 
+	// Check to see if the user is signed in.
+	if (!user) {
+		eventPageApi.stopLoadingAnimation();
+		return;
+	}
+
+	// Load the user article.
+	await loadUserArticle();
 	eventPageApi.stopLoadingAnimation();
 
-	// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
-	// extract into common?
+	// star the article if auto-starring is on
+	const extensionOptions = await eventPageApi.getExtensionOptions();
+	if (extensionOptions[ExtensionOptionKey.StarOnSave]) {
+		await eventPageApi.setStarred({
+			articleId: article.id,
+			isStarred: true,
+		});
+	}
+}
+
+async function loadUserArticle() {
+	// ArticleLookupResult
+	const result = await eventPageApi.getUserArticle(
+		createPageParseResult(metadataParseResult, contentParseResult)
+	);
 
 	// set globals
 	article = result.userArticle;
 	userPage = result.userPage;
 	user = result.user;
-
-	// star the article if auto-starring is on
-	if (starOnOpen) {
-		eventPageApi.setStarred({
-			articleId: article.id,
-			isStarred: true,
-		});
-	}
 
 	// update the title and byline
 	updateArticleHeader({
@@ -853,15 +876,24 @@ async function initialize() {
 			})
 		);
 	}
+}
 
-	// PROXY EXT NOTE: native doesn't have this, still needed?
-	// Intercept mouseup event on article content to prevent article scripts
-	// from handling click events.
-	document
-		.getElementById('com_readup_article_content')
-		.addEventListener('mouseup', (event) => {
-			event.stopPropagation();
-		});
+async function unloadUserArticle() {
+	// clear the comments
+	embedProps.comments = null;
+
+	// reset the reader
+	reader.unloadPage();
+	page.unload();
+	page = null;
+
+	// clear globals
+	article = null;
+	userPage = null;
+	user = null;
+
+	// re-render ui
+	render();
 }
 
 initialize();

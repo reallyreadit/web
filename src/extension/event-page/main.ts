@@ -10,7 +10,6 @@ import {
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
 import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
 import {
-	ExtensionOptionKey,
 	ExtensionOptions,
 	extensionOptionsStorageQuery,
 } from '../options-page/ExtensionOptions';
@@ -38,14 +37,23 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onGetDisplayPreference: () => {
 		return serverApi.getDisplayPreference();
 	},
+	onGetDisplayPreferenceFromCache: () => {
+		return serverApi.getDisplayPreferenceFromCache();
+	},
+	onGetExtensionOptions: () => {
+		return chrome.storage.local.get(extensionOptionsStorageQuery) as Promise<ExtensionOptions>;
+	},
+	onGetUserAccountFromCache: () => {
+		return serverApi.getUserFromCache();
+	},
 	onChangeDisplayPreference: async (preference) => {
 		// update web app
 		await webAppApi.displayPreferenceChanged(preference);
 		// persist
 		return serverApi.changeDisplayPreference(preference);
 	},
-	onRegisterPage: (tabId, data) =>
-		serverApi.registerPage(tabId, data).then(async (result) => {
+	onGetUserArticle: (tabId, data) =>
+		serverApi.getUserArticle(tabId, data).then(async (result) => {
 			// update web app (article is automatically starred)
 			await webAppApi.articleUpdated({
 				article: result.userArticle,
@@ -154,7 +162,13 @@ const webAppApi = new WebAppApi({
 		// update readers
 		await readerContentScriptApi.commentUpdated(comment);
 	},
-	onUserSignedIn: async (profile) => { },
+	onUserSignedIn: async (profile) => {
+		// update server cache
+		await serverApi.userUpdated(profile.userAccount);
+		await serverApi.displayPreferenceChanged(profile.displayPreference);
+		// update readers
+		await readerContentScriptApi.userSignedIn(profile);
+	},
 	onUserSignedOut: async () => {
 		await serverApi.userSignedOut();
 		await readerContentScriptApi.userSignedOut();
@@ -187,11 +201,7 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 async function openReaderInTab(
 	tab: chrome.tabs.Tab,
 	articleUrl: string,
-	star: boolean = false
 ) {
-	// TODO: sending the displayPreference became less important again, since trying
-	// out the reader.html / dark-reader solution
-	// maybe it's cleaner to just request these extra params via the eventPageApi like before
 	const displayPreference = await serverApi.getDisplayPreferenceFromCache();
 	const baseURL = chrome.runtime.getURL(
 		`/${
@@ -203,9 +213,7 @@ async function openReaderInTab(
 		}`
 	);
 	const searchParams = new URLSearchParams({
-		url: articleUrl,
-		displayPreference: JSON.stringify(displayPreference),
-		star: star.toString(),
+		url: articleUrl
 	});
 	const readerUrl = `${baseURL}?${searchParams}`;
 	await chrome.tabs.update(tab.id, { url: readerUrl });
@@ -355,15 +363,9 @@ chrome.action.onClicked.addListener(async (tab) => {
 	}
 
 	// open article, starring if that is the setting
-	chrome.storage.local.get(
-		extensionOptionsStorageQuery,
-		async (options: ExtensionOptions) => {
-			await openReaderInTab(
-				tab,
-				tab.url,
-				options[ExtensionOptionKey.StarOnSave]
-			);
-		}
+	await openReaderInTab(
+		tab,
+		tab.url,
 	);
 });
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

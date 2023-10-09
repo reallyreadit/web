@@ -18,6 +18,8 @@ import UserAccount from '../../../common/models/UserAccount';
 import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import { ExtensionOptions } from '../../options-page/ExtensionOptions';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 
 function sendMessage<T>(
 	type: string,
@@ -81,6 +83,7 @@ export default class EventPageApi {
 		onCommentPosted: (comment: CommentThread) => void;
 		onCommentUpdated: (comment: CommentThread) => void;
 		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+		onUserSignedIn: (profile: WebAppUserProfile) => void;
 		onUserSignedOut: () => void;
 		onUserUpdated: (user: UserAccount) => void;
 	}) {
@@ -107,6 +110,9 @@ export default class EventPageApi {
 				case 'displayPreferenceChanged':
 					handlers.onDisplayPreferenceChanged(message.data);
 					break;
+				case 'userSignedIn':
+					handlers.onUserSignedIn(message.data);
+					break;
 				case 'userSignedOut':
 					handlers.onUserSignedOut();
 					break;
@@ -123,6 +129,21 @@ export default class EventPageApi {
 	public getDisplayPreference() {
 		return sendMessageAwaitingResponse<DisplayPreference | null>(
 			'getDisplayPreference'
+		);
+	}
+	public getDisplayPreferenceFromCache() {
+		return sendMessageAwaitingResponse<DisplayPreference | null>(
+			'getDisplayPreferenceFromCache'
+		);
+	}
+	public getExtensionOptions() {
+		return sendMessageAwaitingResponse<ExtensionOptions>(
+			'getExtensionOptions'
+		);
+	}
+	public getUserAccountFromCache() {
+		return sendMessageAwaitingResponse<UserAccount | null>(
+			'getUserAccountFromCache'
 		);
 	}
 	public changeDisplayPreference(preference: DisplayPreference) {
@@ -153,9 +174,12 @@ export default class EventPageApi {
 		this._loadingAnimationInterval = null;
 		sendMessage('loadingAnimationTick', 0);
 	}
-	public registerPage(data: ParseResult) {
+	public registerPage() {
+		return sendMessageAwaitingResponse('registerPage');
+	}
+	public getUserArticle(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>(
-			'registerPage',
+			'getUserArticle',
 			data
 		);
 	}
