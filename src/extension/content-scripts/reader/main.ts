@@ -523,7 +523,7 @@ const eventPageApi = new EventPageApi({
 
 // document messaging interface
 window.addEventListener('message', (event) => {
-	if (!/(\/\/|\.)readup\.com$/.test(event.origin)) {
+	if (!/(\/\/|\.)readup\.org$/.test(event.origin)) {
 		return;
 	}
 	switch ((event.data?.type as String) || null) {
