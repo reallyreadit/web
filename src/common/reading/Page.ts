@@ -169,6 +169,12 @@ export default class Page {
 	public toggleVisualDebugging() {
 		this._contentEls.forEach((block) => block.toggleVisualDebugging());
 	}
+	public unload() {
+		for (const element of this._contentEls) {
+			element.stopVisualDebugging();
+			element.removeVisualDebuggingElements();
+		}
+	}
 	public get elements() {
 		return this._contentEls;
 	}
