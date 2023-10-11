@@ -19,9 +19,6 @@ export default class BrowserActionBadgeApi {
 		});
 	}
 	public async setLoading(tabId: number, tick: number) {
-		console.log(
-			`[BrowserActionBadgeApi] creating loading animation for tab # ${tabId}`
-		);
 		tick %= this._loadingAnimationFrameCount;
 		let text = '';
 		for (let i = 0; i < this._loadingAnimationFrameCount - 1; i++) {

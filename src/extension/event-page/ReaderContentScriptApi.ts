@@ -80,9 +80,11 @@ export default class ReaderContentScriptApi {
 				// return true so that other handlers will have an opportunity to respond
 				return true;
 			}
-			console.log(
-				`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`
-			);
+			if (message.type !== 'loadingAnimationTick') {
+				console.log(
+					`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`
+				);
+			}
 			switch (message.type) {
 				case 'getDisplayPreference':
 					createMessageResponseHandler(
