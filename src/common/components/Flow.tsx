@@ -11,13 +11,12 @@
 import * as React from 'react';
 import UserAccount from '../models/UserAccount';
 import * as classNames from 'classnames';
-import Icon from '../components/Icon';
+import Icon from './Icon';
 import TransitionContainer from './TransitionContainer';
 
 export enum ExitReason {
 	Aborted,
 	Completed,
-	ExistingUserAuthenticated,
 }
 export interface BaseProps {
 	onClose: (reason: ExitReason) => void;
@@ -28,7 +27,7 @@ interface State {
 	goingToStep: number | null;
 	step: number;
 }
-export default abstract class BrowserOnboardingFlow<
+export default abstract class Flow<
 	Props extends BaseProps
 > extends React.Component<Props, State> {
 	private readonly _completeStepTransition = () => {
@@ -39,7 +38,7 @@ export default abstract class BrowserOnboardingFlow<
 	};
 	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
 		if (
-			event.animationName === 'browser-onboarding-flow_74077a-steps-slide-out'
+			event.animationName === 'flow_fhdgte-steps-slide-out'
 		) {
 			this.props.onClose(
 				this.state.exitReason != null
@@ -79,7 +78,7 @@ export default abstract class BrowserOnboardingFlow<
 	public render() {
 		return (
 			<div
-				className={classNames('browser-onboarding-flow_74077a', {
+				className={classNames('flow_fhdgte', {
 					closing: this.state.exitReason != null,
 				})}
 				onAnimationEnd={this._handleAnimationEnd}

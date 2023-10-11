@@ -28,7 +28,7 @@ import { Form as CreateAccountForm } from '../../common/components/BrowserOnboar
 import { Form as SignInForm } from '../../common/components/BrowserOnboardingFlow/SignInStep';
 import { Form as CreateAuthServiceAccountForm } from '../../common/components/BrowserOnboardingFlow/CreateAuthServiceAccountStep';
 import PasswordResetRequestForm from '../../common/models/userAccounts/PasswordResetRequestForm';
-import { ExitReason } from '../../common/components/BrowserOnboardingFlow';
+import { ExitReason } from '../../common/components/Flow';
 import AuthServiceProvider from '../../common/models/auth/AuthServiceProvider';
 import BrowserPopupResponseResponse from '../../common/models/auth/BrowserPopupResponseResponse';
 import KeyValuePair from '../../common/KeyValuePair';

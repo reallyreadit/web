@@ -28,10 +28,10 @@ import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
 import ExtensionInstalledStep from './OnboardingFlow/ExtensionInstalledStep';
 import ButtonTutorialStep from './OnboardingFlow/ButtonTutorialStep';
 import TrackingAnimationStep from './OnboardingFlow/TrackingAnimationStep';
-import BrowserOnboardingFlow, {
+import Flow, {
 	BaseProps,
 	ExitReason,
-} from '../../../common/components/BrowserOnboardingFlow';
+} from '../../../common/components/Flow';
 import { Intent } from '../../../common/components/Toaster';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import ImportStep from './OnboardingFlow/ImportStep';
@@ -81,7 +81,7 @@ export interface Props extends BaseProps {
 	passwordResetEmail?: string;
 	passwordResetToken?: string;
 }
-export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
+export default class OnboardingFlow extends Flow<Props> {
 	private _authServiceToken: string;
 	private readonly _createAccount = (form: CreateAccountForm) => {
 		return this.props.onCreateAccount(form).then(this._handleAccountCreation);
@@ -128,13 +128,13 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 			if (this.props.user.dateOrientationCompleted == null) {
 				this.goToStep(Step.TrackingAnimation);
 			} else {
-				this._beginClosing(ExitReason.ExistingUserAuthenticated);
+				this._beginClosing(ExitReason.Completed);
 			}
 		} else if (
 			this.props.isExtensionInstalled &&
 			this.props.user.dateOrientationCompleted
 		) {
-			this._beginClosing(ExitReason.ExistingUserAuthenticated);
+			this._beginClosing(ExitReason.Completed);
 		} else if (!this.props.isExtensionInstalled) {
 			this.goToStep(Step.InstallExtension);
 		} else {

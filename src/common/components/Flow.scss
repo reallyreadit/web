@@ -9,12 +9,12 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
-	componentPath: src/common/components/BrowserOnboardingFlow
-	cssComponentId: browser-onboarding-flow_74077a
+	componentPath: src/common/components/Flow
+	cssComponentId: flow_fhdgte
 */
 @import '../styles/colors';
 
-.browser-onboarding-flow_74077a {
+.flow_fhdgte {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -28,44 +28,44 @@
 	animation-duration: 250ms;
 	animation-fill-mode: forwards;
 }
-.browser-onboarding-flow_74077a::before {
+.flow_fhdgte::before {
 	content: '';
 	min-height: 10px;
 	flex: 1 1 auto;
 }
-.browser-onboarding-flow_74077a::after {
+.flow_fhdgte::after {
 	content: '';
 	min-height: 10px;
 	flex: 3 1 auto;
 }
-.browser-onboarding-flow_74077a.closing {
+.flow_fhdgte.closing {
 	animation-duration: 250ms;
 	animation-fill-mode: forwards;
 }
-.browser-onboarding-flow_74077a > .steps {
+.flow_fhdgte > .steps {
 	display: flex;
 	flex-flow: column;
 	width: calc(100% - 20px);
 	max-width: 700px;
 	min-height: 0;
 	border-radius: 5px;
-	animation: browser-onboarding-flow_74077a-steps-slide-in 250ms forwards;
+	animation: flow_fhdgte-steps-slide-in 250ms forwards;
 }
-.browser-onboarding-flow_74077a.closing > .steps {
-	animation: browser-onboarding-flow_74077a-steps-slide-out 250ms forwards;
+.flow_fhdgte.closing > .steps {
+	animation: flow_fhdgte-steps-slide-out 250ms forwards;
 }
-.browser-onboarding-flow_74077a > .steps::after {
+.flow_fhdgte > .steps::after {
 	content: '';
 	display: block;
 	height: 40px;
 }
-.browser-onboarding-flow_74077a > .steps > .titlebar {
+.flow_fhdgte > .steps > .titlebar {
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
-.browser-onboarding-flow_74077a > .steps > .titlebar > .icon-right {
+.flow_fhdgte > .steps > .titlebar > .icon-right {
 	flex: 0 0 auto;
 	display: flex;
 	justify-content: center;
@@ -73,7 +73,7 @@
 	width: 40px;
 	height: 40px;
 }
-.browser-onboarding-flow_74077a
+.flow_fhdgte
 	> .steps
 	> .titlebar
 	> .icon-right
@@ -81,7 +81,7 @@
 	font-size: 16px;
 	cursor: pointer;
 }
-.browser-onboarding-flow_74077a
+.flow_fhdgte
 	> .steps
 	> .transition-container_ko0vbz
 	> .content {
@@ -94,10 +94,10 @@
 }
 
 @media (max-width: 499px) {
-	.browser-onboarding-flow_74077a > .steps::after {
+	.flow_fhdgte > .steps::after {
 		height: 0;
 	}
-	.browser-onboarding-flow_74077a
+	.flow_fhdgte
 		> .steps
 		> .transition-container_ko0vbz
 		> .content::after {
@@ -107,7 +107,7 @@
 	}
 }
 
-@keyframes browser-onboarding-flow_74077a-overlay-fade-in-light {
+@keyframes flow_fhdgte-overlay-fade-in-light {
 	from {
 		background-color: transparent;
 	}
@@ -115,7 +115,7 @@
 		background-color: map-get($light-theme, $overlay-color);
 	}
 }
-@keyframes browser-onboarding-flow_74077a-overlay-fade-out-light {
+@keyframes flow_fhdgte-overlay-fade-out-light {
 	from {
 		background-color: map-get($light-theme, $overlay-color);
 	}
@@ -123,7 +123,7 @@
 		background-color: transparent;
 	}
 }
-@keyframes browser-onboarding-flow_74077a-overlay-fade-in-dark {
+@keyframes flow_fhdgte-overlay-fade-in-dark {
 	from {
 		background-color: transparent;
 	}
@@ -131,7 +131,7 @@
 		background-color: map-get($dark-theme, $overlay-color);
 	}
 }
-@keyframes browser-onboarding-flow_74077a-overlay-fade-out-dark {
+@keyframes flow_fhdgte-overlay-fade-out-dark {
 	from {
 		background-color: map-get($dark-theme, $overlay-color);
 	}
@@ -139,7 +139,7 @@
 		background-color: transparent;
 	}
 }
-@keyframes browser-onboarding-flow_74077a-steps-slide-in {
+@keyframes flow_fhdgte-steps-slide-in {
 	from {
 		transform: translateY(20%);
 		opacity: 0;
@@ -149,7 +149,7 @@
 		opacity: 1;
 	}
 }
-@keyframes browser-onboarding-flow_74077a-steps-slide-out {
+@keyframes flow_fhdgte-steps-slide-out {
 	from {
 		transform: translateY(0);
 		opacity: 1;
@@ -161,23 +161,23 @@
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .browser-onboarding-flow_74077a {
+	#{$root} .flow_fhdgte {
 		@include theme-colors(
 			$scheme,
 			(
-				'animation-name': 'browser-onboarding-flow_74077a-overlay-fade-in',
+				'animation-name': 'flow_fhdgte-overlay-fade-in',
 			)
 		);
 	}
-	#{$root} .browser-onboarding-flow_74077a.closing {
+	#{$root} .flow_fhdgte.closing {
 		@include theme-colors(
 			$scheme,
 			(
-				'animation-name': 'browser-onboarding-flow_74077a-overlay-fade-out',
+				'animation-name': 'flow_fhdgte-overlay-fade-out',
 			)
 		);
 	}
-	#{$root} .browser-onboarding-flow_74077a > .steps {
+	#{$root} .flow_fhdgte > .steps {
 		@include theme-colors(
 			$scheme,
 			(
@@ -187,7 +187,7 @@
 		);
 	}
 	#{$root}
-		.browser-onboarding-flow_74077a
+		.flow_fhdgte
 		> .steps
 		> .titlebar
 		> .icon-right

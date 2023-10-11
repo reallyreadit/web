@@ -12,7 +12,7 @@ import { DateTime } from 'luxon';
 import AsyncTracker from '../common/AsyncTracker';
 import BrowserApi from '../common/BrowserApi';
 import Captcha from '../common/captcha/Captcha';
-import { ExitReason } from '../common/components/BrowserOnboardingFlow';
+import { ExitReason } from '../common/components/Flow';
 import { Toast } from '../common/components/Toaster';
 import parseDocumentContent from '../common/contentParsing/parseDocumentContent';
 import EventManager from '../common/EventManager';

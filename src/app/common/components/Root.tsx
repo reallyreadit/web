@@ -97,7 +97,7 @@ import {
 	Props as OnboardingProps,
 	Step as OnboardingStep,
 } from './OnboardingFlow';
-import { ExitReason as OnboardingExitReason } from '../../../common/components/BrowserOnboardingFlow';
+import { ExitReason as OnboardingExitReason } from '../../../common/components/Flow';
 import { formatIsoDateAsDotNet } from '../../../common/format';
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 
