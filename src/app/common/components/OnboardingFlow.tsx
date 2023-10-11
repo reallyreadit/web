@@ -291,7 +291,7 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 					? Step.ResetPassword
 					: props.initialAuthenticationStep != null
 					? props.initialAuthenticationStep
-					: Step.CreateAccount
+					: Step.SignIn
 				: props.appPlatform != null
 				? Step.TrackingAnimation
 				: !props.isExtensionInstalled
