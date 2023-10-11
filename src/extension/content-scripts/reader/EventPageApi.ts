@@ -10,7 +10,7 @@ import Post from '../../../common/models/social/Post';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import { MessageResponse, isSuccessResponse } from '../../common/messaging';
+import { MessageResponse, isSuccessResponse, ResponseType } from '../../common/messaging';
 import StarForm from '../../../common/models/articles/StarForm';
 import { AuthServiceBrowserLinkResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
@@ -40,6 +40,7 @@ function sendMessage<T>(
 		if (responseCallback) {
 			responseCallback({
 				error: 'Failed to send message.',
+				type: ResponseType.Error
 			});
 		}
 	}
