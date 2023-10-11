@@ -157,7 +157,6 @@ styleArticleDocument({
 		byline: createByline(metadataParseResult.metadata.article.authors),
 	},
 	transitionElement: document.documentElement,
-	completeTransition: true,
 });
 
 const publisherConfig = findPublisherConfig(
@@ -635,6 +634,9 @@ function toggleStar() {
 insertEmbed();
 
 updateDisplayPreference(displayPreference);
+
+document.documentElement.style.transition = 'opacity 350ms';
+document.documentElement.style.opacity = '1';
 
 // send parse result
 messagingContext.sendMessage(

@@ -383,12 +383,6 @@ const styleContent = `
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .vi { color: #EEFFFF; }
 :root[data-com_readup_theme=dark] #com_readup_article_content pre .il { color: #F78C6C; }
 `;
-const htmlTransitionCompletionStyleContent = `
-#com_readup_document {
-	opacity: 1 !important;
-	transition: opacity 350ms !important;
-}
-`;
 const obsoleteStyles: {
 	[key: string]: string[];
 } = {
@@ -508,12 +502,10 @@ export default function styleArticleDocument({
 	header,
 	useScrollContainer,
 	transitionElement,
-	completeTransition,
 }: {
 	header?: HeaderMetadata;
 	useScrollContainer?: boolean;
 	transitionElement: HTMLElement;
-	completeTransition?: boolean;
 }) {
 	// add viewport meta
 	if (!document.querySelectorAll('meta[name="viewport"]').length) {
@@ -579,14 +571,7 @@ export default function styleArticleDocument({
 	document.body.id = 'com_readup_article';
 	// add styles
 	const styleElement = document.createElement('style');
-	let transitionCompletionStyleContent = '';
-	if (completeTransition) {
-		if (transitionElement !== document.documentElement) {
-			throw new Error('Unexpected transition element.');
-		}
-		transitionCompletionStyleContent = htmlTransitionCompletionStyleContent;
-	}
-	styleElement.textContent = styleContent + transitionCompletionStyleContent;
+	styleElement.textContent = styleContent;
 	document.body.appendChild(styleElement);
 	// add title and byline
 	if (header) {

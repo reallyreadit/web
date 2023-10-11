@@ -778,23 +778,8 @@ async function initialize() {
 			title: metadataParseResult.metadata.article.title,
 			byline: createByline(metadataParseResult.metadata.article.authors),
 		},
-		transitionElement: document.documentElement,
-		// completeTransition works on the <html> element,
-		// which results in a longer flash in dark mode (0 opacity = white)
-		// TODO: target the body in this styleArticleDocument, instead of in this file?
-		// completeTransition: true
+		transitionElement: document.body,
 	});
-
-	// Complete the fade-in transition of the text
-	// These can't be inserted as inline styles, because the old inline styles
-	// still need to exist for the old transition state to exist.
-	const styleElement = document.createElement('style');
-	styleElement.textContent = `
-		body {
-			opacity: 1 !important;
-			transition: opacity 350ms !important;
-		}`;
-	document.head.insertAdjacentElement('beforeend', styleElement);
 
 	// Set the global user object before rendering the UI.
 	user = await eventPageApi.getUserAccountFromCache();
@@ -814,6 +799,10 @@ async function initialize() {
 	// We need to load these here (after document pruning and styling)
 	window.reallyreadit.extension.injectInlineStyles();
 	window.reallyreadit.extension.injectSvgElements();
+
+	// Complete the fade-in transition of the text
+	document.body.style.transition = 'opacity 350ms';
+	document.body.style.opacity = '1';
 
 	// TODO EXT NOTE: web needed this, but native doesn't have
 	hasStyledArticleDocument = true;
