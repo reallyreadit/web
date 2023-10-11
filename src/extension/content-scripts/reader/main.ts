@@ -22,9 +22,9 @@ import ScrollService from '../../../common/services/ScrollService';
 import UserAccount from '../../../common/models/UserAccount';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference, { getClientDefaultDisplayPreference } from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, { getClientDefaultDisplayPreference, DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString } from '../../../common/routing/queryString';
+import { parseQueryString, extensionAuthQueryStringKey } from '../../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../../common/ParserDocumentLocation';
 import { DeviceType } from '../../../common/DeviceType';
 import parseDocumentContent from '../../../common/contentParsing/parseDocumentContent';
@@ -52,6 +52,8 @@ import UserPage from '../../../common/models/UserPage';
 import { createUrl } from '../../../common/HttpEndpoint';
 import { ExtensionOptionKey } from '../../options-page/ExtensionOptions';
 import ParseResult from '../../../common/contentParsing/ParseResult';
+import ReaderReminder from '../../../common/components/ReaderReminder';
+import { isReadupElement } from '../../../common/contentParsing/utils';
 
 // TODO PROXY EXT: taken from the native reader
 // our case is similar to
@@ -95,22 +97,45 @@ function render(
 	>,
 	callback?: () => void
 ) {
-	ReactDOM.render(
-		React.createElement(ReaderUIEmbed, {
-			...(embedProps = {
-				...embedProps,
-				...props,
-			}),
-			article: {
-				isLoading: !article,
-				value: article,
-			},
-			displayPreference,
-			user,
-		}),
-		embedRootElement,
-		callback
-	);
+	Promise
+		.all([
+			new Promise(
+				resolve => {
+					ReactDOM.render(
+						React.createElement(ReaderUIEmbed, {
+							...(embedProps = {
+								...embedProps,
+								...props,
+							}),
+							article: {
+								isLoading: !article,
+								value: article,
+							},
+							displayPreference,
+							user,
+						}),
+						embedRootElement,
+						resolve
+					);
+				}
+			),
+			new Promise(
+				resolve => {
+					ReactDOM.render(
+						React.createElement(
+							ReaderReminder,
+							{
+								...reminderProps,
+								isActive: !user && !reminderState.isDismissed && !reminderState.isDisabled
+							}
+						),
+						reminderRootElement,
+						resolve
+					);
+				}
+			)
+		])
+		.then(callback);
 }
 
 // user interface
@@ -378,6 +403,27 @@ let embedProps: Pick<
 	onToggleStar: toggleStar,
 };
 let embedRootElement: HTMLDivElement;
+// This is the props object and container element for the sign-in reminder react component.
+const reminderProps = {
+	onSignIn: () => {
+		openInNewTab(createUrl(window.reallyreadit.extension.config.webServer, null, { [extensionAuthQueryStringKey]: null }))
+	},
+	onDismiss: async (disableReminder: boolean) => {
+		reminderState.isDismissed = true;
+		if (disableReminder) {
+			await chrome.storage.local.set({ 'disableSignInReminder': true });
+			reminderState.isDisabled = true;
+		}
+		render();
+	}
+};
+let reminderState = {
+	// This is the in-memory ephemeral preference for this reader tab.
+	isDismissed: false,
+	// This is synced during initialization with the preference persisted to extension storage.
+	isDisabled: false
+};
+let reminderRootElement: HTMLDivElement;
 
 /**
  * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
@@ -396,7 +442,13 @@ function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
 	embedRootElement.id = 'com_readup_embed';
+	embedRootElement.className = 'com_readup_container';
 	scrollRoot.append(embedRootElement);
+	// create reminder element
+	reminderRootElement = window.document.createElement('div');
+	reminderRootElement.id = 'com_readup_reminder';
+	reminderRootElement.className = 'com_readup_container';
+	scrollRoot.prepend(reminderRootElement);
 	// initial render
 	render();
 	// create scroll service
@@ -783,6 +835,10 @@ async function initialize() {
 
 	// Set the global user object before rendering the UI.
 	user = await eventPageApi.getUserAccountFromCache();
+
+	// Initialize the sign-in reminder preference from storage.
+	const storageQuery = await chrome.storage.local.get('disableSignInReminder');
+	reminderState.isDisabled = !!storageQuery['disableSignInReminder'];
 
 	// insert React UI
 	insertEmbed();

@@ -1,0 +1,33 @@
+/*
+	componentPath: src/common/components/ReaderReminder
+	cssComponentId: reader-reminder_rg6ejc
+*/
+@import '../styles/colors';
+
+.reader-reminder_rg6ejc {
+	max-width: 600px;
+    margin: 0 auto 60px auto;
+}
+.reader-reminder_rg6ejc.hidden {
+	display: none;
+}
+.reader-reminder_rg6ejc > .box > .content > p > .logo {
+	display: block;
+	background-size: contain;
+	background-repeat: no-repeat;
+	width: 61px;
+	height: 32px;
+}
+.reader-reminder_rg6ejc > .box > .content > p > label {
+	font-size: 11pt;
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .reader-reminder_rg6ejc > .box > .content > p > .logo {
+		@if $scheme == light {
+			background-image: url('./content-scripts/ui/images/logo.svg');
+		} @else {
+			background-image: url('./content-scripts/ui/images/logo-white.svg');
+		}
+	}
+}
