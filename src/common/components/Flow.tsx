@@ -69,7 +69,9 @@ export default abstract class Flow<
 	protected abstract getStepRenderer(
 		step: number
 	): (user: UserAccount) => React.ReactNode;
-	protected abstract shouldAllowCancellation(): boolean;
+	protected shouldAllowCancellation() {
+		return true;
+	}
 	protected goToStep(step: number) {
 		this.setState({
 			goingToStep: step,

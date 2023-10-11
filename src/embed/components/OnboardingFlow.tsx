@@ -156,7 +156,4 @@ export default class OnboardingFlow extends Flow<Props> {
 	protected getStepRenderer(step: Step) {
 		return this._stepMap[step];
 	}
-	protected shouldAllowCancellation() {
-		return true;
-	}
 }
