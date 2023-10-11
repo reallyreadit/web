@@ -145,8 +145,6 @@ const staticAssets = createBuild({
 			base: `${project.srcDir}/extension/content-scripts/reader/`,
 			src: [
 				`${project.srcDir}/extension/content-scripts/reader/reader.html`,
-				`${project.srcDir}/extension/content-scripts/reader/reader-dark.html`,
-				`${project.srcDir}/extension/content-scripts/reader/reader-light.html`,
 			],
 		},
 	],

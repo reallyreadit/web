@@ -170,6 +170,14 @@ const createContentScriptBuild = params => createBuild({
 			'extension/content-scripts/reader/main.ts'
 		),
 	},
+	staticAssets: [
+		{
+			base: `${project.srcDir}/extension/content-scripts/reader`,
+			src: [
+				`${project.srcDir}/extension/content-scripts/reader/theme.js`,
+			]
+		},
+	],
 	path: path.posix.join(params.path, targetPath),
 });
 

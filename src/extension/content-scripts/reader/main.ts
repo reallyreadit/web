@@ -451,6 +451,15 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 	if (textSizeChanged && page) {
 		page.updateLineHeight();
 	}
+
+	// Synchronize the display preference with the state in the URL.
+	const url = new URL(window.location.href);
+	if (preference) {
+		url.searchParams.set('theme', preference.theme === DisplayTheme.Light ? 'light' : 'dark');
+	} else {
+		url.searchParams.delete('theme');
+	}
+	window.history.replaceState(null, document.title, url.toString());
 }
 
 function updateUser(userIn: UserAccount) {
@@ -616,11 +625,23 @@ async function fetchAndInjectArticle() {
 
 	// Inject the article content
 	document.body = doc.body;
-	document.head.innerHTML = doc.head.innerHTML;
 
-	// Note that the <html> element is not overwritten here.
-	// One good side-effect of this is that the background color
-	// set in the reader(-dark).html stays preserved while loading
+	// Replace the head content without removing the temp background style element.
+	const deleteQueue = [];
+	for (const child of document.head.children) {
+		if (!isReadupElement(child)) {
+			deleteQueue.push(child);
+		}
+	}
+	while (deleteQueue.length) {
+		deleteQueue
+			.pop()
+			.remove();
+	}
+	const moveQueue = Array.from(doc.head.children);
+	while (moveQueue.length) {
+		document.head.append(moveQueue.pop());
+	}
 }
 
 async function processArticleContent(doc: Document) {

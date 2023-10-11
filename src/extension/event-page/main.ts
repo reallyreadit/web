@@ -203,20 +203,12 @@ async function openReaderInTab(
 	articleUrl: string,
 ) {
 	const displayPreference = await serverApi.getDisplayPreferenceFromCache();
-	const baseURL = chrome.runtime.getURL(
-		`/${
-			displayPreference
-				? displayPreference.theme === DisplayTheme.Light
-					? 'reader-light.html'
-					: 'reader-dark.html'
-				: 'reader.html'
-		}`
-	);
-	const searchParams = new URLSearchParams({
-		url: articleUrl
-	});
-	const readerUrl = `${baseURL}?${searchParams}`;
-	await chrome.tabs.update(tab.id, { url: readerUrl });
+	const url = new URL(chrome.runtime.getURL('reader.html'));
+	url.searchParams.append('url', articleUrl);
+	if (displayPreference) {
+		url.searchParams.append('theme', displayPreference.theme === DisplayTheme.Light ? 'light' : 'dark');
+	}
+	await chrome.tabs.update(tab.id, { url: url.toString() });
 }
 
 async function openReaderInCurrentTab(articleUrl: string) {
