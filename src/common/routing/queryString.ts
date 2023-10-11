@@ -55,6 +55,7 @@ export const appVersion = 'appVersion';
 export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
 export const deviceTypeQueryStringKey = 'deviceType';
+export const extensionAuthQueryStringKey = 'extensionAuth';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
 export const messageQueryStringKey = 'message';
 export const subscribeQueryStringKey = 'subscribe';
@@ -69,6 +70,7 @@ export const unroutableQueryStringKeys = [
 	authServiceTokenQueryStringKey,
 	clientTypeQueryStringKey,
 	deviceTypeQueryStringKey,
+	extensionAuthQueryStringKey,
 	extensionInstalledQueryStringKey,
 	messageQueryStringKey,
 	subscribeQueryStringKey,

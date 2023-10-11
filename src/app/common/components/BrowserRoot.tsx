@@ -54,6 +54,7 @@ import {
 	createQueryString,
 	appReferralQueryStringKey,
 	subscribeQueryStringKey,
+	extensionAuthQueryStringKey,
 } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -715,6 +716,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				passwordResetToken: queryStringParams['token'],
 			};
 		} else if (
+			extensionAuthQueryStringKey in queryStringParams ||
 			extensionInstalledQueryStringKey in queryStringParams ||
 			(props.initialUserProfile &&
 				!props.initialUserProfile.userAccount.dateOrientationCompleted &&
