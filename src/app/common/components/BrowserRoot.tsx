@@ -415,7 +415,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			),
 			[ScreenKey.Author]: createAuthorScreenFactory(ScreenKey.Author, {
 				deviceType: this.props.deviceType,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
@@ -460,7 +460,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Comments]: createCommentsScreenFactory(ScreenKey.Comments, {
 				deviceType: this.props.deviceType,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -497,7 +497,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -549,7 +549,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				ScreenKey.Leaderboards,
 				{
 					deviceType: this.props.deviceType,
-					onBeginOnboarding: this._beginOnboarding,
+					onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 					onCopyAppReferrerTextToClipboard:
 						this._copyAppReferrerTextToClipboard,
 					onCloseDialog: this._dialog.closeDialog,
@@ -625,7 +625,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Profile]: createProfileScreenFactory(ScreenKey.Profile, {
 				deviceType: this.props.deviceType,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onClearAlerts: this._clearAlerts,
 				onCloseDialog: this._dialog.closeDialog,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
@@ -662,7 +662,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
 				extensionVersion: this.props.extensionApi.installedVersion,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
@@ -1196,7 +1196,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				) : null}
 				<Header
 					deviceType={this.props.deviceType}
-					onBeginOnboarding={this._beginOnboarding}
+					onBeginOnboarding={this._beginOnboardingAtCreateAccount}
 					onCopyAppReferrerTextToClipboard={
 						this._copyAppReferrerTextToClipboard
 					}

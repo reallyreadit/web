@@ -527,7 +527,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
-				onBeginOnboarding: this._beginOnboarding,
+				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onClearAlerts: this._clearAlerts,
 				onCopyAppReferrerTextToClipboard: this._noop,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,

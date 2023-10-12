@@ -575,7 +575,7 @@ export default abstract class Root<
 	});
 
 	// user account
-	protected readonly _beginOnboarding = (analyticsAction: string) => {
+	protected readonly _beginOnboardingAtCreateAccount = (analyticsAction: string) => {
 		this._dialog.openDialog(
 			sharedState => (
 				<OnboardingFlow
