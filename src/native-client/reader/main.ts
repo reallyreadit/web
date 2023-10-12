@@ -49,7 +49,7 @@ import UserPage from '../../common/models/UserPage';
 import UserAccount from '../../common/models/UserAccount';
 import ScrollService from '../../common/services/ScrollService';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
-import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, { getClientDefaultDisplayPreference } from '../../common/models/userAccounts/DisplayPreference';
 import { Message } from '../../common/MessagingContext';
 import { parseUrlForRoute } from '../../common/routing/Route';
 import ScreenKey from '../../common/routing/ScreenKey';
@@ -62,6 +62,8 @@ import ShareResponse from '../../common/sharing/ShareResponse';
 import { DeviceType } from '../../common/DeviceType';
 import { AppPlatform } from '../../common/AppPlatform';
 import { createUrl } from '../../common/HttpEndpoint';
+import ReaderReminder from '../../common/components/ReaderReminder';
+import { AuthenticationMethod } from '../../common/models/auth/AuthenticationRequest';
 
 const initData = window.reallyreadit.nativeClient.reader.initData;
 
@@ -114,10 +116,10 @@ messagingContext.addListener(
 );
 
 let article: UserArticle,
-	displayPreference = initData.displayPreference,
-	page: Page,
-	userPage: UserPage,
-	user: UserAccount;
+	displayPreference = initData.displayPreference || getClientDefaultDisplayPreference(),
+	page: Page | null,
+	userPage: UserPage | null,
+	user: UserAccount | null;
 
 /**
  * Let the components in this reader know that the display preference has changed,
@@ -273,6 +275,34 @@ let embedProps: Pick<
 		onToggleStar: toggleStar,
 	},
 	embedRootElement: HTMLDivElement;
+// This is the props object and container element for the sign-in reminder react component.
+const reminderProps = {
+	onSignIn: () => {
+		messagingContext.sendMessage({
+			type: 'authenticate',
+			data: {
+				method: AuthenticationMethod.SignIn
+			}
+		});
+	},
+	onDismiss: async (disableReminder: boolean) => {
+		reminderState.isDismissed = true;
+		if (disableReminder) {
+			messagingContext.sendMessage({
+				type: 'disableSignInReminder'
+			});
+			reminderState.isDisabled = true;
+		}
+		render();
+	}
+};
+let reminderState = {
+	// This is the in-memory ephemeral preference for this reader view.
+	isDismissed: false,
+	// This is synced from the preference persisted to device storage.
+	isDisabled: initData.isSignInReminderDisabled
+};
+let reminderRootElement: HTMLDivElement;
 
 /**
  * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
@@ -287,7 +317,13 @@ function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
 	embedRootElement.id = 'com_readup_embed';
+	embedRootElement.className = 'com_readup_container';
 	scrollRoot.append(embedRootElement);
+	// create reminder element
+	reminderRootElement = window.document.createElement('div');
+	reminderRootElement.id = 'com_readup_reminder';
+	reminderRootElement.className = 'com_readup_container';
+	scrollRoot.prepend(reminderRootElement);
 	// initial render
 	render();
 	// create scroll service
@@ -321,22 +357,43 @@ function render(
 	>,
 	callback?: () => void
 ) {
-	ReactDOM.render(
-		React.createElement(ReaderUIEmbed, {
-			...(embedProps = {
-				...embedProps,
-				...props,
+	Promise
+		.all([
+			new Promise(resolve => {
+				ReactDOM.render(
+					React.createElement(ReaderUIEmbed, {
+						...(embedProps = {
+							...embedProps,
+							...props,
+						}),
+						article: {
+							isLoading: !article,
+							value: article,
+						},
+						displayPreference,
+						user,
+					}),
+					embedRootElement,
+					callback
+				);
 			}),
-			article: {
-				isLoading: !article,
-				value: article,
-			},
-			displayPreference,
-			user,
-		}),
-		embedRootElement,
-		callback
-	);
+			new Promise(
+				resolve => {
+					ReactDOM.render(
+						React.createElement(
+							ReaderReminder,
+							{
+								...reminderProps,
+								isActive: !initData.isAuthenticated && !reminderState.isDismissed && !reminderState.isDisabled
+							}
+						),
+						reminderRootElement,
+						resolve
+					);
+				}
+			)
+		])
+		.then(callback);
 }
 
 function linkAuthServiceAccount(provider: AuthServiceProvider) {
@@ -644,7 +701,10 @@ messagingContext.sendMessage(
 		type: 'parseResult',
 		data: createPageParseResult(metadataParseResult, contentParseResult),
 	},
-	(result: ArticleLookupResult) => {
+	(result: ArticleLookupResult | null) => {
+		if (!initData.isAuthenticated) {
+			return;
+		}
 		// set globals
 		article = result.userArticle;
 		userPage = result.userPage;
