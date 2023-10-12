@@ -36,7 +36,6 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
 import SemanticVersion from '../../../../common/SemanticVersion';
-import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	article: Fetchable<UserArticle>;
@@ -57,8 +56,8 @@ class ReadScreen extends React.PureComponent<Props> {
 		this.props.onReadArticle(this.props.article.value);
 	};
 	public componentDidMount() {
-		// Automatically redirect to the reader if logged in & the extension is installed
-		if (!!this.props.user && !!this.props.isExtensionInstalled) {
+		// Automatically redirect to the reader if the extension is installed
+		if (this.props.isExtensionInstalled) {
 			this._readArticle();
 		}
 	}
@@ -155,7 +154,7 @@ class ReadScreen extends React.PureComponent<Props> {
 					})}
 				>
 					<div className="spacer" />
-					{!!this.props.user && !!this.props.isExtensionInstalled ? (
+					{this.props.isExtensionInstalled ? (
 						<div className='installed'>
 							<div className="read-question">Continue with the reader</div>
 							<div className="spacer" />
@@ -200,67 +199,23 @@ class ReadScreen extends React.PureComponent<Props> {
 													<li>Unlock comments after reading</li>
 												</ul>
 											</div>
-											{/* If not logged in & on desktop: suggest to Get Started */}
-											{!this.props.user &&
-											!isMobileDevice(this.props.deviceType) ? (
-												<GetStartedButton
-													analyticsAction="home-hero-download"
-													iosPromptType='download'
-													deviceType={this.props.deviceType}
-													location={this.props.location}
-													onBeginOnboarding={this.props.onBeginOnboarding}
-													onCopyAppReferrerTextToClipboard={
-														this.props.onCopyAppReferrerTextToClipboard
-													}
-													onCreateStaticContentUrl={
-														this.props.onCreateStaticContentUrl
-													}
-													onOpenNewPlatformNotificationRequestDialog={
-														this.props
-															.onOpenNewPlatformNotificationRequestDialog
-													}
-												/>
-											) : null}
-											{/* If on desktop & logged in & extension NOT yet installed,
-												OR, if on mobile
-												route to Download page */}
-											{(!!this.props.user &&
-												!this.props.isExtensionInstalled) ||
-											isMobileDevice(this.props.deviceType) ? (
-												// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
-												// or somehow tell people to update?
-												// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0
-												<DownloadButton
-													analyticsAction="ReadScreen"
-													deviceType={this.props.deviceType}
-													location={this.props.location}
-													showOpenInApp={true}
-													onNavTo={this.props.onNavTo}
-													onCopyAppReferrerTextToClipboard={
-														this.props.onCopyAppReferrerTextToClipboard
-													}
-													onCreateStaticContentUrl={
-														this.props.onCreateStaticContentUrl
-													}
-													onOpenNewPlatformNotificationRequestDialog={
-														this.props
-															.onOpenNewPlatformNotificationRequestDialog
-													}
-												/>
-											) : null}
-											{/*
-												Suggest to read article, in case the automatic redirect above fails
-												*/}
-											{!!this.props.user &&
-											!!this.props.isExtensionInstalled ? (
-												<Button
-													intent="loud"
-													onClick={this._readArticle}
-													size="large"
-													align="center"
-													text="Read Article"
-												/>
-											) : null}
+											<DownloadButton
+												analyticsAction="ReadScreen"
+												deviceType={this.props.deviceType}
+												location={this.props.location}
+												showOpenInApp={true}
+												onNavTo={this.props.onNavTo}
+												onCopyAppReferrerTextToClipboard={
+													this.props.onCopyAppReferrerTextToClipboard
+												}
+												onCreateStaticContentUrl={
+													this.props.onCreateStaticContentUrl
+												}
+												onOpenNewPlatformNotificationRequestDialog={
+													this.props
+														.onOpenNewPlatformNotificationRequestDialog
+												}
+											/>
 										</div>
 									</>
 								</ContentBox>
