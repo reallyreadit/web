@@ -8,32 +8,21 @@
 //
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
-/*
-	componentPath: src/app/common/components/AppRoot/OrientationWizard/NotificationsStep
-	cssComponentId: notifications-step_uaqf5m
-*/
+import * as React from 'react';
+import AdFreeAnimation from '../../BrowserRoot/AdFreeAnimation';
+import Button from '../../../../../common/components/Button';
 
-.notifications-step_uaqf5m {
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	align-items: center;
-}
-.notifications-step_uaqf5m > h1 {
-	font-size: 26pt;
-	font-family: 'Museo Sans (500)';
-	margin-bottom: 30px;
-}
-.notifications-step_uaqf5m > h2 {
-	font-size: 16pt;
-	font-family: 'Museo Sans (500)';
-	margin: 0 10px 30px 10px;
-	text-align: center;
-}
-.notifications-step_uaqf5m > .icon_rour3d {
-	font-size: 130px;
-	margin-bottom: 30px;
-}
-.notifications-step_uaqf5m > .button_ovrlmi {
-	margin: 10px 0 40px;
-}
+export default (props: {
+	onContinue: () => void;
+}) => (
+	<div className="button-tutorial-step_12zrbe">
+		<h1>The button removes distractions and tracks your progress.</h1>
+		<AdFreeAnimation orientation="landscape" />
+		<Button
+			intent="loud"
+			onClick={props.onContinue}
+			size="large"
+			text="Got It"
+		/>
+	</div>
+);

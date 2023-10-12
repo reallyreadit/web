@@ -57,7 +57,6 @@ import AppActivationEvent from '../../../common/models/app/AppActivationEvent';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 import AppReferral from '../AppReferral';
-import OnboardingFlow from './OnboardingFlow';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import NotificationAuthorizationStatus from '../../../common/models/app/NotificationAuthorizationStatus';
 import createSettingsScreenFactory from './SettingsPage';
@@ -116,11 +115,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		handler: (count: number) => void
 	) => {
 		return this._eventManager.addListener('newStars', handler);
-	};
-
-	// notifications
-	private readonly _requestNotificationAuthorization = () => {
-		return this.props.appApi.requestNotificationAuthorization();
 	};
 
 	// screens
@@ -310,7 +304,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				);
 			});
 	};
-	private readonly _signInWithApple = () => this.props.appApi
+	protected readonly _signInWithApple = () => this.props.appApi
 		.getDeviceInfo()
 		.then((deviceInfo) => {
 			if (
@@ -335,7 +329,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				this.props.appApi.requestAppleIdCredential();
 			});
 		});
-	private readonly _signInWithTwitter = () => this.props.appApi
+	protected readonly _signInWithTwitter = () => this.props.appApi
 		.getDeviceInfo()
 		.then((deviceInfo) => {
 			if (
@@ -743,7 +737,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 		this.state = {
 			...this.state,
 			dialogs: dialog ? [this._dialog.createDialog(dialog)] : [],
-			onboarding: props.initialUserProfile && !props.initialUserProfile.userAccount.dateOrientationCompleted ? { } : null,
 			isPoppingScreen: false,
 			screens,
 		};
@@ -1205,33 +1198,6 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 						selectedScreen={this.state.screens[0]}
 						user={this.state.user}
 					/>
-					{this.state.onboarding ? (
-						<OnboardingFlow
-							analyticsAction={this.state.onboarding.analyticsAction}
-							appPlatform={this.props.appApi.deviceInfo.appPlatform}
-							authServiceToken={this.state.onboarding.authServiceToken}
-							captcha={this.props.captcha}
-							deviceType={DeviceType.Ios}
-							initialAuthenticationStep={
-								this.state.onboarding.initialAuthenticationStep
-							}
-							isExtensionInstalled={false}
-							onClose={this._endOnboarding}
-							onCreateAccount={this._createAccount}
-							onCreateAuthServiceAccount={this._createAuthServiceAccount}
-							onCreateStaticContentUrl={this._createStaticContentUrl}
-							onRequestNotificationAuthorization={this._requestNotificationAuthorization}
-							onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
-							onResetPassword={this._resetPassword}
-							onShowToast={this._toaster.addToast}
-							onSignIn={this._signIn}
-							onSignInWithApple={this._signInWithApple}
-							onSignInWithTwitter={this._signInWithTwitter}
-							passwordResetEmail={this.state.onboarding.passwordResetEmail}
-							passwordResetToken={this.state.onboarding.passwordResetToken}
-							user={this.state.user}
-						/>
-					) : null}
 				</>
 				<DialogManager
 					dialogs={this.state.dialogs}

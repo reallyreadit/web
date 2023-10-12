@@ -53,12 +53,13 @@ import KeyValuePair from '../common/KeyValuePair';
 import { ShareChannelData } from '../common/sharing/ShareData';
 import { createQueryString } from '../common/routing/queryString';
 import { openTweetComposerBrowserWindow } from '../common/sharing/twitter';
+import * as React from 'react';
+import OnboardingFlow from './components/OnboardingFlow';
 
 interface State {
 	article: UserArticle;
 	dialogs: KeyValuePair<number, DialogState>[];
 	error: string | null;
-	onboardingAnalyticsAction: string | null;
 	toasts: Toast[];
 	user: UserAccount | null;
 }
@@ -194,7 +195,7 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		createAbsoluteUrl = (path: string) => {
 			return createUrl(window.reallyreadit.embed.config.webServer, path);
 		},
-		dialogService = new DialogService({
+		dialogService = new DialogService<State>({
 			setState: (nextState, callback) => {
 				setState(nextState(state)).then(callback);
 			},
@@ -260,7 +261,6 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		article: initializationResponse.article,
 		dialogs: [],
 		error: null,
-		onboardingAnalyticsAction: null,
 		toasts: [],
 		user: initializationResponse.user,
 	};
@@ -307,135 +307,15 @@ function activate(initializationResponse: InitializationActivationResponse) {
 			document.body.appendChild(shadowHost);
 		},
 		services: {
-			captcha: new Captcha(null, (handler) => {
-				// no captcha
-			}),
 			clipboardService,
 			dialogService,
-			onCloseOnboarding: (reason) => {
-				setState({
-					onboardingAnalyticsAction: null,
-				}).then(() => {
-					if (reason !== ExitReason.Aborted) {
-						eventManager.triggerEvent('onOnboardingCompleted', null);
-					}
-					eventManager.removeListeners('onOnboardingCompleted');
-				});
-			},
-			onCreateAccount: (req) => {
-				return apiServer
-					.createUserAccount({
-						name: req.name,
-						email: req.email,
-						password: req.password,
-						captchaResponse: req.captchaResponse,
-						timeZoneName: DateTime.local().zoneName,
-						theme: getClientPreferredColorScheme(),
-						analytics: {
-							action: req.analyticsAction,
-							currentPath: window.location.pathname,
-							initialPath: window.location.pathname,
-							referrerUrl: window.document.referrer,
-						},
-						pushDevice: null,
-					})
-					.then((profile) => {
-						browserApi.userSignedIn(profile);
-						return setState({
-							user: profile.userAccount,
-						});
-					});
-			},
-			onCreateAuthServiceAccount: (req) => {
-				return apiServer
-					.createAuthServiceAccount({
-						name: req.name,
-						pushDevice: null,
-						theme: getClientPreferredColorScheme(),
-						timeZoneName: DateTime.local().zoneName,
-						analytics: {
-							action: req.analyticsAction,
-							currentPath: window.location.pathname,
-							initialPath: window.location.pathname,
-							referrerUrl: window.document.referrer,
-						},
-						token: req.token,
-					})
-					.then((profile) => {
-						browserApi.userSignedIn(profile);
-						return setState({
-							user: profile.userAccount,
-						});
-					});
-			},
-			onRequestPasswordReset: (req) => {
-				return apiServer.requestPasswordReset(req);
-			},
-			onShowToast: (content, intent) => {
-				toasterService.addToast(content, intent);
-			},
-			onSignIn: (req) => {
-				return apiServer
-					.signIn({
-						authServiceToken: req.authServiceToken,
-						email: req.email,
-						password: req.password,
-						pushDevice: null,
-					})
-					.then((profile) => {
-						browserApi.userSignedIn(profile);
-						return setState({
-							user: profile.userAccount,
-						});
-					});
-			},
-			onSignInWithAuthService: (provider) => {
-				const popup = new AuthServiceBrowserPopup();
-				// open window synchronously to avoid being blocked by popup blockers
-				popup.open();
-				return apiServer
-					.requestAuthServiceBrowserPopupRequest({
-						provider,
-					})
-					.then((response) =>
-						popup.load(response.popupUrl).then(() =>
-							apiServer
-								.getAuthServiceBrowserPopupResponse({
-									requestId: response.requestId,
-								})
-								.then((popupResponse) => {
-									if (popupResponse.userProfile) {
-										browserApi.userSignedIn(popupResponse.userProfile);
-										return setState({
-											user: popupResponse.userProfile.userAccount,
-										}).then(() => popupResponse);
-									} else {
-										return popupResponse;
-									}
-								})
-								.catch((reason) => {
-									if (isHttpProblemDetails(reason) && reason.status === 404) {
-										return {
-											association: null,
-											authServiceToken: null,
-											error: AuthenticationError.Cancelled,
-											userProfile: null,
-										};
-									}
-									throw reason;
-								})
-						)
-					);
-			},
 			toasterService,
 		},
 		state: {
 			article: state.article,
 			dialogs: state.dialogs,
 			error: state.error,
-			onboardingAnalyticsAction: state.onboardingAnalyticsAction,
 			toasts: state.toasts,
-			user: state.user,
 		},
 	});
 	globalUi.attach();
@@ -481,9 +361,130 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		services: {
 			dialogService,
 			onAuthenticationRequired: (analyticsAction, delegate) => {
-				setState({
-					onboardingAnalyticsAction: analyticsAction,
-				});
+				dialogService.openDialog(
+					sharedState => React.createElement(
+						OnboardingFlow,
+						{
+							analyticsAction,
+							captcha: new Captcha(null, (handler) => {
+								// no captcha
+							}),
+							onClose: (reason) => {
+								dialogService.closeDialog();
+								if (reason !== ExitReason.Aborted) {
+									eventManager.triggerEvent('onOnboardingCompleted', null);
+								}
+								eventManager.removeListeners('onOnboardingCompleted');
+							},
+							onCreateAccount: (req) => {
+								return apiServer
+									.createUserAccount({
+										name: req.name,
+										email: req.email,
+										password: req.password,
+										captchaResponse: req.captchaResponse,
+										timeZoneName: DateTime.local().zoneName,
+										theme: getClientPreferredColorScheme(),
+										analytics: {
+											action: req.analyticsAction,
+											currentPath: window.location.pathname,
+											initialPath: window.location.pathname,
+											referrerUrl: window.document.referrer,
+										},
+										pushDevice: null,
+									})
+									.then((profile) => {
+										browserApi.userSignedIn(profile);
+										return setState({
+											user: profile.userAccount,
+										});
+									});
+							},
+							onCreateAuthServiceAccount: (req) => {
+								return apiServer
+									.createAuthServiceAccount({
+										name: req.name,
+										pushDevice: null,
+										theme: getClientPreferredColorScheme(),
+										timeZoneName: DateTime.local().zoneName,
+										analytics: {
+											action: req.analyticsAction,
+											currentPath: window.location.pathname,
+											initialPath: window.location.pathname,
+											referrerUrl: window.document.referrer,
+										},
+										token: req.token,
+									})
+									.then((profile) => {
+										browserApi.userSignedIn(profile);
+										return setState({
+											user: profile.userAccount,
+										});
+									});
+							},
+							onRequestPasswordReset: (req) => {
+								return apiServer.requestPasswordReset(req);
+							},
+							onShowToast: (content, intent) => {
+								toasterService.addToast(content, intent);
+							},
+							onSignIn: (req) => {
+								return apiServer
+									.signIn({
+										authServiceToken: req.authServiceToken,
+										email: req.email,
+										password: req.password,
+										pushDevice: null,
+									})
+									.then((profile) => {
+										browserApi.userSignedIn(profile);
+										return setState({
+											user: profile.userAccount,
+										});
+									});
+							},
+							onSignInWithAuthService: (provider) => {
+								const popup = new AuthServiceBrowserPopup();
+								// open window synchronously to avoid being blocked by popup blockers
+								popup.open();
+								return apiServer
+									.requestAuthServiceBrowserPopupRequest({
+										provider,
+									})
+									.then((response) =>
+										popup.load(response.popupUrl).then(() =>
+											apiServer
+												.getAuthServiceBrowserPopupResponse({
+													requestId: response.requestId,
+												})
+												.then((popupResponse) => {
+													if (popupResponse.userProfile) {
+														browserApi.userSignedIn(popupResponse.userProfile);
+														return setState({
+															user: popupResponse.userProfile.userAccount,
+														}).then(() => popupResponse);
+													} else {
+														return popupResponse;
+													}
+												})
+												.catch((reason) => {
+													if (isHttpProblemDetails(reason) && reason.status === 404) {
+														return {
+															association: null,
+															authServiceToken: null,
+															error: AuthenticationError.Cancelled,
+															userProfile: null,
+														};
+													}
+													throw reason;
+												})
+										)
+									);
+							},
+							user: sharedState.user
+						}
+					)
+				);
 				return eventManager.addListener('onOnboardingCompleted', delegate);
 			},
 			onCreateAbsoluteUrl: createAbsoluteUrl,

@@ -14,45 +14,12 @@
 */
 @import '../styles/colors';
 
-.flow_fhdgte {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 100;
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: flex-start;
-	animation-duration: 250ms;
-	animation-fill-mode: forwards;
-}
-.flow_fhdgte::before {
-	content: '';
-	min-height: 10px;
-	flex: 1 1 auto;
-}
-.flow_fhdgte::after {
-	content: '';
-	min-height: 10px;
-	flex: 3 1 auto;
-}
-.flow_fhdgte.closing {
-	animation-duration: 250ms;
-	animation-fill-mode: forwards;
-}
 .flow_fhdgte > .steps {
 	display: flex;
 	flex-flow: column;
-	width: calc(100% - 20px);
 	max-width: 700px;
 	min-height: 0;
 	border-radius: 5px;
-	animation: flow_fhdgte-steps-slide-in 250ms forwards;
-}
-.flow_fhdgte.closing > .steps {
-	animation: flow_fhdgte-steps-slide-out 250ms forwards;
 }
 .flow_fhdgte > .steps::after {
 	content: '';
@@ -107,76 +74,7 @@
 	}
 }
 
-@keyframes flow_fhdgte-overlay-fade-in-light {
-	from {
-		background-color: transparent;
-	}
-	to {
-		background-color: map-get($light-theme, $overlay-color);
-	}
-}
-@keyframes flow_fhdgte-overlay-fade-out-light {
-	from {
-		background-color: map-get($light-theme, $overlay-color);
-	}
-	to {
-		background-color: transparent;
-	}
-}
-@keyframes flow_fhdgte-overlay-fade-in-dark {
-	from {
-		background-color: transparent;
-	}
-	to {
-		background-color: map-get($dark-theme, $overlay-color);
-	}
-}
-@keyframes flow_fhdgte-overlay-fade-out-dark {
-	from {
-		background-color: map-get($dark-theme, $overlay-color);
-	}
-	to {
-		background-color: transparent;
-	}
-}
-@keyframes flow_fhdgte-steps-slide-in {
-	from {
-		transform: translateY(20%);
-		opacity: 0;
-	}
-	to {
-		transform: translateY(0);
-		opacity: 1;
-	}
-}
-@keyframes flow_fhdgte-steps-slide-out {
-	from {
-		transform: translateY(0);
-		opacity: 1;
-	}
-	to {
-		transform: translateY(20%);
-		opacity: 0;
-	}
-}
-
 @include theme using ($root, $scheme) {
-	#{$root} .flow_fhdgte {
-		@include theme-colors(
-			$scheme,
-			(
-				'animation-name': 'flow_fhdgte-overlay-fade-in',
-			)
-		);
-	}
-	#{$root} .flow_fhdgte.closing {
-		@include theme-colors(
-			$scheme,
-			(
-				'animation-name': 'flow_fhdgte-overlay-fade-out',
-			)
-		);
-	}
 	#{$root} .flow_fhdgte > .steps {
 		@include theme-colors(
 			$scheme,

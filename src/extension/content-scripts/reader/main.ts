@@ -24,7 +24,7 @@ import Post, { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
 import DisplayPreference, { getClientDefaultDisplayPreference, DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString, extensionAuthQueryStringKey } from '../../../common/routing/queryString';
+import { parseQueryString, authenticateQueryStringKey } from '../../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../../common/ParserDocumentLocation';
 import { DeviceType } from '../../../common/DeviceType';
 import parseDocumentContent from '../../../common/contentParsing/parseDocumentContent';
@@ -406,7 +406,7 @@ let embedRootElement: HTMLDivElement;
 // This is the props object and container element for the sign-in reminder react component.
 const reminderProps = {
 	onSignIn: () => {
-		openInNewTab(createUrl(window.reallyreadit.extension.config.webServer, null, { [extensionAuthQueryStringKey]: null }))
+		openInNewTab(createUrl(window.reallyreadit.extension.config.webServer, null, { [authenticateQueryStringKey]: 'signIn' }))
 	},
 	onDismiss: async (disableReminder: boolean) => {
 		reminderState.isDismissed = true;

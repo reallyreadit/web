@@ -21,7 +21,6 @@ import Root, {
 	NavReference,
 	parseNavReference,
 	ReadArticleReference,
-	OnboardingState,
 } from './Root';
 import Header from './BrowserRoot/Header';
 import UserAccount, {
@@ -53,8 +52,6 @@ import {
 	extensionInstalledQueryStringKey,
 	createQueryString,
 	appReferralQueryStringKey,
-	subscribeQueryStringKey,
-	extensionAuthQueryStringKey,
 } from '../../../common/routing/queryString';
 import Icon from '../../../common/components/Icon';
 import ArticleUpdatedEvent from '../../../common/models/ArticleUpdatedEvent';
@@ -65,7 +62,7 @@ import NotificationPreference from '../../../common/models/notifications/Notific
 import PushDeviceForm from '../../../common/models/userAccounts/PushDeviceForm';
 import createAotdHistoryScreenFactory from './screens/AotdHistoryScreen';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
-import { DeviceType, isCompatibleBrowser } from '../../../common/DeviceType';
+import { DeviceType } from '../../../common/DeviceType';
 import createSettingsScreenFactory from './SettingsPage';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
 import AuthServiceAccountAssociation from '../../../common/models/auth/AuthServiceAccountAssociation';
@@ -98,6 +95,8 @@ import {
 import { AppPlatform } from '../../../common/AppPlatform';
 import { ShareChannelData } from '../../../common/sharing/ShareData';
 import { ScreenTitle } from '../../../common/ScreenTitle';
+import ExtensionInstalledFlow from './BrowserRoot/ExtensionInstalledFlow';
+import DialogKey from '../../../common/routing/DialogKey';
 
 interface Props extends RootProps {
 	browserApi: BrowserApiBase;
@@ -303,7 +302,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				this._toaster.addToast('Password reset successfully.', Intent.Success);
 			});
 	};
-	private readonly _signInWithApple = (action: string) => {
+	protected readonly _signInWithApple = (action: string) => {
 		// can't use URLSearchParams here because apple requires spaces be
 		// encoded as %20 (which encodeURIComponent does) instead of +
 		const queryString = createQueryString({
@@ -323,7 +322,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 			// leave the promise unresolved as the browser navigates
 		});
 	};
-	private readonly _signInWithTwitter = (action: string) => {
+	protected readonly _signInWithTwitter = (action: string) => {
 		return new Promise<BrowserPopupResponseResponse>((resolve, reject) => {
 			this.props.serverApi
 				.requestTwitterBrowserAuthRequestToken({
@@ -357,6 +356,35 @@ export default class extends Root<Props, State, SharedState, Events> {
 
 	constructor(props: Props) {
 		super('browser-root_6tjc3j', true, props);
+
+		// dialogs
+		this._dialogCreatorMap = {
+			...this._dialogCreatorMap,
+			[DialogKey.CreateAuthServiceAccount]: (location, sharedState) => (
+				<OnboardingFlow
+					authServiceToken={parseQueryString(location.queryString)[authServiceTokenQueryStringKey]}
+					captcha={this.props.captcha}
+					onClose={this._dialog.closeDialog}
+					onCreateAccount={this._createAccount}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+					onResetPassword={this._resetPassword}
+					onShowToast={this._toaster.addToast}
+					onSignIn={this._signIn}
+					onSignInWithApple={this._signInWithApple}
+					onSignInWithTwitter={this._signInWithTwitter}
+					user={sharedState.user}
+				/>
+			),
+			[DialogKey.ExtensionInstalled]: (location, sharedState) => (
+				<ExtensionInstalledFlow
+					deviceType={this.props.deviceType}
+					onClose={this._dialog.closeDialog}
+					onCreateStaticContentUrl={this._createStaticContentUrl}
+					user={sharedState.user}
+				/>
+			)
+		};
 
 		// screens
 		this._screenFactoryMap = {
@@ -689,12 +717,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		};
 
 		// route state
-		const route = findRouteByLocation(
-				routes,
-				props.initialLocation,
-				unroutableQueryStringKeys
-			),
-			locationState = this.getLocationDependentState(props.initialLocation);
+		const locationState = this.getLocationDependentState(props.initialLocation);
 
 		// query string state
 		const queryStringParams = parseQueryString(
@@ -704,35 +727,10 @@ export default class extends Root<Props, State, SharedState, Events> {
 				messageQueryStringKey
 			] as WelcomeMessage;
 
-		// onboarding state
-		let onboardingState: OnboardingState;
-		if (authServiceTokenQueryStringKey in queryStringParams) {
-			onboardingState = {
-				authServiceToken: queryStringParams[authServiceTokenQueryStringKey],
-			};
-		} else if ('reset-password' in queryStringParams) {
-			onboardingState = {
-				passwordResetEmail: queryStringParams['email'],
-				passwordResetToken: queryStringParams['token'],
-			};
-		} else if (
-			extensionAuthQueryStringKey in queryStringParams ||
-			extensionInstalledQueryStringKey in queryStringParams ||
-			(props.initialUserProfile &&
-				!props.initialUserProfile.userAccount.dateOrientationCompleted &&
-				isCompatibleBrowser(props.deviceType) &&
-				route.screenKey !== ScreenKey.EmailSubscriptions &&
-				route.screenKey !== ScreenKey.ExtensionRemoval &&
-				!(subscribeQueryStringKey in queryStringParams))
-		) {
-			onboardingState = {};
-		}
-
 		this.state = {
 			...this.state,
-			dialogs: [],
+			dialogs: locationState.dialog ? [this._dialog.createDialog(locationState.dialog)] : [],
 			isExtensionInstalled: props.extensionApi.isInstalled,
-			onboarding: onboardingState,
 			screens: [locationState.screen],
 			welcomeMessage: welcomeMessage in welcomeMessages ? welcomeMessage : null,
 		};
@@ -1115,14 +1113,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				method: NavMethod.ReplaceAll,
 			});
 		}
-		// if we're signed in from another tab and onboarding is not null
-		// it means that some authentication step is displayed and should be cleared
-		if (eventSource === EventSource.Remote && this.state.onboarding) {
-			supplementaryState = {
-				...supplementaryState,
-				onboarding: null,
-			};
-		}
 		return super.onUserSignedIn(
 			profile,
 			eventType,
@@ -1163,18 +1153,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				this._hasBroadcastInitialUser = true;
 			}
 		}
-		// check for orientation completion and end onboarding if active
-		let supplementaryState: Partial<State>;
-		if (
-			this.state.onboarding != null &&
-			this.state.user.dateOrientationCompleted == null &&
-			user.dateOrientationCompleted != null
-		) {
-			supplementaryState = {
-				onboarding: null,
-			};
-		}
-		super.onUserUpdated(user, eventSource, supplementaryState);
+		super.onUserUpdated(user, eventSource);
 	}
 
 	protected readArticle(
@@ -1254,33 +1233,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 					onTransitionComplete={this._dialog.handleTransitionCompletion}
 					sharedState={this.state}
 				/>
-				{this.state.onboarding ? (
-					<OnboardingFlow
-						analyticsAction={this.state.onboarding.analyticsAction}
-						appPlatform={null}
-						authServiceToken={this.state.onboarding.authServiceToken}
-						captcha={this.props.captcha}
-						deviceType={this.props.deviceType}
-						initialAuthenticationStep={
-							this.state.onboarding.initialAuthenticationStep
-						}
-						isExtensionInstalled={this.state.isExtensionInstalled}
-						onClose={this._endOnboarding}
-						onCreateAccount={this._createAccount}
-						onCreateAuthServiceAccount={this._createAuthServiceAccount}
-						onCreateStaticContentUrl={this._createStaticContentUrl}
-						onRequestNotificationAuthorization={null}
-						onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
-						onResetPassword={this._resetPassword}
-						onShowToast={this._toaster.addToast}
-						onSignIn={this._signIn}
-						onSignInWithApple={this._signInWithApple}
-						onSignInWithTwitter={this._signInWithTwitter}
-						passwordResetEmail={this.state.onboarding.passwordResetEmail}
-						passwordResetToken={this.state.onboarding.passwordResetToken}
-						user={this.state.user}
-					/>
-				) : null}
 				<Toaster
 					onRemoveToast={this._toaster.removeToast}
 					toasts={this.state.toasts}

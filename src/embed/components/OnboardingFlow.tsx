@@ -12,7 +12,6 @@ import * as React from 'react';
 import CaptchaBase from '../../common/captcha/CaptchaBase';
 import Flow, {
 	BaseProps,
-	ExitReason,
 } from '../../common/components/Flow';
 import CreateAccountStep, {
 	Form as CreateAccountForm,
@@ -75,10 +74,10 @@ export default class OnboardingFlow extends Flow<Props> {
 		this.goToStep(Step.SignIn);
 	};
 	private readonly _handleAccountCreation = () => {
-		this._beginClosing(ExitReason.Completed);
+		this._complete();
 	};
 	private readonly _handleExistingUserAuthentication = () => {
-		this._beginClosing(ExitReason.Completed);
+		this._abort();
 	};
 	private readonly _signIn = (form: SignInForm) => {
 		return this.props

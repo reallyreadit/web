@@ -55,27 +55,24 @@ export const appVersion = 'appVersion';
 export const authServiceTokenQueryStringKey = 'authServiceToken';
 export const clientTypeQueryStringKey = 'clientType';
 export const deviceTypeQueryStringKey = 'deviceType';
-export const extensionAuthQueryStringKey = 'extensionAuth';
+export const authenticateQueryStringKey = 'authenticate';
 export const extensionInstalledQueryStringKey = 'extensionInstalled';
 export const messageQueryStringKey = 'message';
-export const subscribeQueryStringKey = 'subscribe';
 // legacy
 export const marketingScreenVariantQueryStringKey = 'marketingScreenVariant';
 export const marketingVariantQueryStringKey = 'marketingVariant';
 export const referrerUrlQueryStringKey = 'referrerUrl';
+export const subscribeQueryStringKey = 'subscribe';
 export const unroutableQueryStringKeys = [
 	appPlatformQueryStringKey,
 	appReferralQueryStringKey,
 	appVersion,
-	authServiceTokenQueryStringKey,
 	clientTypeQueryStringKey,
 	deviceTypeQueryStringKey,
-	extensionAuthQueryStringKey,
-	extensionInstalledQueryStringKey,
 	messageQueryStringKey,
-	subscribeQueryStringKey,
 	// legacy
 	marketingScreenVariantQueryStringKey,
 	marketingVariantQueryStringKey,
 	referrerUrlQueryStringKey,
+	subscribeQueryStringKey,
 ];

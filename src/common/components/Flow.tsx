@@ -10,7 +10,6 @@
 
 import * as React from 'react';
 import UserAccount from '../models/UserAccount';
-import * as classNames from 'classnames';
 import Icon from './Icon';
 import TransitionContainer from './TransitionContainer';
 
@@ -36,27 +35,11 @@ export default abstract class Flow<
 			step: this.state.goingToStep,
 		});
 	};
-	private readonly _handleAnimationEnd = (event: React.AnimationEvent) => {
-		if (
-			event.animationName === 'flow_fhdgte-steps-slide-out'
-		) {
-			this.props.onClose(
-				this.state.exitReason != null
-					? this.state.exitReason
-					: ExitReason.Aborted
-			);
-		}
-	};
 	protected readonly _abort = () => {
-		this._beginClosing(ExitReason.Aborted);
-	};
-	protected readonly _beginClosing = (exitReason: ExitReason) => {
-		this.setState({
-			exitReason,
-		});
+		this.props.onClose(ExitReason.Aborted);
 	};
 	protected readonly _complete = () => {
-		this._beginClosing(ExitReason.Completed);
+		this.props.onClose(ExitReason.Completed);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -79,12 +62,7 @@ export default abstract class Flow<
 	}
 	public render() {
 		return (
-			<div
-				className={classNames('flow_fhdgte', {
-					closing: this.state.exitReason != null,
-				})}
-				onAnimationEnd={this._handleAnimationEnd}
-			>
+			<div className="flow_fhdgte">
 				<div className="steps">
 					<div className="titlebar">
 						<div className="icon-right">
