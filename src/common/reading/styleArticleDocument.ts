@@ -27,7 +27,6 @@ const styleContent = `
 #com_readup_article {
 	font-family: serif;
 	line-height: 1.35;
-	padding-top: 100px;
 }
 #com_readup_article[data-com_readup_text_size='1'] {
 	font-size: 16pt;
