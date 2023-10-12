@@ -85,6 +85,7 @@ import NavBar from './AppRoot/NavBar';
 import createMyFeedScreenFactory from './screens/MyFeedScreen';
 import createBestEverScreenFactory from './screens/BestEverScreen';
 import AppleIdCredential from '../../../common/models/app/AppleIdCredential';
+import { AuthenticationMethod } from '../../../common/models/auth/AuthenticationRequest';
 
 interface Props extends RootProps {
 	appApi: AppApi;
@@ -787,6 +788,13 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 					}
 				}
 				this.onArticleUpdated(event);
+			})
+			.addListener('authenticate', request => {
+				if (request.method === AuthenticationMethod.SignIn) {
+					this._beginOnboardingAtSignIn('ReaderReminder');
+				} else {
+					this._beginOnboardingAtCreateAccount('ReaderReminder');
+				}
 			})
 			.addListener('authServiceAccountLinked', (association) => {
 				if (
