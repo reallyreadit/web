@@ -29,7 +29,6 @@ export type IconName =
 	| 'bookmark'
 	| 'box'
 	| 'cancel'
-	| 'candy'
 	| 'charity'
 	| 'chart'
 	| 'checkmark'

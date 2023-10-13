@@ -1,8 +1,15 @@
+// Use enum to determine type since null values or errors aren't preserved during serialization.
+export enum ResponseType {
+	Success,
+	Error
+}
 interface MessageErrorResponse {
 	error: string;
+	type: ResponseType.Error;
 }
 interface MessageSuccessResponse<T> {
 	value: T;
+	type: ResponseType.Success
 }
 export type MessageResponse<T> =
 	| MessageSuccessResponse<T>
@@ -10,7 +17,7 @@ export type MessageResponse<T> =
 export function isSuccessResponse<T>(
 	response: MessageResponse<T>
 ): response is MessageSuccessResponse<T> {
-	return response != null && 'value' in response;
+	return response?.type === ResponseType.Success;
 }
 export function createMessageResponseHandler<T>(
 	promise: Promise<T>,
@@ -20,6 +27,7 @@ export function createMessageResponseHandler<T>(
 		.then((value) => {
 			sendResponse({
 				value,
+				type: ResponseType.Success
 			});
 		})
 		.catch((reason) => {
@@ -32,6 +40,7 @@ export function createMessageResponseHandler<T>(
 			}
 			sendResponse({
 				error: reason,
+				type: ResponseType.Error
 			});
 		});
 }

@@ -50,6 +50,9 @@ export default class extends AppApi {
 				case 'articleUpdated':
 					this.emitEvent('articleUpdated', message.data);
 					break;
+				case 'authenticate':
+					this.emitEvent('authenticate', message.data);
+					break;
 				case 'authenticateAppleIdCredential':
 					this.emitEvent('authenticateAppleIdCredential', message.data);
 					break;

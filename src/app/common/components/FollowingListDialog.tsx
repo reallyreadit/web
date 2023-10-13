@@ -150,7 +150,7 @@ export default class FollowingListDialog extends React.Component<Props, State> {
 				title={this.props.title}
 			>
 				{this.state.followings.isLoading ? (
-					<LoadingOverlay position="static" />
+					<LoadingOverlay />
 				) : (
 					<>
 						{this.state.newItemCount ? (

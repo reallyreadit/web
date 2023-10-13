@@ -9,6 +9,9 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 enum DialogKey {
-	ResetPassword,
+	Authenticate,
+	CreateAuthServiceAccount,
+	ExtensionInstalled,
+	ResetPassword
 }
 export default DialogKey;

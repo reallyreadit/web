@@ -8,9 +8,14 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Readup Reader</title>
-		<style>
+		<!--Preemptively set the background color here to avoid any flashing colors during loading.-->
+		<script src="/content-scripts/reader/theme.js"></script>
+		<style id="com_readup_temp_background_style">
 			html {
 				background-color: #fdfdfd;
+			}
+			html[data-com_readup_theme="dark"] {
+				background-color: #181818;
 			}
 		</style>
 	</head>

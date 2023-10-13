@@ -19,14 +19,12 @@ import routes, { createArticleSlug } from '../../../../common/routing/routes';
 import Fetchable from '../../../../common/Fetchable';
 import UserAccount from '../../../../common/models/UserAccount';
 import {
-	formatFetchable,
 	formatList,
 	formatCountable,
 } from '../../../../common/format';
 import produce from 'immer';
 import { unroutableQueryStringKeys } from '../../../../common/routing/queryString';
 import LoadingOverlay from '../controls/LoadingOverlay';
-import ScreenContainer from '../ScreenContainer';
 import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
 import DownloadButton from './DownloadButton';
 import Button from '../../../../common/components/Button';
@@ -38,7 +36,6 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
 import SemanticVersion from '../../../../common/SemanticVersion';
-import GetStartedButton from './GetStartedButton';
 
 interface Props {
 	article: Fetchable<UserArticle>;
@@ -59,8 +56,8 @@ class ReadScreen extends React.PureComponent<Props> {
 		this.props.onReadArticle(this.props.article.value);
 	};
 	public componentDidMount() {
-		// Automatically redirect to the reader if logged in & the extension is installed
-		if (!!this.props.user && !!this.props.isExtensionInstalled) {
+		// Automatically redirect to the reader if the extension is installed
+		if (this.props.isExtensionInstalled) {
 			this._readArticle();
 		}
 	}
@@ -134,28 +131,30 @@ class ReadScreen extends React.PureComponent<Props> {
 		);
 	}
 	public render() {
-		return this.props.article.isLoading ? (
-			<ScreenContainer className="read-screen_ikr26q">
-				<LoadingOverlay position="absolute" />
-			</ScreenContainer>
-		) : !this.props.article.value ? (
-			<ScreenContainer className="read-screen_ikr26q">
-				<InfoBox position="absolute" style="normal">
+		if (this.props.article.isLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
+		if (!this.props.article.value) {
+			return (
+				<InfoBox style="normal">
 					<p>Article not found.</p>
 				</InfoBox>
-			</ScreenContainer>
-		) : (
+			);
+		}
+		return (
 			<>
-				<ScreenContainer className="read-screen_ikr26q article-screen-container">
+				<div className="read-screen_ikr26q article-screen-container">
 					{this.renderArticle()}
-				</ScreenContainer>
-				<ScreenContainer
+				</div>
+				<div
 					className={classNames('read-screen_ikr26q', {
 						installed: !!this.props.isExtensionInstalled,
 					})}
 				>
 					<div className="spacer" />
-					{!!this.props.user && !!this.props.isExtensionInstalled ? (
+					{this.props.isExtensionInstalled ? (
 						<div className='installed'>
 							<div className="read-question">Continue with the reader</div>
 							<div className="spacer" />
@@ -192,76 +191,31 @@ class ReadScreen extends React.PureComponent<Props> {
 										<div className="choice__details">
 											<div>
 												<h2>
-													Read it on Readup,
-													<br /> the app for reading.
+													Read it on Readup
 												</h2>
 												{/* <p className="info">Join {this.props.article.value.firstPoster} and {this.props.article.value.readCount - 1} other readers.  */}
 												<ul className="info dashed">
-													<li>Better reading</li>
 													<li>100% ad-free</li>
+													<li>Unlock comments after reading</li>
 												</ul>
 											</div>
-											{/* If not logged in & on desktop: suggest to Get Started */}
-											{!this.props.user &&
-											!isMobileDevice(this.props.deviceType) ? (
-												<GetStartedButton
-													analyticsAction="home-hero-download"
-													iosPromptType='download'
-													deviceType={this.props.deviceType}
-													location={this.props.location}
-													onBeginOnboarding={this.props.onBeginOnboarding}
-													onCopyAppReferrerTextToClipboard={
-														this.props.onCopyAppReferrerTextToClipboard
-													}
-													onCreateStaticContentUrl={
-														this.props.onCreateStaticContentUrl
-													}
-													onOpenNewPlatformNotificationRequestDialog={
-														this.props
-															.onOpenNewPlatformNotificationRequestDialog
-													}
-												/>
-											) : null}
-											{/* If on desktop & logged in & extension NOT yet installed,
-											    OR, if on mobile
-												route to Download page */}
-											{(!!this.props.user &&
-												!this.props.isExtensionInstalled) ||
-											isMobileDevice(this.props.deviceType) ? (
-												// TODO PROXY EXT: only allow reading if newest version of the extension is installed?
-												// or somehow tell people to update?
-												// || this.props.extensionVersion.compareTo(new SemanticVersion('6.0.0')) >= 0
-												<DownloadButton
-													analyticsAction="ReadScreen"
-													deviceType={this.props.deviceType}
-													location={this.props.location}
-													showOpenInApp={true}
-													onNavTo={this.props.onNavTo}
-													onCopyAppReferrerTextToClipboard={
-														this.props.onCopyAppReferrerTextToClipboard
-													}
-													onCreateStaticContentUrl={
-														this.props.onCreateStaticContentUrl
-													}
-													onOpenNewPlatformNotificationRequestDialog={
-														this.props
-															.onOpenNewPlatformNotificationRequestDialog
-													}
-												/>
-											) : null}
-											{/*
-												Suggest to read article, in case the automatic redirect above fails
-											 */}
-											{!!this.props.user &&
-											!!this.props.isExtensionInstalled ? (
-												<Button
-													intent="loud"
-													onClick={this._readArticle}
-													size="large"
-													align="center"
-													text="Read Article"
-												/>
-											) : null}
+											<DownloadButton
+												analyticsAction="ReadScreen"
+												deviceType={this.props.deviceType}
+												location={this.props.location}
+												showOpenInApp={true}
+												onNavTo={this.props.onNavTo}
+												onCopyAppReferrerTextToClipboard={
+													this.props.onCopyAppReferrerTextToClipboard
+												}
+												onCreateStaticContentUrl={
+													this.props.onCreateStaticContentUrl
+												}
+												onOpenNewPlatformNotificationRequestDialog={
+													this.props
+														.onOpenNewPlatformNotificationRequestDialog
+												}
+											/>
 										</div>
 									</>
 								</ContentBox>
@@ -288,10 +242,25 @@ class ReadScreen extends React.PureComponent<Props> {
 							</div>
 						</>
 					)}
-				</ScreenContainer>
+				</div>
 			</>
 		);
 	}
+}
+function createTitle(article: Fetchable<UserArticle>) {
+	if (article.isLoading) {
+		return {
+			default: 'Loading...'
+		};
+	}
+	if (!article.value) {
+		return {
+			default: 'Article not found'
+		};
+	}
+	return {
+		default: article.value.title
+	};
 }
 export default function createReadScreenFactory<TScreenKey>(
 	key: TScreenKey,
@@ -328,11 +297,7 @@ export default function createReadScreenFactory<TScreenKey>(
 						id,
 						produce((currentState: Screen<Fetchable<UserArticle>>) => {
 							currentState.componentState = article;
-							if (article.value) {
-								currentState.title = article.value.title;
-							} else {
-								currentState.title = 'Article not found';
-							}
+							currentState.title = createTitle(article);
 						})
 					);
 				}
@@ -342,12 +307,7 @@ export default function createReadScreenFactory<TScreenKey>(
 				componentState: article,
 				key,
 				location,
-				title: formatFetchable(
-					article,
-					(article) => article.title,
-					'Loading...',
-					'Article not found.'
-				),
+				title: createTitle(article),
 			};
 		},
 		render: (

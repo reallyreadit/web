@@ -21,6 +21,8 @@ import UserAccount from '../../common/models/UserAccount';
 import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { ExtensionOptions } from '../options-page/ExtensionOptions';
+import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 interface ReaderContentScriptTab {
 	articleId: number | null;
@@ -35,10 +37,13 @@ export default class ReaderContentScriptApi {
 	constructor(params: {
 		badgeApi: BrowserActionBadgeApi;
 		onGetDisplayPreference: () => Promise<DisplayPreference | null>;
+		onGetDisplayPreferenceFromCache: () => Promise<DisplayPreference | null>;
+		onGetExtensionOptions: () => Promise<ExtensionOptions>;
+		onGetUserAccountFromCache: () => Promise<UserAccount | null>;
 		onChangeDisplayPreference: (
 			preference: DisplayPreference
 		) => Promise<DisplayPreference>;
-		onRegisterPage: (
+		onGetUserArticle: (
 			tabId: number,
 			data: ParseResult
 		) => Promise<ArticleLookupResult>;
@@ -69,216 +74,248 @@ export default class ReaderContentScriptApi {
 		// listen for messages from content script
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (
-				message.to === 'eventPage' &&
-				message.from === 'readerContentScript'
+				message.to !== 'eventPage' ||
+				message.from !== 'readerContentScript'
 			) {
+				// return true so that other handlers will have an opportunity to respond
+				return true;
+			}
+			if (message.type !== 'loadingAnimationTick') {
 				console.log(
 					`[ReaderApi] received ${message.type} message from tab # ${sender.tab?.id}`
 				);
-				switch (message.type) {
-					case 'getDisplayPreference':
-						createMessageResponseHandler(
-							params.onGetDisplayPreference(),
-							sendResponse
-						);
-						return true;
-					case 'changeDisplayPreference':
-						createMessageResponseHandler(
-							(async () => {
-								await this.sendMessageToOtherTabs(sender.tab.id, {
-									type: 'displayPreferenceChanged',
-									data: message.data,
-								});
-								return await params.onChangeDisplayPreference(message.data);
-							})(),
-							sendResponse
-						);
-						return true;
-					case 'loadingAnimationTick':
+			}
+			switch (message.type) {
+				case 'getDisplayPreference':
+					createMessageResponseHandler(
+						params.onGetDisplayPreference(),
+						sendResponse
+					);
+					return true;
+				case 'getDisplayPreferenceFromCache':
+					createMessageResponseHandler(
+						params.onGetDisplayPreferenceFromCache(),
+						sendResponse
+					);
+					return true;
+				case 'getExtensionOptions':
+					createMessageResponseHandler(
+						params.onGetExtensionOptions(),
+						sendResponse
+					);
+					return true;
+				case 'getUserAccountFromCache':
+					createMessageResponseHandler(
+						params.onGetUserAccountFromCache(),
+						sendResponse
+					);
+					return true;
+				case 'changeDisplayPreference':
+					createMessageResponseHandler(
 						(async () => {
-							const tick = message.data as number;
-							if (tick === 0) {
-								await this._badge.setDefault(sender.tab.id);
-							}
-							await this._badge.setLoading(sender.tab.id, tick);
-						})();
-						break;
-					case 'registerPage':
-						createMessageResponseHandler(
-							(async () => {
+							await this.sendMessageToOtherTabs(sender.tab.id, {
+								type: 'displayPreferenceChanged',
+								data: message.data,
+							});
+							return await params.onChangeDisplayPreference(message.data);
+						})(),
+						sendResponse
+					);
+					return true;
+				case 'loadingAnimationTick':
+					(async () => {
+						const tick = message.data as number;
+						if (tick === 0) {
+							await this._badge.setDefault(sender.tab.id);
+							return;
+						}
+						await this._badge.setLoading(sender.tab.id, tick);
+					})();
+					break;
+				case 'registerPage':
+					createMessageResponseHandler(
+						(async () => {
+							await this.setTab({
+								articleId: null,
+								id: sender.tab.id,
+							});
+						})(),
+						sendResponse
+					);
+					return true;
+				case 'getUserArticle':
+					createMessageResponseHandler(
+						(async () => {
+							try {
+								const result = await params.onGetUserArticle(sender.tab.id, message.data);
 								await this.setTab({
-									articleId: null,
+									articleId: result.userArticle.id,
 									id: sender.tab.id,
 								});
-								try {
-									const result = await params.onRegisterPage(sender.tab.id, message.data);
-									await this.setTab({
-										articleId: result.userArticle.id,
-										id: sender.tab.id,
-									});
-									const tabs = await this.getTabs();
-									for (const tab of tabs) {
-										if (tab.articleId === result.userArticle.id) {
-											await this._badge.setReading(tab.id, result.userArticle);
-											await chrome.action.setTitle({
-												tabId: tab.id,
-												title: `${calculateEstimatedReadTime(
-													result.userArticle.wordCount
-												)} min. read`,
-											});
-										}
-									}
-									return result;
-								} catch (ex) {
-									await this.removeTab(sender.tab.id);
-									await this._badge.setDefault(sender.tab.id);
-									throw ex;
-								}
-							})(),
-							sendResponse
-						);
-						return true;
-					case 'commitReadState':
-						createMessageResponseHandler(
-							(async () => {
-								const article = await params.onCommitReadState(
-									sender.tab.id,
-									message.data.commitData,
-									message.data.isCompletionCommit
-								);
 								const tabs = await this.getTabs();
 								for (const tab of tabs) {
-									if (tab.articleId === article.id) {
-										await this._badge.setReading(tab.id, article);
+									if (tab.articleId === result.userArticle.id) {
+										await this._badge.setReading(tab.id, result.userArticle);
+										await chrome.action.setTitle({
+											tabId: tab.id,
+											title: `${calculateEstimatedReadTime(
+												result.userArticle.wordCount
+											)} min. read`,
+										});
 									}
 								}
-								return article;
-							})(),
-							sendResponse
-						);
-						return true;
-					case 'unregisterPage':
-						// sender.tab is undefined in Firefox
-						// tab won't be removed until a messaging error occurs
-						const tabId = sender?.tab?.id;
-						if (tabId != null) {
-							this.removeTab(tabId);
-						}
-						break;
-					case 'closeWindow':
-						chrome.windows.remove(message.data as number, () => {
-							if (chrome.runtime.lastError) {
-								console.log(
-									`[ReaderApi] error closing window, message: ${chrome.runtime.lastError.message}`
-								);
+								return result;
+							} catch (ex) {
+								await this._badge.setDefault(sender.tab.id);
+								throw ex;
 							}
-						});
-						break;
-					case 'getComments':
-						createMessageResponseHandler(
-							params.onGetComments(message.data),
-							sendResponse
-						);
-						return true;
-					case 'hasWindowClosed':
-						createMessageResponseHandler(
-							new Promise<boolean>((resolve, reject) => {
-								chrome.windows.get(message.data as number, (chromeWindow) => {
+						})(),
+						sendResponse
+					);
+					return true;
+				case 'commitReadState':
+					createMessageResponseHandler(
+						(async () => {
+							const article = await params.onCommitReadState(
+								sender.tab.id,
+								message.data.commitData,
+								message.data.isCompletionCommit
+							);
+							const tabs = await this.getTabs();
+							for (const tab of tabs) {
+								if (tab.articleId === article.id) {
+									await this._badge.setReading(tab.id, article);
+								}
+							}
+							return article;
+						})(),
+						sendResponse
+					);
+					return true;
+				case 'unregisterPage':
+					// sender.tab is undefined in Firefox
+					// tab won't be removed until a messaging error occurs
+					const tabId = sender?.tab?.id;
+					if (tabId != null) {
+						this.removeTab(tabId);
+					}
+					break;
+				case 'closeWindow':
+					chrome.windows.remove(message.data as number, () => {
+						if (chrome.runtime.lastError) {
+							console.log(
+								`[ReaderApi] error closing window, message: ${chrome.runtime.lastError.message}`
+							);
+						}
+					});
+					break;
+				case 'getComments':
+					createMessageResponseHandler(
+						params.onGetComments(message.data),
+						sendResponse
+					);
+					return true;
+				case 'hasWindowClosed':
+					createMessageResponseHandler(
+						new Promise<boolean>((resolve, reject) => {
+							chrome.windows.get(message.data as number, (chromeWindow) => {
+								if (chrome.runtime.lastError) {
+									console.log(
+										`[ReaderApi] error getting window, message: ${chrome.runtime.lastError.message}`
+									);
+								}
+								resolve(!chromeWindow);
+							});
+						}),
+						sendResponse
+					);
+					return true;
+				case 'openWindow':
+					const request = message.data as WindowOpenRequest;
+					createMessageResponseHandler(
+						new Promise<number>((resolve, reject) => {
+							chrome.windows.create(
+								{
+									type: 'popup',
+									url: request.url,
+									width: request.width,
+									height: request.height,
+									focused: true,
+								},
+								(chromeWindow) => {
 									if (chrome.runtime.lastError) {
 										console.log(
-											`[ReaderApi] error getting window, message: ${chrome.runtime.lastError.message}`
+											`[ReaderApi] error opening window, message: ${chrome.runtime.lastError.message}`
 										);
+										reject(chrome.runtime.lastError);
+										return;
 									}
-									resolve(!chromeWindow);
-								});
-							}),
-							sendResponse
-						);
-						return true;
-					case 'openWindow':
-						const request = message.data as WindowOpenRequest;
-						createMessageResponseHandler(
-							new Promise<number>((resolve, reject) => {
-								chrome.windows.create(
-									{
-										type: 'popup',
-										url: request.url,
-										width: request.width,
-										height: request.height,
-										focused: true,
-									},
-									(chromeWindow) => {
-										if (chrome.runtime.lastError) {
-											console.log(
-												`[ReaderApi] error opening window, message: ${chrome.runtime.lastError.message}`
-											);
-											reject(chrome.runtime.lastError);
-											return;
-										}
-										resolve(chromeWindow.id);
-									}
-								);
-							}),
-							sendResponse
-						);
-						return true;
-					case 'postArticle':
-						createMessageResponseHandler(
-							params.onPostArticle(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postComment':
-						createMessageResponseHandler(
-							params.onPostComment(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postCommentAddendum':
-						createMessageResponseHandler(
-							params.onPostCommentAddendum(message.data),
-							sendResponse
-						);
-						return true;
-					case 'postCommentRevision':
-						createMessageResponseHandler(
-							params.onPostCommentRevision(message.data),
-							sendResponse
-						);
-						return true;
-					case 'readArticle':
-						createMessageResponseHandler(
-							params.onReadArticle(sender.tab.id, message.data),
-							sendResponse
-						);
-						return true;
-					case 'reportArticleIssue':
-						createMessageResponseHandler(
-							params.onReportArticleIssue(message.data),
-							sendResponse
-						);
-						return true;
-					case 'requestTwitterBrowserLinkRequestToken':
-						createMessageResponseHandler(
-							params.onRequestTwitterBrowserLinkRequestToken(),
-							sendResponse
-						);
-						return true;
-					case 'setStarred':
-						createMessageResponseHandler(
-							params.onSetStarred(message.data),
-							sendResponse
-						);
-						return true;
-					case 'deleteComment':
-						createMessageResponseHandler(
-							params.onDeleteComment(message.data),
-							sendResponse
-						);
-						return true;
-				}
+									resolve(chromeWindow.id);
+								}
+							);
+						}),
+						sendResponse
+					);
+					return true;
+				case 'postArticle':
+					createMessageResponseHandler(
+						params.onPostArticle(message.data),
+						sendResponse
+					);
+					return true;
+				case 'postComment':
+					createMessageResponseHandler(
+						params.onPostComment(message.data),
+						sendResponse
+					);
+					return true;
+				case 'postCommentAddendum':
+					createMessageResponseHandler(
+						params.onPostCommentAddendum(message.data),
+						sendResponse
+					);
+					return true;
+				case 'postCommentRevision':
+					createMessageResponseHandler(
+						params.onPostCommentRevision(message.data),
+						sendResponse
+					);
+					return true;
+				case 'readArticle':
+					createMessageResponseHandler(
+						params.onReadArticle(sender.tab.id, message.data),
+						sendResponse
+					);
+					return true;
+				case 'reportArticleIssue':
+					createMessageResponseHandler(
+						params.onReportArticleIssue(message.data),
+						sendResponse
+					);
+					return true;
+				case 'requestTwitterBrowserLinkRequestToken':
+					createMessageResponseHandler(
+						params.onRequestTwitterBrowserLinkRequestToken(),
+						sendResponse
+					);
+					return true;
+				case 'setStarred':
+					createMessageResponseHandler(
+						params.onSetStarred(message.data),
+						sendResponse
+					);
+					return true;
+				case 'deleteComment':
+					createMessageResponseHandler(
+						params.onDeleteComment(message.data),
+						sendResponse
+					);
+					return true;
 			}
-			return undefined;
+			// always send a response because the sender must use a callback in order to
+			// check for runtime errors and an error will be triggered if the port is closed
+			sendResponse();
+			return false;
 		});
 	}
 	private async getTabs() {
@@ -368,7 +405,12 @@ export default class ReaderContentScriptApi {
 			data: preference,
 		});
 	}
-
+	public async userSignedIn(profile: WebAppUserProfile) {
+		await this.sendMessageToAllTabs({
+			type: 'userSignedIn',
+			data: profile,
+		});
+	}
 	public async userSignedOut() {
 		await this.sendMessageToAllTabs({
 			type: 'userSignedOut',
@@ -377,7 +419,6 @@ export default class ReaderContentScriptApi {
 		for (const tab of tabs) {
 			await this._badge.setDefault(tab.id);
 		}
-		await this.clearTabs();
 	}
 	public async userUpdated(user: UserAccount) {
 		await this.sendMessageToAllTabs({

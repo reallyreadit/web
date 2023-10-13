@@ -20,22 +20,6 @@
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 10px;
-
-	&--aotd {
-		margin-bottom: 0.5em;
-		color: var(--text-muted-color);
-		> .icon_rour3d {
-			vertical-align: middle;
-			margin-right: 0.2em;
-		}
-		> label {
-			font-size: 0.8rem;
-			text-transform: uppercase;
-		}
-		@include from(tablet-portrait) {
-			display: none;
-		}
-	}
 }
 
 .aotd-view_hgax0h > .section-header > label {
@@ -54,9 +38,6 @@
 	margin: 20px auto;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
-}
-.aotd-view_hgax0h > .loading-overlay_zfgtd1 {
-	margin: 20px 0;
 }
 
 @include theme using ($root, $scheme) {

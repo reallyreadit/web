@@ -25,7 +25,6 @@ enum ScreenKey {
 	Home,
 	Leaderboards,
 	MyFeed,
-	MyImpact,
 	MyReads,
 	Notifications,
 	Password,

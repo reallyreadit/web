@@ -16,18 +16,20 @@ import ScreenKey from '../../../../common/routing/ScreenKey';
 import * as classNames from 'classnames';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
+import { ScreenTitle } from '../../../../common/ScreenTitle';
 
 export default (props: {
 	content?: React.ReactNode;
 	isTransitioningBack: boolean;
 	onBack: () => void;
+	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onViewNotifications: () => void;
 	onViewProfile: (userName?: string, options?: NavOptions) => void;
 	onViewSettings: () => void;
 	selectedRootScreen: Screen;
 	currentScreen: Screen;
-	titles: (React.ReactNode | null)[];
-	user: UserAccount;
+	titles: ScreenTitle[];
+	user: UserAccount | null;
 }) => {
 	let leftButton: {
 		action: () => void;
@@ -40,7 +42,7 @@ export default (props: {
 	) {
 		leftButton = {
 			action: props.onViewNotifications,
-			badge: props.user.replyAlertCount,
+			badge: props.user?.replyAlertCount ?? 0,
 			iconName: 'bell',
 		};
 	} else {
@@ -54,7 +56,7 @@ export default (props: {
 			<div className="left-content" onClick={leftButton.action}>
 				{leftButton.action === props.onBack ? (
 					<Icon badge={leftButton.badge} name={leftButton.iconName} />
-				) : (
+				) : props.user ? (
 					// force new dom element to avoid animating badge
 					<div
 						className={classNames('notification-icon-wrapper', {
@@ -64,28 +66,30 @@ export default (props: {
 					>
 						<Icon badge={leftButton.badge} name={leftButton.iconName} />
 					</div>
-				)}
+				) : null}
 			</div>
 			<div className="title">
 				{
 					props.titles[
 						props.titles.length - (props.isTransitioningBack ? 2 : 1)
-					]
+					].default
 				}
 			</div>
 			<div className="right-content ">
 				{props.content}
 
-				<div
-					className="menu-button notification-icon"
-					onClick={props.onViewNotifications}
-				>
-					<Icon badge={props.user.replyAlertCount} name="bell" />
-				</div>
+				{props.user ?
+					<div
+						className="menu-button notification-icon"
+						onClick={props.onViewNotifications}
+					>
+						<Icon badge={props.user.replyAlertCount ?? 0} name="bell" />
+					</div> :
+					null}
 				{props.currentScreen.key === ScreenKey.Profile &&
 				findRouteByKey(routes, ScreenKey.Profile)
 					.getPathParams(props.currentScreen.location.path)
-					['userName'].toLowerCase() === props.user.name.toLowerCase() ? (
+					['userName'].toLowerCase() === props.user?.name.toLowerCase() ? (
 					<div className="menu-button" onClick={props.onViewSettings}>
 						<Icon name="gear2" />
 					</div>
@@ -93,7 +97,7 @@ export default (props: {
 				  props.currentScreen.key !== ScreenKey.Admin ? (
 					<div
 						className="menu-button"
-						onClick={(_) => props.onViewProfile(props.user.name)}
+						onClick={(_) => props.user ? props.onViewProfile(props.user.name) : props.onOpenSignInPrompt('Header')}
 					>
 						<Icon name="user" />
 					</div>

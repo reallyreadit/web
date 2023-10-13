@@ -37,7 +37,7 @@ export default (props: {
 		/>
 		<ClipboardTextInput onSetRef={props.clipboardService.setTextInputRef} />
 		{props.error ? (
-			<InfoBox position="absolute" style="warning">
+			<InfoBox style="warning">
 				<p>An error occurred while processing the article:</p>
 				<p>{props.error}</p>
 			</InfoBox>

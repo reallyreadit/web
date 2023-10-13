@@ -70,7 +70,7 @@
 html {
 	font-family: 'Museo Sans (300)', sans-serif;
 	font-size: 13pt;
-	background-color: var(--app-background-color);
+	background-color: var(--app-background-alt-color);
 	color: var(--text-color);
 	// https://web.dev/font-display/
 	font-display: swap;
@@ -78,14 +78,11 @@ html {
 html[data-client-type='App'] {
 	height: 100vh;
 }
-html[data-client-type='Browser'] {
+html[data-client-type='App'] body,
+html[data-client-type='App'] #root {
 	height: 100%;
 }
-body,
-#root {
-	height: 100%;
-}
-body {
+html[data-client-type='App'] body {
 	overflow: hidden;
 }
 a,

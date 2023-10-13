@@ -21,7 +21,6 @@ import { FetchFunction } from '../serverApi/ServerApi';
 import TimeZoneSelectListItem from '../../../common/models/TimeZoneSelectListItem';
 import ChangeTimeZoneDialog from './SettingsPage/ChangeTimeZoneDialog';
 import AsyncLink from './controls/AsyncLink';
-import ScreenContainer from './ScreenContainer';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Fetchable from '../../../common/Fetchable';
 import AsyncTracker, { CancellationToken } from '../../../common/AsyncTracker';
@@ -274,7 +273,7 @@ class SettingsPage extends React.PureComponent<
 	public render() {
 		const user = this.props.user;
 		return (
-			<ScreenContainer className="settings-page_ejwkk">
+			<div className="settings-page_ejwkk">
 				{this.props.user.role === UserAccountRole.Admin ? (
 					<Button
 						onClick={() => this.props.onNavTo({ key: ScreenKey.Admin })}
@@ -299,15 +298,8 @@ class SettingsPage extends React.PureComponent<
 				>
 					View your personal reading stats
 				</SettingsLink>
-				<SettingsLink
-					iconName="pie-chart"
-					screenKey={ScreenKey.MyImpact}
-					onNavTo={this.props.onNavTo}
-				>
-					<div>View your author distribution stats</div>
-				</SettingsLink>
 				{this.state.settings.isLoading ? (
-					<LoadingOverlay position="absolute" />
+					<LoadingOverlay />
 				) : (
 					<>
 						<div className="setting">
@@ -518,7 +510,7 @@ class SettingsPage extends React.PureComponent<
 						</div>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
@@ -531,7 +523,9 @@ export default function createSettingsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Settings',
+			title: {
+				default: 'Settings'
+			},
 		}),
 		render: (screenState: Screen, sharedState: SharedState) => (
 			<SettingsPage

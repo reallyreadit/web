@@ -17,7 +17,6 @@ import { ShareEvent } from '../../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../../common/sharing/ShareResponse';
 import PageResult from '../../../../../common/models/PageResult';
 import UserAccount from '../../../../../common/models/UserAccount';
-import RankCallout from './RankCallout';
 import Button from '../../../../../common/components/Button';
 import SelectList from '../../../../../common/components/SelectList';
 import LoadingOverlay from '../LoadingOverlay';
@@ -25,7 +24,6 @@ import CommunityReadSort from '../../../../../common/models/CommunityReadSort';
 import { NavReference } from '../../Root';
 import { DeviceType } from '../../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../../common/sharing/ShareData';
-import Icon from '../../../../../common/components/Icon';
 import MorphingArticleDetails from '../../../../../common/components/MorphingArticleDetails';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
@@ -71,10 +69,6 @@ export default class AotdView extends React.Component<{
 	public render() {
 		return (
 			<div className="aotd-view_hgax0h">
-				<div className="section-header--aotd">
-					<Icon name="trophy" />
-					<label>Article of the Day</label>
-				</div>
 				<div className="aotd">
 					<MorphingArticleDetails
 						article={this.props.aotd}
@@ -126,7 +120,7 @@ export default class AotdView extends React.Component<{
 					) : null}
 				</div>
 				{this.props.isLoading ? (
-					<LoadingOverlay position="static" />
+					<LoadingOverlay />
 				) : (
 					<List>
 						{this.props.articles.items.map((article, index) => (
@@ -144,9 +138,6 @@ export default class AotdView extends React.Component<{
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}
-									rankCallout={
-										index === 0 && !this.props.user ? <RankCallout /> : null
-									}
 									user={this.props.user}
 								/>
 							</li>

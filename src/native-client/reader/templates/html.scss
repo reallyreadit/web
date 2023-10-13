@@ -39,28 +39,33 @@
 	src: url('/fonts/museo-sans-900.ttf');
 }
 
+#com_readup_document {
+	padding-top: 160px;
+}
 #com_readup_embed {
 	max-width: 640px;
 	padding: 0 10px;
 	margin: 2em auto 0 auto;
+	overflow: hidden;
+}
+.com_readup_container {
 	font-family: 'Museo Sans (300)';
 	font-size: 13pt;
 	line-height: 1.15;
-	overflow: hidden;
 }
-#com_readup_embed a,
-#com_readup_embed button,
-#com_readup_embed div,
-#com_readup_embed span,
-#com_readup_embed svg {
+.com_readup_container a,
+.com_readup_container button,
+.com_readup_container div,
+.com_readup_container span,
+.com_readup_container svg {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-#com_readup_embed a {
+.com_readup_container a {
 	color: inherit;
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} #com_readup_embed {
+	#{$root} .com_readup_container {
 		@include theme-colors(
 			$scheme,
 			(

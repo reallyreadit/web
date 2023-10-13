@@ -16,11 +16,7 @@ import CommentRevisionForm from '../../common/models/social/CommentRevisionForm'
 import CommentDeletionForm from '../../common/models/social/CommentDeletionForm';
 import TwitterRequestToken from '../../common/models/auth/TwitterRequestToken';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
-import DisplayPreference, {
-	areEqual as areDisplayPreferencesEqual,
-	getClientDefaultDisplayPreference,
-} from '../../common/models/userAccounts/DisplayPreference';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
+import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
@@ -49,11 +45,11 @@ export default class ServerApi {
 		this._onUserSignedOut = handlers.onUserSignedOut;
 	}
 
-	public async getDisplayPreferenceFromStorage() {
+	private async getDisplayPreferenceFromStorage() {
 		const result = await chrome.storage.local.get('displayPreference');
 		return result['displayPreference'] as DisplayPreference | null;
 	}
-	public async getUserFromStorage() {
+	private async getUserFromStorage() {
 		const result = await chrome.storage.local.get('user');
 		return result['user'] as UserAccount | null;
 	}
@@ -109,7 +105,7 @@ export default class ServerApi {
 				})
 				// Process response
 				.then(
-					({
+					async ({
 						response,
 						responseText,
 						responseObject,
@@ -129,7 +125,7 @@ export default class ServerApi {
 								console.log(
 									`[ServerApi] user signed out (received 401 response from API server)`
 								);
-								_this.userSignedOut();
+								await _this.userSignedOut();
 								_this._onUserSignedOut();
 							}
 							reject(
@@ -150,7 +146,7 @@ export default class ServerApi {
 				});
 		});
 	}
-	public registerPage(tabId: number, data: ParseResult) {
+	public getUserArticle(tabId: number, data: ParseResult) {
 		return this.fetchJson<ArticleLookupResult>({
 			method: 'POST',
 			path: '/Extension/GetUserArticle',
@@ -215,12 +211,11 @@ export default class ServerApi {
 		});
 	}
 	public async isAuthenticated() {
-		const user = await this.getUser();
+		const user = await this.getUserFromCache();
 		return user != null;
 	}
-	public async getUser() {
-		const result = await chrome.storage.local.get('user');
-		return result['user'] as UserAccount | null;
+	public async getUserFromCache() {
+		return this.getUserFromStorage();
 	}
 	public rateArticle(articleId: number, score: number) {
 		return this.fetchJson<{
@@ -265,17 +260,10 @@ export default class ServerApi {
 			data,
 		});
 	}
-	public async userSignedIn(profile: WebAppUserProfile) {
-		await chrome.storage.local.set({
-			'user': profile.userAccount,
-			'displayPreference': profile.displayPreference
-		});
-	}
 	public async userSignedOut() {
 		await chrome.storage.local.set({
 			'user': null,
 			'displayPreference': null,
-			'displayedNotifications': []
 		});
 	}
 	public async userUpdated(user: UserAccount) {
@@ -287,39 +275,29 @@ export default class ServerApi {
 	}
 
 	public async getDisplayPreference() {
-		const storedPreference = await this.getDisplayPreferenceFromStorage();
-		this.fetchJson<DisplayPreference | null>({
+		return this.fetchJson<DisplayPreference | null>({
 			method: 'GET',
 			path: '/UserAccounts/DisplayPreference',
 		})
 			.then(async (preference) => {
-				if (
-					storedPreference != null &&
-					preference != null &&
-					areDisplayPreferencesEqual(storedPreference, preference)
-				) {
-					return;
-				}
-				if (preference) {
-					await this.displayPreferenceChanged(preference);
-				} else {
-					await this.changeDisplayPreference(
-						(preference = getClientDefaultDisplayPreference())
-					);
-				}
+				await this.displayPreferenceChanged(preference);
 				console.log(`[ServerApi] display preference changed`);
 				this._onDisplayPreferenceChanged(preference);
+				return preference;
 			})
 			.catch(() => {
 				console.log(`[ServerApi] error fetching display preference`);
+				return null as DisplayPreference | null;
 			});
-		return storedPreference;
 	}
 	public async displayPreferenceChanged(preference: DisplayPreference) {
 		await chrome.storage.local.set({ 'displayPreference': preference });
 	}
 	public async changeDisplayPreference(preference: DisplayPreference) {
 		await this.displayPreferenceChanged(preference);
+		if (!(await this.isAuthenticated())) {
+			return preference;
+		}
 		return this.fetchJson<DisplayPreference>({
 			method: 'POST',
 			path: '/UserAccounts/DisplayPreference',

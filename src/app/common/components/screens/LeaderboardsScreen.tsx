@@ -27,10 +27,9 @@ import HeaderSelector from '../HeaderSelector';
 import AuthorLeaderboards from './LeaderboardScreen/AuthorLeaderboards';
 import { DeviceType } from '../../../../common/DeviceType';
 import Panel from '../BrowserRoot/Panel';
-import {
-	AuthorsEarningsReportResponse,
-	AuthorsEarningsReportRequest,
-} from '../../../../common/models/subscriptions/AuthorEarningsReport';
+import AuthorLeaderboardsRequest from '../../../../common/models/stats/AuthorLeaderboardsRequest';
+import AuthorRanking from '../../../../common/models/AuthorRanking';
+import AuthorLeaderboardsTimeWindow from '../../../../common/models/stats/AuthorLeaderboardsTimeWindow';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import routes from '../../../../common/routing/routes';
@@ -44,10 +43,7 @@ interface Props {
 	onCloseDialog: () => void;
 	onCreateAbsoluteUrl: (path: string) => string;
 	onCreateStaticContentUrl: (path: string) => string;
-	onGetAuthorsEarningsReport: FetchFunctionWithParams<
-		AuthorsEarningsReportRequest,
-		AuthorsEarningsReportResponse
-	>;
+	onGetAuthorLeaderboards: FetchFunctionWithParams<AuthorLeaderboardsRequest, AuthorRanking[]>,
 	onOpenNewPlatformNotificationRequestDialog: () => void;
 	onGetReaderLeaderboards: FetchFunction<Leaderboards>;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
@@ -75,19 +71,31 @@ export enum LeaderboardsViewParams {
 }
 
 interface State {
-	authorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null;
-	moreAuthorLeaderboards: Fetchable<AuthorsEarningsReportResponse> | null;
-	authorLeaderboardsRequest: AuthorsEarningsReportRequest;
-	isScreenLoading: boolean;
-	readerLeaderboards: Fetchable<Leaderboards> | null;
+	authorLeaderboards: Fetchable<AuthorRanking[]> | null,
+	authorLeaderboardsTimeWindow: AuthorLeaderboardsTimeWindow,
+	isScreenLoading: boolean,
+	readerLeaderboards: Fetchable<Leaderboards> | null
 }
-const defaultAuthorLeaderboardsRequest = {
-	minAmountEarned: 1000,
-	maxAmountEarned: 0,
-};
 
 class LeaderboardsScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
+	private readonly _changeAuthorLeaderboardsTimeWindow = (timeWindow: AuthorLeaderboardsTimeWindow) => {
+		this.setState({
+			authorLeaderboards: this.props.onGetAuthorLeaderboards(
+				{
+					timeWindow
+				},
+				this._asyncTracker.addCallback(
+					authorLeaderboards => {
+						this.setState({
+							authorLeaderboards
+						});
+					}
+				)
+			),
+			authorLeaderboardsTimeWindow: timeWindow
+		});
+	};
 	private readonly _changeView = (value: string) => {
 		const view = value as View;
 		if (view === this.props.view) {
@@ -96,21 +104,25 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		switch (view) {
 			case View.Authors:
 				this.setState({
-					authorLeaderboards: this.props.onGetAuthorsEarningsReport(
-						defaultAuthorLeaderboardsRequest,
-						this._asyncTracker.addCallback((authorLeaderboards) => {
-							this.setState({
-								authorLeaderboards,
-							});
-						})
+					authorLeaderboards: this.props.onGetAuthorLeaderboards(
+						{
+							timeWindow: this.state.authorLeaderboardsTimeWindow
+						},
+						this._asyncTracker.addCallback(
+							authorLeaderboards => {
+								this.setState({
+									authorLeaderboards
+								});
+							}
+						)
 					),
-					authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
 					readerLeaderboards: null,
 				});
 				break;
 			case View.Readers:
 				this.setState({
 					authorLeaderboards: null,
+					authorLeaderboardsTimeWindow: AuthorLeaderboardsTimeWindow.PastWeek,
 					readerLeaderboards: this.props.onGetReaderLeaderboards(
 						this._asyncTracker.addCallback((readerLeaderboards) => {
 							this.setState({
@@ -155,9 +167,7 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 	};
 	constructor(props: Props) {
 		super(props);
-		let state: Pick<State, 'moreAuthorLeaderboards'> = {
-			moreAuthorLeaderboards: null,
-		};
+		const authorLeaderboardsTimeWindow = AuthorLeaderboardsTimeWindow.PastWeek;
 
 		// load initial data for the initially selected leaderboard
 		if (props.view === View.Readers) {
@@ -170,27 +180,29 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 				})
 			);
 			this.state = {
-				...state,
 				isScreenLoading: readerLeaderboards.isLoading,
 				readerLeaderboards,
 				authorLeaderboards: null,
-				authorLeaderboardsRequest: null,
+				authorLeaderboardsTimeWindow,
 			};
 		} else {
-			const authorLeaderboards = props.onGetAuthorsEarningsReport(
-				defaultAuthorLeaderboardsRequest,
-				this._asyncTracker.addCallback((authorLeaderboards) => {
-					this.setState({
-						authorLeaderboards,
-						isScreenLoading: false,
-					});
-				})
+			const authorLeaderboards = props.onGetAuthorLeaderboards(
+				{
+					timeWindow: authorLeaderboardsTimeWindow
+				},
+				this._asyncTracker.addCallback(
+					authorLeaderboards => {
+						this.setState({
+							authorLeaderboards,
+							isScreenLoading: false
+						});
+					}
+				)
 			);
 			this.state = {
-				...state,
 				isScreenLoading: authorLeaderboards.isLoading,
 				authorLeaderboards,
-				authorLeaderboardsRequest: defaultAuthorLeaderboardsRequest,
+				authorLeaderboardsTimeWindow,
 				readerLeaderboards: null,
 			};
 		}
@@ -198,32 +210,38 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		// reload data when an article has changed (this may have an influence on statistics)
 		// currently these events are only spawned in the local user session
 		this._asyncTracker.addCancellationDelegate(
-			props.onRegisterArticleChangeHandler((event) => {
-				if (!event.isCompletionCommit) {
-					return;
+			props.onRegisterArticleChangeHandler(
+				event => {
+					if (!event.isCompletionCommit) {
+						return;
+					}
+					switch (props.view) {
+						case View.Authors:
+							props.onGetAuthorLeaderboards(
+								{
+									timeWindow: this.state.authorLeaderboardsTimeWindow
+								},
+								this._asyncTracker.addCallback(
+									authorLeaderboards => {
+										this.setState({
+											authorLeaderboards
+										});
+									}
+								)
+							);
+							break;
+						case View.Readers:
+							props.onGetReaderLeaderboards(
+								this._asyncTracker.addCallback((readerLeaderboards) => {
+									this.setState({
+										readerLeaderboards,
+									});
+								})
+							);
+							break;
+					}
 				}
-				switch (props.view) {
-					case View.Authors:
-						props.onGetAuthorsEarningsReport(
-							this.state.authorLeaderboardsRequest,
-							this._asyncTracker.addCallback((authorLeaderboards) => {
-								this.setState({
-									authorLeaderboards,
-								});
-							})
-						);
-						break;
-					case View.Readers:
-						props.onGetReaderLeaderboards(
-							this._asyncTracker.addCallback((readerLeaderboards) => {
-								this.setState({
-									readerLeaderboards,
-								});
-							})
-						);
-						break;
-				}
-			})
+			)
 		);
 	}
 	public componentDidUpdate(prevProps: Props) {
@@ -246,64 +264,40 @@ class LeaderboardsScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 
-	public onLoadMoreAuthors() {
-		const nextRequest = {
-			minAmountEarned: 0,
-			maxAmountEarned: 1000,
-		};
-
-		this.setState({
-			moreAuthorLeaderboards: this.props.onGetAuthorsEarningsReport(
-				nextRequest,
-				this._asyncTracker.addCallback((moreAuthorLeaderboards) => {
-					this.setState({
-						moreAuthorLeaderboards,
-					});
-				})
-			),
-		});
-	}
-
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
 			<div className="leaderboards-screen_wuzsob">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="absolute" />
-				) : (
-					<>
-						<Panel className="main">
-							{!this.props.user ? <h1>Leaderboards</h1> : null}
-							<HeaderSelector
-								disabled={
-									this.state.authorLeaderboards?.isLoading ||
-									this.state.readerLeaderboards?.isLoading
-								}
-								items={this._headerSelectorItems}
-								onChange={this._changeView}
-								value={this.props.view}
-							/>
-							{this.props.view === View.Authors ? (
-								<AuthorLeaderboards
-									onNavTo={this.props.onNavTo}
-									onOpenDialog={this.props.onOpenDialog}
-									onCloseDialog={this.props.onCloseDialog}
-									onLoadMoreAuthors={this.onLoadMoreAuthors.bind(this)}
-									response={this.state.authorLeaderboards}
-									responseMore={this.state.moreAuthorLeaderboards}
-									user={this.props.user}
-								/>
-							) : (
-								<ReaderLeaderboards
-									leaderboards={this.state.readerLeaderboards}
-									onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-									onOpenExplainer={this._openExplainer}
-									onViewProfile={this.props.onViewProfile}
-									user={this.props.user}
-								/>
-							)}
-						</Panel>
-					</>
-				)}
+				<Panel className="main">
+					<HeaderSelector
+						disabled={
+							this.state.authorLeaderboards?.isLoading ||
+							this.state.readerLeaderboards?.isLoading
+						}
+						items={this._headerSelectorItems}
+						onChange={this._changeView}
+						value={this.props.view}
+					/>
+					{this.props.view === View.Authors ?
+						<AuthorLeaderboards
+							onChangeTimeWindow={this._changeAuthorLeaderboardsTimeWindow}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onViewAuthor={this.props.onViewAuthor}
+							rankings={this.state.authorLeaderboards}
+							timeWindow={this.state.authorLeaderboardsTimeWindow}
+						/> :
+						<ReaderLeaderboards
+							leaderboards={this.state.readerLeaderboards}
+							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+							onOpenExplainer={this._openExplainer}
+							onViewProfile={this.props.onViewProfile}
+							user={this.props.user}
+						/>}
+				</Panel>
 			</div>
 		);
 	}
@@ -321,7 +315,9 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Leaderboards',
+			title: {
+				default: 'Leaderboards'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<LeaderboardsScreen
@@ -334,10 +330,8 @@ export default function createLeaderboardsScreenFactory<TScreenKey>(
 				onCloseDialog={services.onCloseDialog}
 				onCreateAbsoluteUrl={services.onCreateAbsoluteUrl}
 				onCreateStaticContentUrl={services.onCreateStaticContentUrl}
-				onGetAuthorsEarningsReport={services.onGetAuthorsEarningsReport}
-				onOpenNewPlatformNotificationRequestDialog={
-					services.onOpenNewPlatformNotificationRequestDialog
-				}
+				onOpenNewPlatformNotificationRequestDialog={services.onOpenNewPlatformNotificationRequestDialog}
+				onGetAuthorLeaderboards={services.onGetAuthorLeaderboards}
 				onGetReaderLeaderboards={services.onGetReaderLeaderboards}
 				onNavTo={services.onNavTo}
 				onOpenDialog={services.onOpenDialog}

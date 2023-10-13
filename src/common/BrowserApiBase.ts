@@ -19,6 +19,7 @@ import ExtensionInstallationEvent from './ExtensionInstallationEvent';
 import { AuthServiceBrowserLinkResponse } from './models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
+import { ScreenTitle } from './ScreenTitle';
 
 export default abstract class BrowserApiBase extends EventEmitter<{
 	articleUpdated: ArticleUpdatedEvent;
@@ -48,7 +49,7 @@ export default abstract class BrowserApiBase extends EventEmitter<{
 	public abstract notificationPreferenceChanged(
 		preference: NotificationPreference
 	): void;
-	public abstract setTitle(title: string): void;
+	public abstract setTitle(title: ScreenTitle): void;
 	public abstract updateAvailable(version: SemanticVersion): void;
 	public abstract userSignedIn(profile: WebAppUserProfile): void;
 	public abstract userSignedOut(): void;

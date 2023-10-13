@@ -22,7 +22,6 @@ import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import CommunityReadsQuery from '../../../../common/models/articles/CommunityReadsQuery';
 import CommunityReads from '../../../../common/models/CommunityReads';
@@ -142,52 +141,51 @@ export class BestEverScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
-			<ScreenContainer className="best-ever-screen_bmdeo1">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+			<div className="best-ever-screen_bmdeo1">
+				{this.props.title ? <h1>{this.props.title}</h1> : null}
+				{this.state.communityReads.isLoading ? (
+					<LoadingOverlay />
 				) : (
 					<>
-						{this.props.title ? <h1>{this.props.title}</h1> : null}
-						{this.state.communityReads.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : (
-							<>
-								<List>
-									{this.state.communityReads.value.articles.items.map(
-										(article) => (
-											<li key={article.id}>
-												<ArticleDetails
-													article={article}
-													deviceType={this.props.deviceType}
-													onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-													onNavTo={this.props.onNavTo}
-													onPost={this.props.onPostArticle}
-													onRateArticle={this.props.onRateArticle}
-													onRead={this.props.onReadArticle}
-													onShare={this.props.onShare}
-													onShareViaChannel={this.props.onShareViaChannel}
-													onToggleStar={this.props.onToggleArticleStar}
-													onViewComments={this.props.onViewComments}
-													onViewProfile={this.props.onViewProfile}
-													user={this.props.user}
-												/>
-											</li>
-										)
-									)}
-								</List>
-								<PageSelector
-									pageNumber={
-										this.state.communityReads.value.articles.pageNumber
-									}
-									pageCount={this.state.communityReads.value.articles.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						)}
+						<List>
+							{this.state.communityReads.value.articles.items.map(
+								(article) => (
+									<li key={article.id}>
+										<ArticleDetails
+											article={article}
+											deviceType={this.props.deviceType}
+											onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+											onNavTo={this.props.onNavTo}
+											onPost={this.props.onPostArticle}
+											onRateArticle={this.props.onRateArticle}
+											onRead={this.props.onReadArticle}
+											onShare={this.props.onShare}
+											onShareViaChannel={this.props.onShareViaChannel}
+											onToggleStar={this.props.onToggleArticleStar}
+											onViewComments={this.props.onViewComments}
+											onViewProfile={this.props.onViewProfile}
+											user={this.props.user}
+										/>
+									</li>
+								)
+							)}
+						</List>
+						<PageSelector
+							pageNumber={
+								this.state.communityReads.value.articles.pageNumber
+							}
+							pageCount={this.state.communityReads.value.articles.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
@@ -201,7 +199,9 @@ export default function createBestEverScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Top of all time',
+			title: {
+				default: 'Top of all time'
+			},
 		}),
 		render: (state: Screen, sharedState: SharedState) => (
 			<BestEverScreen

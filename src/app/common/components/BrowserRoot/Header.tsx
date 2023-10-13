@@ -10,78 +10,173 @@
 
 import * as React from 'react';
 import classNames from 'classnames';
-import Icon from '../../../../common/components/Icon';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import routes from '../../../../common/routing/routes';
 import { findRouteByKey } from '../../../../common/routing/Route';
 import Button from '../../../../common/components/Button';
+import {
+	NavOptions,
+	NavReference,
+	NavMethod,
+	Screen,
+} from '../Root';
+import Link from '../../../../common/components/Link';
+import { DeviceType } from '../../../../common/DeviceType';
 import UserAccount from '../../../../common/models/UserAccount';
-import { DeviceType, isMobileDevice } from '../../../../common/DeviceType';
+import Icon from '../../../../common/components/Icon';
 
 interface Props {
 	deviceType: DeviceType;
 	onBeginOnboarding: (analyticsAction: string) => void;
-	onOpenMenu: () => void;
+	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
+	onCreateStaticContentUrl: (path: string) => string;
+	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
+	onOpenNewPlatformNotificationRequestDialog: () => void;
 	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onViewHome: () => void;
 	onViewNotifications: () => void;
+	topScreen: Screen,
 	user: UserAccount | null;
 }
-export default class extends React.PureComponent<Props> {
-	private readonly _beginOnboarding = () => {
-		this.props.onBeginOnboarding('Header');
+
+type State = {
+	isMenuOpen: boolean
+};
+
+const analyticsAction = 'Header';
+
+const menuLinks = [
+	{
+		screenKey: ScreenKey.Home,
+		linkText: 'Article of the Day',
+	},
+	{
+		screenKey: ScreenKey.Leaderboards,
+		linkText: 'Leaderboards',
+	},
+	{
+		screenKey: ScreenKey.MyReads,
+		linkText: 'My Reads',
+	},
+	{
+		screenKey: ScreenKey.MyFeed,
+		linkText: 'My Feed',
+	},
+];
+
+export default class Header extends React.Component<Props, State> {
+	state: State = {
+		isMenuOpen: false
 	};
+
 	private readonly _handleLogoClick = (e: React.MouseEvent) => {
 		e.preventDefault();
 		this.props.onViewHome();
+		this.closeMenu();
 	};
+
+	private readonly _handleLinkClick = (ref: NavReference) => {
+		this.props.onNavTo(ref, { method: NavMethod.ReplaceAll });
+		this.closeMenu();
+	};
+
+	private readonly _toggleMenu = () => {
+		this.setState((prev) => {
+			return { isMenuOpen: !prev.isMenuOpen };
+		});
+	};
+
 	private readonly _openSignInPrompt = () => {
-		this.props.onOpenSignInPrompt('Header');
+		this.props.onOpenSignInPrompt(analyticsAction);
+		this.closeMenu();
 	};
+
+	constructor(props: Props) {
+		super(props);
+	}
+
+	private closeMenu() {
+		this.setState({ isMenuOpen: false });
+	}
+
 	public render() {
-		const showLoginButtons =
-				!this.props.user && !isMobileDevice(this.props.deviceType),
-			showMenu = !!this.props.user;
+		let hideLandscapeTitle = false;
+		const linkElements = menuLinks.map((link) => {
+			let className = '';
+			if (link.screenKey === this.props.topScreen.key) {
+				hideLandscapeTitle = true;
+				className = 'active';
+			}
+			return (
+				<Link
+					key={link.linkText}
+					screen={link.screenKey}
+					className={className}
+					onClick={this._handleLinkClick}
+				>
+					{link.linkText}
+				</Link>
+			);
+		});
 		return (
-			<header
-				className={classNames('header_cvm3v7', {
-					menu: showLoginButtons || showMenu,
-				})}
-			>
-				<a
-					className="logo"
-					href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
-					onClick={this._handleLogoClick}
-				></a>
-				{showLoginButtons || showMenu ? (
-					<div className="menu-container">
-						{showMenu ? (
-							<>
-								<Icon
-									badge={this.props.user.replyAlertCount}
-									name="bell"
-									onClick={this.props.onViewNotifications}
-								/>
-								<Icon name="menu2" onClick={this.props.onOpenMenu} />
-							</>
-						) : null}
-						{showLoginButtons ? (
-							<>
-								<Button
-									text="Log In"
-									size="large"
-									onClick={this._openSignInPrompt}
-								/>
-								<Button
-									intent="loud"
-									text="Get Started"
-									size="large"
-									onClick={this._beginOnboarding}
-								/>
-							</>
-						) : null}
+			<header className={classNames('header_2afwll', { 'hide-landscape-title': hideLandscapeTitle })}>
+				<div className={classNames('nav', { 'menu-open': this.state.isMenuOpen })}>
+					<div className="content">
+						<a
+							className="logo"
+							href={findRouteByKey(routes, ScreenKey.Home).createUrl()}
+							onClick={this._handleLogoClick}
+						></a>
+						<div
+							className="links"
+						>
+							<div className="pages">
+								{linkElements}
+							</div>
+							<div className="auth">
+								{this.props.user ?
+									<>
+										<Link
+											screen={ScreenKey.Notifications}
+											onClick={this._handleLinkClick}
+											iconLeft='bell'
+										>
+											My Replies
+										</Link>
+										<Link
+											screen={ScreenKey.Profile}
+											params={{ userName: this.props.user.name }}
+											onClick={this._handleLinkClick}
+											iconLeft='user'
+										>
+											My Profile
+										</Link>
+										<Link
+											screen={ScreenKey.Settings}
+											onClick={this._handleLinkClick}
+											iconLeft='gear2'
+										>
+											Settings
+										</Link>
+									</> :
+									<Button
+										className="log-in"
+										text="Log In"
+										onClick={this._openSignInPrompt}
+									/>}
+							</div>
+						</div>
+						<Icon
+							className="menu-button"
+							display="block"
+							name={this.state.isMenuOpen ? 'cross' : 'menu'}
+							onClick={this._toggleMenu}
+						/>
 					</div>
-				) : null}
+				</div>
+				<div className="title">
+					<div className="content">{this.props.topScreen.title.default}</div>
+				</div>
 			</header>
 		);
 	}

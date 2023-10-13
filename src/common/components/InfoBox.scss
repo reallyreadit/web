@@ -18,13 +18,9 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
-.info-box_8xzdd8.absolute {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
+	/* Use height: 100% in case this component is the child of a 100% height parent and vertical margins for all other cases. */
+	height: 100%;
+	margin: 20px 0;
 }
 .info-box_8xzdd8 > .box {
 	display: flex;

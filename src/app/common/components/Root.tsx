@@ -14,10 +14,10 @@ import CaptchaBase from '../../../common/captcha/CaptchaBase';
 import { Intent } from '../../../common/components/Toaster';
 import ServerApi from '../serverApi/ServerApi';
 import UserArticle from '../../../common/models/UserArticle';
-import ResetPasswordDialog from './ResetPasswordDialog';
 import {
 	parseQueryString,
 	unroutableQueryStringKeys,
+	authenticateQueryStringKey,
 } from '../../../common/routing/queryString';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import ScreenKey, {
@@ -36,7 +36,7 @@ import { createScreenFactory as createPrivacyPolicyScreenFactory } from './Priva
 import { createScreenFactory as createEmailConfirmationScreenFactory } from './EmailConfirmationPage';
 import { createScreenFactory as createPasswordScreenFactory } from './PasswordPage';
 import { createScreenFactory as createEmailSubscriptionsScreenFactory } from './EmailSubscriptionsPage';
-import createTeamPageFactory from './AboutPage';
+import { createScreenFactory as createMarketingScreenFactory } from './screens/MarketingScreen';
 import { DateTime } from 'luxon';
 import AsyncTracker from '../../../common/AsyncTracker';
 import classNames from 'classnames';
@@ -70,8 +70,6 @@ import CommentAddendumForm from '../../../common/models/social/CommentAddendumFo
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
 import { Form as CreateAccountDialogForm } from './CreateAccountDialog';
-import { Form as CreateAuthServiceAccountDialogForm } from './CreateAuthServiceAccountDialog';
-import SignInDialog, { Form as SignInDialogForm } from './SignInDialog';
 import SignUpAnalyticsForm from '../../../common/models/analytics/SignUpAnalyticsForm';
 import SignInEventType from '../../../common/models/userAccounts/SignInEventType';
 import AuthServiceProvider from '../../../common/models/auth/AuthServiceProvider';
@@ -85,7 +83,6 @@ import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserPro
 import EventSource from '../EventSource';
 import Fetchable from '../../../common/Fetchable';
 import Settings from '../../../common/models/Settings';
-import { SubscriptionDistributionSummaryResponse } from '../../../common/models/subscriptions/SubscriptionDistributionSummaryResponse';
 import NewPlatformNotificationRequestDialog from './BrowserRoot/NewPlatformNotificationRequestDialog';
 import {
 	AuthorAssignmentRequest,
@@ -93,8 +90,14 @@ import {
 } from '../../../common/models/articles/AuthorAssignment';
 import { AuthorEmailVerificationRequest } from '../../../common/models/userAccounts/AuthorEmailVerificationRequest';
 import { ArticleStarredEvent } from '../AppApi';
-import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import { AuthorUserAccountAssignmentRequest } from '../../../common/models/authors/AuthorUserAccountAssignment';
+import { ScreenTitle } from '../../../common/ScreenTitle';
+import OnboardingFlow, {
+	Step as OnboardingStep,
+} from './OnboardingFlow';
+import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
+import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
+import SignInForm from '../../../common/models/userAccounts/SignInForm';
 
 export interface Props {
 	captcha: CaptchaBase;
@@ -104,12 +107,6 @@ export interface Props {
 	staticServerEndpoint: HttpEndpoint;
 	version: SemanticVersion;
 	webServerEndpoint: HttpEndpoint;
-}
-export enum TemplateSection {
-	None = 0,
-	Header = 1,
-	Navigation = 2,
-	Footer = 4,
 }
 export enum NavMethod {
 	Pop,
@@ -154,9 +151,7 @@ export interface Screen<T = any> {
 	componentState?: T;
 	key: ScreenKey;
 	location: RouteLocation;
-	templateSection?: TemplateSection;
-	title?: string;
-	titleContent?: React.ReactNode;
+	title: ScreenTitle;
 	isReplacement?: boolean;
 }
 export interface ScreenFactory<TSharedState> {
@@ -331,31 +326,43 @@ export default abstract class Root<
 			sharedState: TSharedState
 		) => React.ReactNode;
 	}> = {
-		[DialogKey.ResetPassword]: (location) => {
+		[DialogKey.ResetPassword]: (location, sharedState) => {
 			const kvps = parseQueryString(location.queryString);
 			return (
-				<ResetPasswordDialog
-					email={kvps['email']}
-					onCloseDialog={this._dialog.closeDialog}
+				<OnboardingFlow
+					captcha={this.props.captcha}
+					onClose={this._dialog.closeDialog}
+					onCreateAccount={this._createAccount}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
 					onResetPassword={this._resetPassword}
 					onShowToast={this._toaster.addToast}
-					token={kvps['token']}
+					onSignIn={this._signIn}
+					onSignInWithApple={this._signInWithApple}
+					onSignInWithTwitter={this._signInWithTwitter}
+					user={sharedState.user}
+					passwordResetEmail={kvps['email']}
+					passwordResetToken={kvps['token']}
 				/>
 			);
 		},
-	};
-	protected readonly _openLinkAuthServiceAccountDialog = (token: string) => {
-		this._dialog.openDialog(
-			<SignInDialog
-				analyticsAction="LinkAuthServiceAccount"
-				authServiceToken={token}
-				autoFocus={this._autoFocusInputs}
-				onCloseDialog={this._dialog.closeDialog}
-				onOpenPasswordResetDialog={this._openRequestPasswordResetDialog}
+		[DialogKey.Authenticate]: (location, sharedState) => (
+			<OnboardingFlow
+				analyticsAction="authenticateQueryString"
+				initialAuthenticationStep={parseQueryString(location.queryString)[authenticateQueryStringKey] === 'signIn' ? OnboardingStep.SignIn : OnboardingStep.CreateAccount}
+				captcha={this.props.captcha}
+				onClose={this._dialog.closeDialog}
+				onCreateAccount={this._createAccount}
+				onCreateAuthServiceAccount={this._createAuthServiceAccount}
+				onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+				onResetPassword={this._resetPassword}
 				onShowToast={this._toaster.addToast}
 				onSignIn={this._signIn}
+				onSignInWithApple={this._signInWithApple}
+				onSignInWithTwitter={this._signInWithTwitter}
+				user={sharedState.user}
 			/>
-		);
+		)
 	};
 
 	// dialogs
@@ -557,13 +564,6 @@ export default abstract class Root<
 		}
 	};
 
-	// subscriptions
-	protected readonly _getSubscriptionDistributionSummary = (
-		callback: (
-			result: Fetchable<SubscriptionDistributionSummaryResponse>
-		) => void
-	) => this.props.serverApi.getSubscriptionDistributionSummary(callback);
-
 	// toasts
 	protected readonly _toaster = new ToasterService({
 		asyncTracker: this._asyncTracker,
@@ -575,6 +575,48 @@ export default abstract class Root<
 	});
 
 	// user account
+	protected readonly _beginOnboardingAtCreateAccount = (analyticsAction: string) => {
+		this._dialog.openDialog(
+			sharedState => (
+				<OnboardingFlow
+					analyticsAction={analyticsAction}
+					initialAuthenticationStep={OnboardingStep.CreateAccount}
+					captcha={this.props.captcha}
+					onClose={this._dialog.closeDialog}
+					onCreateAccount={this._createAccount}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+					onResetPassword={this._resetPassword}
+					onShowToast={this._toaster.addToast}
+					onSignIn={this._signIn}
+					onSignInWithApple={this._signInWithApple}
+					onSignInWithTwitter={this._signInWithTwitter}
+					user={sharedState.user}
+				/>
+			)
+		);
+	};
+	protected readonly _beginOnboardingAtSignIn = (analyticsAction: string) => {
+		this._dialog.openDialog(
+			sharedState => (
+				<OnboardingFlow
+					analyticsAction={analyticsAction}
+					initialAuthenticationStep={OnboardingStep.SignIn}
+					captcha={this.props.captcha}
+					onClose={this._dialog.closeDialog}
+					onCreateAccount={this._createAccount}
+					onCreateAuthServiceAccount={this._createAuthServiceAccount}
+					onRequestPasswordReset={this.props.serverApi.requestPasswordReset}
+					onResetPassword={this._resetPassword}
+					onShowToast={this._toaster.addToast}
+					onSignIn={this._signIn}
+					onSignInWithApple={this._signInWithApple}
+					onSignInWithTwitter={this._signInWithTwitter}
+					user={sharedState.user}
+				/>
+			)
+		);
+	};
 	protected readonly _changeDisplayPreference = (
 		preference: DisplayPreference
 	) => {
@@ -631,7 +673,7 @@ export default abstract class Root<
 			});
 	};
 	protected readonly _createAuthServiceAccount = (
-		form: CreateAuthServiceAccountDialogForm
+		form: Pick<AuthServiceAccountForm, 'token' | 'name'>
 	) => {
 		return this.props.serverApi
 			.createAuthServiceAccount({
@@ -694,7 +736,7 @@ export default abstract class Root<
 	protected readonly _sendPasswordCreationEmail = () => {
 		return this.props.serverApi.sendPasswordCreationEmail();
 	};
-	protected readonly _signIn = (form: SignInDialogForm) => {
+	protected readonly _signIn = (form: Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string }) => {
 		return this.props.serverApi
 			.signIn({
 				...form,
@@ -708,6 +750,8 @@ export default abstract class Root<
 				);
 			});
 	};
+	protected abstract readonly _signInWithApple: (analyticsAction: string) => Promise<AuthServiceCredentialAuthResponse>;
+	protected abstract readonly _signInWithTwitter: (analyticsAction: string) => Promise<AuthServiceCredentialAuthResponse>;
 	protected readonly _signOut = () => {
 		const pushDeviceForm = this.getPushDeviceForm();
 		return this.props.serverApi
@@ -789,14 +833,6 @@ export default abstract class Root<
 				onShowToast: this._toaster.addToast,
 				onUnassignAuthorFromArticle: this._unassignAuthorFromArticle,
 			}),
-			[ScreenKey.Download]: createDownloadPageFactory(ScreenKey.Download, {
-				onOpenDialog: this._dialog.openDialog,
-				onCloseDialog: this._dialog.closeDialog,
-				onOpenNewPlatformNotificationRequestDialog:
-					this._openNewPlatformNotificationRequestDialog,
-				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onNavTo: this._navTo,
-			}),
 			[ScreenKey.EmailConfirmation]: createEmailConfirmationScreenFactory(
 				ScreenKey.EmailConfirmation
 			),
@@ -825,8 +861,9 @@ export default abstract class Root<
 				onGetReadingTimeStats: this.props.serverApi.getReadingTimeStats,
 				onRegisterArticleChangeHandler: this._registerArticleChangeEventHandler,
 			}),
-			[ScreenKey.About]: createTeamPageFactory(ScreenKey.About, {
+			[ScreenKey.About]: createMarketingScreenFactory(ScreenKey.About, {
 				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onGetPublisherArticles: this.props.serverApi.getPublisherArticles,
 				onNavTo: this._navTo,
 			}),
 		};
@@ -968,7 +1005,7 @@ export default abstract class Root<
 			displayTheme: preference.theme,
 		});
 	}
-	protected onLocationChanged(path: string, title?: string) {}
+	protected onLocationChanged(path: string, title?: ScreenTitle) {}
 	protected onNotificationPreferenceChanged(
 		preference: NotificationPreference
 	) {
@@ -977,7 +1014,7 @@ export default abstract class Root<
 			preference
 		);
 	}
-	protected onTitleChanged(title: string) {}
+	protected onTitleChanged(title: ScreenTitle) {}
 	protected onUserSignedIn(
 		userProfile: WebAppUserProfile,
 		eventType: SignInEventType,

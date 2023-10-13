@@ -10,10 +10,9 @@
 
 import * as React from 'react';
 import CaptchaBase from '../../common/captcha/CaptchaBase';
-import BrowserOnboardingFlow, {
+import Flow, {
 	BaseProps,
-	ExitReason,
-} from '../../common/components/BrowserOnboardingFlow';
+} from '../../common/components/Flow';
 import CreateAccountStep, {
 	Form as CreateAccountForm,
 } from '../../common/components/BrowserOnboardingFlow/CreateAccountStep';
@@ -51,7 +50,7 @@ interface Props extends BaseProps {
 		provider: AuthServiceProvider
 	) => Promise<BrowserPopupResponseResponse>;
 }
-export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
+export default class OnboardingFlow extends Flow<Props> {
 	private readonly _createAccount = (form: CreateAccountForm) => {
 		return this.props.onCreateAccount(form).then(this._handleAccountCreation);
 	};
@@ -75,10 +74,10 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 		this.goToStep(Step.SignIn);
 	};
 	private readonly _handleAccountCreation = () => {
-		this._beginClosing(ExitReason.Completed);
+		this._complete();
 	};
 	private readonly _handleExistingUserAuthentication = () => {
-		this._beginClosing(ExitReason.ExistingUserAuthenticated);
+		this._abort();
 	};
 	private readonly _signIn = (form: SignInForm) => {
 		return this.props
@@ -155,8 +154,5 @@ export default class OnboardingFlow extends BrowserOnboardingFlow<Props> {
 	}
 	protected getStepRenderer(step: Step) {
 		return this._stepMap[step];
-	}
-	protected shouldAllowCancellation() {
-		return true;
 	}
 }

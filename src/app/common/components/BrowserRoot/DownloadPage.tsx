@@ -20,9 +20,8 @@ import {
 // import Link from '../../../../common/components/Link';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import DownloadButton from './DownloadButton';
-import HomeHero from './HomeHero';
+import HomeHero from '../HomeHero';
 import { NavReference, NavOptions } from '../Root';
-import HomePanel from './HomePanel';
 import Link from '../../../../common/components/Link';
 import { SafariExtensionDialog } from './SafariExtensionDialog';
 
@@ -153,33 +152,6 @@ const downloadPage = (props: Services) => (
 				</div>
 			</div>
 		</div>
-		<HomePanel className="desktop-deprecated">
-			<h2>Desktop Apps</h2>
-			<p>
-				While we improve article support for our new Web Reader, the old desktop
-				apps could still be useful for some articles.
-			</p>
-			<div className="browsers">
-				{renderDownloadOption({
-					title: 'macOS',
-					iconName: 'apple',
-					link: 'https://apps.apple.com/us/app/readup-social-reading/id1441825432',
-					services: props,
-				})}
-				{renderDownloadOption({
-					title: 'Windows',
-					iconName: 'windows',
-					link: 'https://static.readup.org/downloads/windows/ReadupSetup.exe',
-					services: props,
-				})}
-				{renderDownloadOption({
-					title: 'Linux (.deb)',
-					iconName: 'linux',
-					link: 'https://static.readup.org/downloads/linux/latest',
-					services: props,
-				})}
-			</div>
-		</HomePanel>
 	</div>
 );
 
@@ -192,7 +164,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'Download Readup',
+			title: {
+				default: 'Download Readup'
+			},
 		}),
 		render: () =>
 			React.createElement(downloadPage, {

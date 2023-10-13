@@ -1,0 +1,100 @@
+// Copyright (C) 2022 reallyread.it, inc.
+//
+// This file is part of Readup.
+//
+// Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
+//
+// Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+
+/*
+	componentPath: src/common/components/Flow
+	cssComponentId: flow_fhdgte
+*/
+@import '../styles/colors';
+
+.flow_fhdgte > .steps {
+	display: flex;
+	flex-flow: column;
+	max-width: 700px;
+	min-height: 0;
+	border-radius: 5px;
+}
+.flow_fhdgte > .steps::after {
+	content: '';
+	display: block;
+	height: 40px;
+}
+.flow_fhdgte > .steps > .titlebar {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+.flow_fhdgte > .steps > .titlebar > .icon-right {
+	flex: 0 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 40px;
+	height: 40px;
+}
+.flow_fhdgte
+	> .steps
+	> .titlebar
+	> .icon-right
+	> .icon_rour3d {
+	font-size: 16px;
+	cursor: pointer;
+}
+.flow_fhdgte
+	> .steps
+	> .transition-container_ko0vbz
+	> .content {
+	padding: 0 15px;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+}
+
+@media (max-width: 499px) {
+	.flow_fhdgte > .steps::after {
+		height: 0;
+	}
+	.flow_fhdgte
+		> .steps
+		> .transition-container_ko0vbz
+		> .content::after {
+		content: '';
+		flex: 1 1 auto;
+		min-height: 40px;
+	}
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .flow_fhdgte > .steps {
+		@include theme-colors(
+			$scheme,
+			(
+				'background': $app-background-color,
+				'box-shadow': 0px 1px 3px 1px,
+			)
+		);
+	}
+	#{$root}
+		.flow_fhdgte
+		> .steps
+		> .titlebar
+		> .icon-right
+		> .icon_rour3d {
+		@include theme-colors(
+			$scheme,
+			(
+				'color': $text-muted-color,
+			)
+		);
+	}
+}

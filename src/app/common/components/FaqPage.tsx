@@ -13,8 +13,8 @@ import RouteLocation from '../../../common/routing/RouteLocation';
 import classNames = require('classnames');
 import Icon from '../../../common/components/Icon';
 import { useState, useEffect } from 'react';
-import HomeHero from './BrowserRoot/HomeHero';
-import HomePanel from './BrowserRoot/HomePanel';
+import HomeHero from './HomeHero';
+import HomePanel from './HomePanel';
 import Button from '../../../common/components/Button';
 import Link, { DiscordInviteLink } from '../../../common/components/Link';
 import ScreenKey from '../../../common/routing/ScreenKey';
@@ -88,26 +88,9 @@ const faqs: FaqCategory[] = [
 				question: 'How do I get started on my computer?',
 				answer: (
 					<p>
-						Download the app for{' '}
-						<Link
-							href="https://apps.apple.com/us/app/readup-social-reading/id1441825432"
-							onClick={props.onNavTo}
-						>
-							Mac
-						</Link>
-						,{' '}
-						<Link
-							href="https://static.readup.org/downloads/windows/ReadupSetup.exe"
-							onClick={props.onNavTo}
-						>
-							Windows
-						</Link>{' '}
-						or{' '}
-						<Link
-							href="https://static.readup.org/downloads/linux/latest"
-							onClick={props.onNavTo}
-						>
-							Linux
+						Get the browser extesion for your browser from our{' '}
+						<Link screen={ScreenKey.Download} onClick={props.onNavTo}>
+							Downloads page
 						</Link>
 						.
 					</p>
@@ -483,9 +466,7 @@ type Props = {
 	user: UserAccount;
 };
 
-type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>> & {
-	onCreateTitle: () => string;
-};
+type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>>;
 
 const renderSettings = (props: Props): React.ReactElement<Link> | string => {
 	if (props.user) {
@@ -601,7 +582,10 @@ export function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: services.onCreateTitle(),
+			title: {
+				default: 'Help',
+				seo: 'Frequently Asked Questions'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<FaqPage

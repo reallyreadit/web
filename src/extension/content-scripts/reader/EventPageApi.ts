@@ -10,7 +10,7 @@ import Post from '../../../common/models/social/Post';
 import CommentAddendumForm from '../../../common/models/social/CommentAddendumForm';
 import CommentRevisionForm from '../../../common/models/social/CommentRevisionForm';
 import CommentDeletionForm from '../../../common/models/social/CommentDeletionForm';
-import { MessageResponse, isSuccessResponse } from '../../common/messaging';
+import { MessageResponse, isSuccessResponse, ResponseType } from '../../common/messaging';
 import StarForm from '../../../common/models/articles/StarForm';
 import { AuthServiceBrowserLinkResponse } from '../../../common/models/auth/AuthServiceBrowserLinkResponse';
 import TwitterRequestToken from '../../../common/models/auth/TwitterRequestToken';
@@ -18,6 +18,8 @@ import UserAccount from '../../../common/models/UserAccount';
 import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import { ExtensionOptions } from '../../options-page/ExtensionOptions';
+import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 
 function sendMessage<T>(
 	type: string,
@@ -38,6 +40,7 @@ function sendMessage<T>(
 		if (responseCallback) {
 			responseCallback({
 				error: 'Failed to send message.',
+				type: ResponseType.Error
 			});
 		}
 	}
@@ -81,6 +84,7 @@ export default class EventPageApi {
 		onCommentPosted: (comment: CommentThread) => void;
 		onCommentUpdated: (comment: CommentThread) => void;
 		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
+		onUserSignedIn: (profile: WebAppUserProfile) => void;
 		onUserSignedOut: () => void;
 		onUserUpdated: (user: UserAccount) => void;
 	}) {
@@ -88,7 +92,8 @@ export default class EventPageApi {
 			// Don't answer messages from content scripts.
 			// TODO: Explore full consequences of running this messaging service in a chrome-extension://... page instead of a regular http(s)://... web page and refactor as required.
 			if (message.to) {
-				return;
+				// return true so that other handlers will have an opportunity to respond
+				return true;
 			}
 			switch (message.type) {
 				case 'articleUpdated':
@@ -106,6 +111,9 @@ export default class EventPageApi {
 				case 'displayPreferenceChanged':
 					handlers.onDisplayPreferenceChanged(message.data);
 					break;
+				case 'userSignedIn':
+					handlers.onUserSignedIn(message.data);
+					break;
 				case 'userSignedOut':
 					handlers.onUserSignedOut();
 					break;
@@ -116,11 +124,27 @@ export default class EventPageApi {
 			// always send a response because the sender must use a callback in order to
 			// check for runtime errors and an error will be triggered if the port is closed
 			sendResponse();
+			return false;
 		});
 	}
 	public getDisplayPreference() {
 		return sendMessageAwaitingResponse<DisplayPreference | null>(
 			'getDisplayPreference'
+		);
+	}
+	public getDisplayPreferenceFromCache() {
+		return sendMessageAwaitingResponse<DisplayPreference | null>(
+			'getDisplayPreferenceFromCache'
+		);
+	}
+	public getExtensionOptions() {
+		return sendMessageAwaitingResponse<ExtensionOptions>(
+			'getExtensionOptions'
+		);
+	}
+	public getUserAccountFromCache() {
+		return sendMessageAwaitingResponse<UserAccount | null>(
+			'getUserAccountFromCache'
 		);
 	}
 	public changeDisplayPreference(preference: DisplayPreference) {
@@ -134,9 +158,14 @@ export default class EventPageApi {
 			return;
 		}
 		let tick = 0;
+		const rate = 150;
 		this._loadingAnimationInterval = window.setInterval(() => {
-			sendMessage('loadingAnimationTick', tick++);
-		}, 150);
+			if (tick * rate > 1000 * 30) {
+				this.stopLoadingAnimation();
+				return;
+			}
+			sendMessage('loadingAnimationTick', ++tick);
+		}, rate);
 	}
 	public stopLoadingAnimation() {
 		if (this._loadingAnimationInterval == null) {
@@ -144,10 +173,14 @@ export default class EventPageApi {
 		}
 		window.clearInterval(this._loadingAnimationInterval);
 		this._loadingAnimationInterval = null;
+		sendMessage('loadingAnimationTick', 0);
 	}
-	public registerPage(data: ParseResult) {
+	public registerPage() {
+		return sendMessageAwaitingResponse('registerPage');
+	}
+	public getUserArticle(data: ParseResult) {
 		return sendMessageAwaitingResponse<ArticleLookupResult>(
-			'registerPage',
+			'getUserArticle',
 			data
 		);
 	}

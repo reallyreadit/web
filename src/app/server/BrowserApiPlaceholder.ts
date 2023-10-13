@@ -19,10 +19,11 @@ import ExtensionInstallationEvent from '../../common/ExtensionInstallationEvent'
 import { AuthServiceBrowserLinkResponse } from '../../common/models/auth/AuthServiceBrowserLinkResponse';
 import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
+import { ScreenTitle } from '../../common/ScreenTitle';
 
 export default class BrowserApiPlaceholder extends BrowserApiBase {
-	private _title: string;
-	public setTitle(title: string) {
+	private _title: ScreenTitle;
+	public setTitle(title: ScreenTitle) {
 		this._title = title;
 	}
 	public articleUpdated(event: ArticleUpdatedEvent) {

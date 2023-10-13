@@ -20,7 +20,6 @@ import SelectList, {
 export interface Value {
 	isEnabled: boolean;
 	email?: AlertEmailPreference;
-	extension?: boolean;
 	push?: boolean;
 }
 interface Props extends Value {
@@ -67,25 +66,16 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 			value = {
 				isEnabled,
 				email: AlertEmailPreference.Immediately,
-				extension: true,
 				push: true,
 			};
 		} else {
 			value = {
 				isEnabled,
 				email: AlertEmailPreference.None,
-				extension: false,
 				push: false,
 			};
 		}
 		this.saveChanges(value);
-	};
-	private readonly _toggleExtension = (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => {
-		this.saveChanges({
-			extension: event.currentTarget.checked,
-		});
 	};
 	constructor(props: Props) {
 		super(props);
@@ -167,20 +157,10 @@ export default class AlertSelector extends React.PureComponent<Props, State> {
 							<label>
 								<input
 									type="checkbox"
-									checked={this.props.extension}
-									onChange={this._toggleExtension}
-								/>
-								<span>Desktop</span>
-							</label>
-						</li>
-						<li>
-							<label>
-								<input
-									type="checkbox"
 									checked={this.props.push}
 									onChange={this._togglePush}
 								/>
-								<span>iOS</span>
+								<span>Push</span>
 							</label>
 						</li>
 					</ol>

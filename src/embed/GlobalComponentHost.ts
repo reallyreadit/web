@@ -14,16 +14,8 @@ import EmbedComponentHost from './EmbedComponentHost';
 
 type Services = Pick<
 	GlobalProps,
-	| 'captcha'
 	| 'clipboardService'
 	| 'dialogService'
-	| 'onCloseOnboarding'
-	| 'onCreateAccount'
-	| 'onCreateAuthServiceAccount'
-	| 'onRequestPasswordReset'
-	| 'onShowToast'
-	| 'onSignIn'
-	| 'onSignInWithAuthService'
 	| 'toasterService'
 >;
 type State = Pick<
@@ -31,9 +23,7 @@ type State = Pick<
 	| 'article'
 	| 'dialogs'
 	| 'error'
-	| 'onboardingAnalyticsAction'
 	| 'toasts'
-	| 'user'
 >;
 export default class GlobalComponentHost extends EmbedComponentHost<
 	Services,

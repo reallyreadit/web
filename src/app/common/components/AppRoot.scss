@@ -44,6 +44,13 @@
 	box-sizing: border-box;
 	z-index: 1;
 }
+.app-root_vc3j5h > .content > .screens > .screen > * {
+	padding: 20px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	min-height: 100%;
+}
 
 @include from(tablet-landscape) {
 	// .app-root_vc3j5h > .content {

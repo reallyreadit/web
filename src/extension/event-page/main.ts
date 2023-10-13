@@ -6,41 +6,16 @@ import { createCommentThread } from '../../common/models/social/Post';
 import { sessionIdCookieKey } from '../../common/cookies';
 import {
 	extensionInstalledQueryStringKey,
-	extensionAuthQueryStringKey,
 } from '../../common/routing/queryString';
 import BrowserActionBadgeApi from './BrowserActionBadgeApi';
-import UserAccount from '../../common/models/UserAccount';
 import { DisplayTheme } from '../../common/models/userAccounts/DisplayPreference';
 import {
-	ExtensionOptionKey,
 	ExtensionOptions,
 	extensionOptionsStorageQuery,
 } from '../options-page/ExtensionOptions';
 
 // NOTE: `window` does not exist in service workers.
 // All window config references are replaced at compile time by Webpack's DefinePlugin
-
-// browser action icon
-function setIcon(state: {
-	user: UserAccount | null;
-}) {
-	const placeholder = '{SIZE}';
-	let pathTemplate = '/icons/';
-	if (state.user) {
-		pathTemplate += `icon-${placeholder}.png`;
-	} else {
-		pathTemplate += `icon-${placeholder}-warning.png`;
-	}
-	chrome.action.setIcon({
-		path: [16, 24, 32, 40, 48].reduce<{ [key: string]: string }>(
-			(paths, size) => {
-				paths[size] = pathTemplate.replace(placeholder, size.toString());
-				return paths;
-			},
-			{}
-		),
-	});
-}
 
 // browser action badge
 const badgeApi = new BrowserActionBadgeApi();
@@ -52,9 +27,6 @@ const serverApi = new ServerApi({
 		await webAppApi.displayPreferenceChanged(preference);
 	},
 	onUserSignedOut: async () => {
-		setIcon({
-			user: null,
-		});
 		await readerContentScriptApi.userSignedOut();
 	},
 });
@@ -65,14 +37,23 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 	onGetDisplayPreference: () => {
 		return serverApi.getDisplayPreference();
 	},
+	onGetDisplayPreferenceFromCache: () => {
+		return serverApi.getDisplayPreferenceFromCache();
+	},
+	onGetExtensionOptions: () => {
+		return chrome.storage.local.get(extensionOptionsStorageQuery) as Promise<ExtensionOptions>;
+	},
+	onGetUserAccountFromCache: () => {
+		return serverApi.getUserFromCache();
+	},
 	onChangeDisplayPreference: async (preference) => {
 		// update web app
 		await webAppApi.displayPreferenceChanged(preference);
 		// persist
 		return serverApi.changeDisplayPreference(preference);
 	},
-	onRegisterPage: (tabId, data) =>
-		serverApi.registerPage(tabId, data).then(async (result) => {
+	onGetUserArticle: (tabId, data) =>
+		serverApi.getUserArticle(tabId, data).then(async (result) => {
 			// update web app (article is automatically starred)
 			await webAppApi.articleUpdated({
 				article: result.userArticle,
@@ -182,22 +163,17 @@ const webAppApi = new WebAppApi({
 		await readerContentScriptApi.commentUpdated(comment);
 	},
 	onUserSignedIn: async (profile) => {
-		setIcon({
-			user: profile.userAccount,
-		});
-		await serverApi.userSignedIn(profile);
+		// update server cache
+		await serverApi.userUpdated(profile.userAccount);
+		await serverApi.displayPreferenceChanged(profile.displayPreference);
+		// update readers
+		await readerContentScriptApi.userSignedIn(profile);
 	},
 	onUserSignedOut: async () => {
-		setIcon({
-			user: null,
-		});
 		await serverApi.userSignedOut();
 		await readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: async (user) => {
-		setIcon({
-			user,
-		});
 		// update server cache
 		await serverApi.userUpdated(user);
 		// update readers
@@ -225,26 +201,19 @@ async function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
 async function openReaderInTab(
 	tab: chrome.tabs.Tab,
 	articleUrl: string,
-	star: boolean = false
 ) {
-	// TODO: sending the displayPreference became less important again, since trying
-	// out the reader.html / dark-reader solution
-	// maybe it's cleaner to just request these extra params via the eventPageApi like before
 	const displayPreference = await serverApi.getDisplayPreferenceFromCache();
-	const baseURL = chrome.runtime.getURL(
-		`/${
-			displayPreference.theme === DisplayTheme.Light
-				? 'reader.html'
-				: 'reader-dark.html'
-		}`
-	);
-	const searchParams = new URLSearchParams({
-		url: articleUrl,
-		displayPreference: JSON.stringify(displayPreference),
-		star: star.toString(),
-	});
-	const readerUrl = `${baseURL}?${searchParams}`;
-	await chrome.tabs.update(tab.id, { url: readerUrl });
+	const url = new URL(chrome.runtime.getURL('reader.html'));
+	url.searchParams.append('url', articleUrl);
+	if (displayPreference) {
+		url.searchParams.append('theme', displayPreference.theme === DisplayTheme.Light ? 'light' : 'dark');
+	}
+	// As of Safari 16.6.1 navigating to an extension page destroys the tab's entire history with no ability to navigate backwards. As a workaround always open the reader in a new tab instead.
+	if (url.protocol === 'safari-web-extension:') {
+		await chrome.tabs.create({ url: url.toString() });
+	} else {
+		await chrome.tabs.update(tab.id, { url: url.toString() });
+	}
 }
 
 async function openReaderInCurrentTab(articleUrl: string) {
@@ -283,10 +252,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	}
 	// initialize settings
 	await chrome.storage.local.set({ debug: JSON.stringify(false) });
-	// update icon
-	setIcon({
-		user: await serverApi.getUser(),
-	});
 	// inject web app content script into open web app tabs
 	// we have to do this on updates as well as initial installs
 	// since content script extension contexts are invalidated
@@ -342,26 +307,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 chrome.runtime.onStartup.addListener(async () => {
 	console.log('[EventPage] startup');
-	// update icon
-	setIcon({
-		user: await serverApi.getUser(),
-	});
 	// initialize tabs
 	await readerContentScriptApi.clearTabs();
 	await webAppApi.clearTabs();
 	await webAppApi.injectContentScripts();
 });
 chrome.action.onClicked.addListener(async (tab) => {
-	// check if we're logged in
-	const isAuthenticated = await serverApi.isAuthenticated();
-	if (!isAuthenticated) {
-		await chrome.tabs.create({
-			url: createUrl(window.reallyreadit.extension.config.webServer, null, {
-				[extensionAuthQueryStringKey]: null,
-			}),
-		});
-		return;
-	}
 	// check which type of page we're looking at
 	if (!tab.url) {
 		return;
@@ -411,23 +362,18 @@ chrome.action.onClicked.addListener(async (tab) => {
 	}
 
 	// open article, starring if that is the setting
-	chrome.storage.local.get(
-		extensionOptionsStorageQuery,
-		async (options: ExtensionOptions) => {
-			await openReaderInTab(
-				tab,
-				tab.url,
-				options[ExtensionOptionKey.StarOnSave]
-			);
-		}
+	await openReaderInTab(
+		tab,
+		tab.url,
 	);
 });
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (
 		message.from !== 'contentScriptInitializer' ||
 		message.to !== 'eventPage'
 	) {
-		return;
+		// return true so that other handlers will have an opportunity to respond
+		return true;
 	}
 	switch (message.type) {
 		case 'injectAlert':
@@ -447,4 +393,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 			});
 			break;
 	}
+	// always send a response because the sender must use a callback in order to
+	// check for runtime errors and an error will be triggered if the port is closed
+	sendResponse();
+	return false;
 });

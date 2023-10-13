@@ -25,6 +25,7 @@ import { ShareEvent } from '../sharing/ShareEvent';
 import ShareResponse from '../sharing/ShareResponse';
 import { ShareChannelData } from '../sharing/ShareData';
 import Star from './Star';
+import UserAccount from '../models/UserAccount';
 
 export interface Props {
 	article: Fetchable<UserArticle>;
@@ -41,6 +42,7 @@ export interface Props {
 	onShareViaChannel: (data: ShareChannelData) => void;
 	onToggleStar: () => Promise<void>;
 	showProgressBar?: boolean;
+	user: UserAccount | null
 }
 export default class ReaderHeader extends React.Component<
 	Props,
@@ -120,13 +122,17 @@ export default class ReaderHeader extends React.Component<
 					isHidden={this.props.isHidden}
 					onChangeDisplayPreference={this.props.onChangeDisplayPreference}
 				/>
-				<div className="spacer"></div>
-				<ReportWidget
-					article={this.props.article}
-					isHidden={this.props.isHidden}
-					onReportArticleIssue={this.props.onReportArticleIssue}
-				/>
-				{this.props.showProgressBar ? (
+				{this.props.user ?
+					<>
+						<div className="spacer"></div>
+						<ReportWidget
+							article={this.props.article}
+							isHidden={this.props.isHidden}
+							onReportArticleIssue={this.props.onReportArticleIssue}
+						/>
+					</> :
+					null}
+				{this.props.showProgressBar && this.props.user ? (
 					<>
 						<div className="spacer"></div>
 						<div className="widget progress">

@@ -19,19 +19,19 @@ import { Screen, NavReference, NavOptions } from '../Root';
 import Button from '../../../../common/components/Button';
 import Alert from '../../../../common/models/notifications/Alert';
 
-const contendersUrl = findRouteByKey(routes, ScreenKey.Contenders).createUrl(),
+const leaderboardsUrl = findRouteByKey(routes, ScreenKey.Leaderboards).createUrl(),
 	homeUrl = findRouteByKey(routes, ScreenKey.Home).createUrl(),
 	myFeedUrl = findRouteByKey(routes, ScreenKey.MyFeed).createUrl(),
 	myReadsUrl = findRouteByKey(routes, ScreenKey.MyReads).createUrl();
 
 interface Props {
 	onNavTo: (ref: NavReference, options: NavOptions) => void;
-	onViewContenders: () => void;
+	onViewLeaderboards: () => void;
 	onViewHome: () => void;
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
 	selectedScreen: Screen;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 export default class NavBar extends React.PureComponent<Props> {
 	public render() {
@@ -40,7 +40,7 @@ export default class NavBar extends React.PureComponent<Props> {
 				<ol>
 					<li>
 						<Button
-							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={this.props.user && hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							href={homeUrl}
 							onClick={this.props.onViewHome}
 							state={
@@ -56,15 +56,15 @@ export default class NavBar extends React.PureComponent<Props> {
 					</li>
 					<li>
 						<Button
-							href={contendersUrl}
-							onClick={this.props.onViewContenders}
+							href={leaderboardsUrl}
+							onClick={this.props.onViewLeaderboards}
 							state={
-								this.props.selectedScreen.key === ScreenKey.Contenders
+								this.props.selectedScreen.key === ScreenKey.Leaderboards
 									? 'selected'
 									: 'normal'
 							}
 							iconLeft="podium"
-							text="Contenders"
+							text="Leaderboards"
 							size="x-large"
 							display="block"
 						/>
@@ -87,14 +87,14 @@ export default class NavBar extends React.PureComponent<Props> {
 					<li>
 						<Button
 							href={myFeedUrl}
-							badge={this.props.user.followerAlertCount}
+							badge={this.props.user?.followerAlertCount ?? 0}
 							onClick={this.props.onViewMyFeed}
 							state={
 								this.props.selectedScreen.key === ScreenKey.MyFeed
 									? 'selected'
 									: 'normal'
 							}
-							iconLeft="candy"
+							iconLeft="group-circle"
 							text="My Feed"
 							size="x-large"
 							display="block"

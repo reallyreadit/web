@@ -24,6 +24,7 @@ import WebAppUserProfile from './models/userAccounts/WebAppUserProfile';
 import DisplayPreference from './models/userAccounts/DisplayPreference';
 import { BroadcastChannelInterface } from './messaging/BroadcastChannelInterface';
 import StorageBroadcastChannel from './messaging/StorageBroadcastChannel';
+import { ScreenTitle } from './ScreenTitle';
 
 export type MessageListener = (messageData: any) => void;
 interface Messenger {
@@ -133,8 +134,8 @@ export default class BrowserApi extends BrowserApiBase {
 	public notificationPreferenceChanged(preference: NotificationPreference) {
 		this.broadcastUpdate('notificationPreferenceChanged', preference);
 	}
-	public setTitle(title: string) {
-		window.document.title = title;
+	public setTitle(title: ScreenTitle) {
+		window.document.title = title.seo ?? title.default;
 	}
 	public updateAvailable(version: SemanticVersion) {
 		this.broadcastUpdate('updateAvailable', version.toString());

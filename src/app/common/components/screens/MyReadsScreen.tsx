@@ -16,7 +16,6 @@ import { ShareEvent } from '../../../../common/sharing/ShareEvent';
 import ShareResponse from '../../../../common/sharing/ShareResponse';
 import Fetchable from '../../../../common/Fetchable';
 import PageResult from '../../../../common/models/PageResult';
-import ScreenContainer from '../ScreenContainer';
 import LoadingOverlay from '../controls/LoadingOverlay';
 import RouteLocation from '../../../../common/routing/RouteLocation';
 import AsyncTracker from '../../../../common/AsyncTracker';
@@ -41,6 +40,7 @@ import { ShareChannelData } from '../../../../common/sharing/ShareData';
 import { ArticleStarredEvent } from '../../AppApi';
 import { AppPlatform } from '../../../../common/AppPlatform';
 import Link from '../../../../common/components/Link';
+import InfoBox from '../../../../common/components/InfoBox';
 
 enum View {
 	History = 'History',
@@ -59,6 +59,7 @@ interface Props {
 	onGetStarredArticles: ArticleFetchFunction;
 	onGetUserArticleHistory: ArticleFetchFunction;
 	onOpenDialog: (element: React.ReactNode) => void;
+	onOpenSignInPrompt: (analyticsAction: string) => void;
 	onCloseDialog: () => void;
 	onNavTo: (ref: NavReference) => void;
 	onPostArticle: (article: UserArticle) => void;
@@ -84,7 +85,7 @@ interface Props {
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
 	screenId: number;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 interface State {
 	articles: Fetchable<PageResult<UserArticle>>;
@@ -142,11 +143,25 @@ class MyReadsScreen extends React.Component<Props, State> {
 			</FormDialog>
 		);
 	};
+	private readonly _openSignInPrompt = () => {
+		this.props.onOpenSignInPrompt('MyReads');
+	};
 	constructor(props: Props) {
 		super(props);
 		const minLength: number | null = null,
 			maxLength: number | null = null,
-			articles = this.fetchArticles(props.view, 1, minLength, maxLength);
+			articles = props.user ?
+				this.fetchArticles(props.view, 1, minLength, maxLength) :
+				{
+					isLoading: false,
+					value: {
+						items: [] as UserArticle[],
+						totalCount: 0,
+						pageNumber: 0,
+						pageSize: 0,
+						pageCount: 0
+					}
+				};
 		this.state = {
 			articles,
 			isChangingList: false,
@@ -287,72 +302,93 @@ class MyReadsScreen extends React.Component<Props, State> {
 			</StickyNote>
 		);
 	}
+	public componentDidUpdate(prevProps: Props) {
+		if (this.props.user && !prevProps.user) {
+			// Reinitialize on sign in.
+			this.setState({
+				articles: this.fetchArticles(this.props.view, 1, null, null),
+				isChangingList: false,
+				isScreenLoading: true,
+				maxLength: null,
+				minLength: null,
+				newStarsCount: 0,
+			});
+		}
+	}
 	public componentWillUnmount() {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (!this.props.user) {
+			return (
+				<InfoBox style="normal">
+					<p>
+						<Link onClick={this._openSignInPrompt}>Log in</Link> to view your saved articles and reading history.
+					</p>
+				</InfoBox>
+			);
+		}
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
-			<ScreenContainer className="my-reads-screen_56ihtk">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
-				) : (
+			<div className="my-reads-screen_56ihtk">
+				{this.state.newStarsCount ? (
+					<UpdateBanner
+						isBusy
+						text={`Loading ${
+							this.state.newStarsCount
+						} new ${formatCountable(this.state.newStarsCount, 'article')}`}
+					/>
+				) : null}
+				<div className="controls">
+					<HeaderSelector
+						disabled={this.state.articles.isLoading}
+						items={headerSelectorItems}
+						onChange={this._changeList}
+						value={this.props.view}
+					/>
+				</div>
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
+				) : this.state.articles.value.items.length ? (
 					<>
-						{this.state.newStarsCount ? (
-							<UpdateBanner
-								isBusy
-								text={`Loading ${
-									this.state.newStarsCount
-								} new ${formatCountable(this.state.newStarsCount, 'article')}`}
-							/>
-						) : null}
-						<div className="controls">
-							<HeaderSelector
-								disabled={this.state.articles.isLoading}
-								items={headerSelectorItems}
-								onChange={this._changeList}
-								value={this.props.view}
-							/>
-						</div>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : this.state.articles.value.items.length ? (
-							<>
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								{this.state.articles.value.pageNumber < 2
-									? this.renderStickyNote()
-									: null}
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						) : (
-							<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
-						)}
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						{this.state.articles.value.pageNumber < 2
+							? this.renderStickyNote()
+							: null}
+						<PageSelector
+							pageNumber={this.state.articles.value.pageNumber}
+							pageCount={this.state.articles.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
+				) : (
+					<CenteringContainer>{this.renderStickyNote()}</CenteringContainer>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
 }
@@ -366,7 +402,9 @@ export default function createScreenFactory<TScreenKey>(
 			id,
 			key,
 			location,
-			title: 'My Reads',
+			title: {
+				default: 'My Reads'
+			},
 		}),
 		render: (screen: Screen, sharedState: SharedState) => (
 			<MyReadsScreen

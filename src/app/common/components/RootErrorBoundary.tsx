@@ -36,7 +36,7 @@ export default class RootErrorBoundary extends React.PureComponent<
 		return (
 			<ErrorBoundary
 				errorElement={
-					<InfoBox position="absolute" style="warning">
+					<InfoBox style="warning">
 						<p>An error occurred and caused the app to crash.</p>
 						<p>
 							If this keeps happening please{' '}

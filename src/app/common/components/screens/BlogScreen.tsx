@@ -25,12 +25,11 @@ import List from '../controls/List';
 import PageSelector from '../controls/PageSelector';
 import ArticleDetails from '../../../../common/components/ArticleDetails';
 import Rating from '../../../../common/models/Rating';
-import ScreenContainer from '../ScreenContainer';
 import UserAccount from '../../../../common/models/UserAccount';
 import PublisherArticleQuery from '../../../../common/models/articles/PublisherArticleQuery';
-import * as classNames from 'classnames';
 import { DeviceType } from '../../../../common/DeviceType';
-import { NavReference } from '../Root';
+import { NavReference, SharedState, Screen } from '../Root';
+import RouteLocation from '../../../../common/routing/RouteLocation';
 
 export interface Props {
 	deviceType: DeviceType;
@@ -54,7 +53,6 @@ export interface Props {
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
-	title?: string;
 	user: UserAccount | null;
 }
 interface State {
@@ -63,7 +61,7 @@ interface State {
 	maxLength: number | null;
 	minLength: number | null;
 }
-export default class BlogScreen extends React.Component<Props, State> {
+class BlogScreen extends React.Component<Props, State> {
 	private readonly _asyncTracker = new AsyncTracker();
 	private readonly _changePageNumber = (pageNumber: number) => {
 		this.setState({
@@ -140,52 +138,70 @@ export default class BlogScreen extends React.Component<Props, State> {
 		this._asyncTracker.cancelAll();
 	}
 	public render() {
+		if (this.state.isScreenLoading) {
+			return (
+				<LoadingOverlay />
+			);
+		}
 		return (
-			<ScreenContainer className="blog-screen_61pk1b">
-				{this.state.isScreenLoading ? (
-					<LoadingOverlay position="static" />
+			<div className="blog-screen_61pk1b">
+				{this.state.articles.isLoading ? (
+					<LoadingOverlay />
 				) : (
 					<>
-						<div className="controls">
-							<h1 className={classNames({ 'has-title': !!this.props.title })}>
-								{this.props.title}
-							</h1>
-						</div>
-						{this.state.articles.isLoading ? (
-							<LoadingOverlay position="static" />
-						) : (
-							<>
-								<List>
-									{this.state.articles.value.items.map((article) => (
-										<li key={article.id}>
-											<ArticleDetails
-												article={article}
-												deviceType={this.props.deviceType}
-												onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
-												onNavTo={this.props.onNavTo}
-												onPost={this.props.onPostArticle}
-												onRateArticle={this.props.onRateArticle}
-												onRead={this.props.onReadArticle}
-												onShare={this.props.onShare}
-												onShareViaChannel={this.props.onShareViaChannel}
-												onToggleStar={this.props.onToggleArticleStar}
-												onViewComments={this.props.onViewComments}
-												onViewProfile={this.props.onViewProfile}
-												user={this.props.user}
-											/>
-										</li>
-									))}
-								</List>
-								<PageSelector
-									pageNumber={this.state.articles.value.pageNumber}
-									pageCount={this.state.articles.value.pageCount}
-									onChange={this._changePageNumber}
-								/>
-							</>
-						)}
+						<List>
+							{this.state.articles.value.items.map((article) => (
+								<li key={article.id}>
+									<ArticleDetails
+										article={article}
+										deviceType={this.props.deviceType}
+										onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
+										onNavTo={this.props.onNavTo}
+										onPost={this.props.onPostArticle}
+										onRateArticle={this.props.onRateArticle}
+										onRead={this.props.onReadArticle}
+										onShare={this.props.onShare}
+										onShareViaChannel={this.props.onShareViaChannel}
+										onToggleStar={this.props.onToggleArticleStar}
+										onViewComments={this.props.onViewComments}
+										onViewProfile={this.props.onViewProfile}
+										user={this.props.user}
+									/>
+								</li>
+							))}
+						</List>
+						<PageSelector
+							pageNumber={this.state.articles.value.pageNumber}
+							pageCount={this.state.articles.value.pageCount}
+							onChange={this._changePageNumber}
+						/>
 					</>
 				)}
-			</ScreenContainer>
+			</div>
 		);
 	}
+}
+
+export default function createBlogScreenFactory<TScreenKey>(
+	key: TScreenKey,
+	deps: Pick<Props, Exclude<keyof Props, 'user'>>
+) {
+	return {
+		create: (id: number, location: RouteLocation) => ({
+			id,
+			key,
+			location,
+			title: {
+				default: 'From the Readup Blog'
+			},
+		}),
+		render: (state: Screen, sharedState: SharedState) => (
+			<BlogScreen
+				{...{
+					...deps,
+					user: sharedState.user,
+				}}
+			/>
+		),
+	};
 }

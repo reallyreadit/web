@@ -1,0 +1,32 @@
+// Copyright (C) 2022 reallyread.it, inc.
+//
+// This file is part of Readup.
+//
+// Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
+//
+// Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+
+/*
+	componentPath: src/app/common/components/BrowserRoot/HomeScreen
+	cssComponentId: home-screen_1sjipy
+*/
+
+.home-screen_1sjipy {
+	display: flex;
+	flex-flow: column;
+}
+.home-screen_1sjipy > .info-box_8xzdd8 {
+	flex: 0 0 auto;
+}
+.home-screen_1sjipy > .info-box_8xzdd8 + .community-reads-list_g4cy3n {
+	margin-top: 20px;
+}
+.home-screen_1sjipy > .sticky-note_zcw6jg {
+	flex: 0 0 auto;
+	margin: 0 auto 10px auto;
+}
+.home-screen_1sjipy > .community-reads-list_g4cy3n {
+	flex: 1 1 auto;
+}

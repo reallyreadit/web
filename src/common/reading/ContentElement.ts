@@ -213,18 +213,39 @@ export default class ContentElement {
 		}
 	}
 	public toggleVisualDebugging() {
-		if ((this._isDebugging = !this._isDebugging)) {
-			this._element.style.position = 'relative';
-			this._element.style.boxShadow = '0 0 0 2px green';
-			this._debugElements.forEach((element) => {
-				element.style.display = 'block';
-			});
-			this._syncDebugDisplay();
+		if (!this._isDebugging) {
+			this.startVisualDebugging();
 		} else {
-			this._element.style.boxShadow = '';
-			this._debugElements.forEach((element) => {
-				element.style.display = 'none';
-			});
+			this.stopVisualDebugging();
+		}
+	}
+	public startVisualDebugging() {
+		if (this._isDebugging) {
+			return;
+		}
+		this._isDebugging = true;
+		this._element.style.position = 'relative';
+		this._element.style.boxShadow = '0 0 0 2px green';
+		this._debugElements.forEach((element) => {
+			element.style.display = 'block';
+		});
+		this._syncDebugDisplay();
+	}
+	public stopVisualDebugging() {
+		if (!this._isDebugging) {
+			return;
+		}
+		this._isDebugging = false;
+		this._element.style.boxShadow = '';
+		this._debugElements.forEach((element) => {
+			element.style.display = 'none';
+		});
+	}
+	public removeVisualDebuggingElements() {
+		while (this._debugElements.length) {
+			this._debugElements
+				.pop()
+				.remove();
 		}
 	}
 	public isReadable() {

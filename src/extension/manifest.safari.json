@@ -1,0 +1,7 @@
+{
+	"background": {
+		"scripts": [
+			"./event-page/bundle.js"
+		]
+	}
+}

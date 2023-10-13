@@ -13,6 +13,7 @@ import InitData from '../InitData';
 import { TwitterCard, TwitterCardType } from '../../server/TwitterCard';
 import { DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import HttpEndpoint, { createUrl } from '../../../common/HttpEndpoint';
+import { ScreenTitle } from '../../../common/ScreenTitle';
 
 function escapeQuotes(value: string) {
 	return value.replace(/"/g, '&quot;');
@@ -32,7 +33,7 @@ export default ({
 	initData: InitData;
 	noIndex: boolean;
 	staticServer: HttpEndpoint;
-	title: string;
+	title: ScreenTitle | null;
 	twitterCard: TwitterCard | null;
 	version: string;
 }) => {
@@ -94,7 +95,7 @@ export default ({
 			`/app/bundles/bundle-${version}.css`
 		)}" />
 		<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/${chromeExtensionId}">
-		<title>${title}</title>
+		<title>${title?.seo ?? title?.default}</title>
 	</head>
 	<body>
 		${icons}

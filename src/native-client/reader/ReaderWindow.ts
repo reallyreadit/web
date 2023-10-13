@@ -25,6 +25,8 @@ declare global {
 			appPlatform: AppPlatform;
 			appVersion: string;
 			displayPreference: DisplayPreference;
+			isAuthenticated: boolean;
+			isSignInReminderDisabled: boolean;
 		};
 	}
 }

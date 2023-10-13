@@ -9,68 +9,191 @@
 // You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 
 /*
-	componentPath: src/app/common/components/BrowserRoot/Header
-	cssComponentId: header_cvm3v7
+        componentPath: src/app/common/components/BrowserRoot/HomeHeader
+        cssComponentId: home-header_2afwll
 */
 @import '../../../../common/styles/colors';
 @import '../../../../common/styles/config';
 
-.header_cvm3v7 {
-	flex: 0 0 auto;
-	display: flex;
-	justify-content: space-between;
-	padding: 20px 30px;
+.header_2afwll > .nav {
+	position: relative;
+	background-color: var(--nav-background-color);
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
+	border-bottom-color: var(--nav-border-color);
+	z-index: 2;
 }
-.header_cvm3v7:not(.menu) {
-	justify-content: center;
+
+.header_2afwll > .nav > .content {
+	display: flex;
+	padding: 15px 20px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
 }
-.header_cvm3v7 > .logo {
-	width: 114px;
-	height: 60px;
+
+.header_2afwll > .nav > .content > .logo {
+	flex: 0 0 auto;
+	display: block;
 	background-size: contain;
 	background-repeat: no-repeat;
+	height: 32px;
+	width: 61px;
+	margin-right: 0.5em;
 }
-.header_cvm3v7 > .menu-container {
+
+.header_2afwll > .nav > .content > .links {
+	flex: 1 1 auto;
+	display: flex;
+}
+
+.header_2afwll > .nav > .content > .links > .pages {
+	flex: 1 1 auto;
 	display: flex;
 	align-items: center;
 }
-.header_cvm3v7 > .menu-container > .icon_rour3d {
-	display: block;
-	font-size: 26px;
-	cursor: pointer;
-}
-.header_cvm3v7 > .menu-container > .icon_rour3d + .icon_rour3d {
-	margin-left: 20px;
-}
-.header_cvm3v7 > .menu-container > .button_ovrlmi + .button_ovrlmi {
-	margin-left: 10px;
+
+.header_2afwll > .nav > .content > .links > .auth {
+	display: flex;
+	align-items: center;
 }
 
-@media (max-width: 499px) {
-	.header_cvm3v7 {
-		padding: 10px;
+.header_2afwll > .nav > .content > .links > .pages > .link_ke15oa,
+.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa {
+	font-family: 'Museo Sans (500)';
+	text-decoration: none;
+}
+
+.header_2afwll > .nav > .content > .links > .pages > .link_ke15oa {
+	margin-left: 1em;
+
+	&:hover,
+	&.active {
+		border-bottom: 1px solid;
 	}
-	.header_cvm3v7:not(.menu) > .menu-container {
-		margin-top: 10px;
+}
+
+.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa {
+	font-size: 15pt;
+	margin-left: 0.75em;
+}
+
+.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa > span:not(.icon-left) {
+	display: none;
+}
+
+.header_2afwll > .nav > .content > .menu-button {
+	display: none;
+	font-size: 1.75em;
+}
+
+.header_2afwll > .nav > .content > .right > .menu > .menu > .content {
+	display: flex;
+	flex-flow: column;
+	position: relative;
+	padding: 0.75em 0;
+	background: var(--content-background-color);
+}
+
+.header_2afwll > .nav > .content > .right > .menu > .menu > .content > .log-in {
+	margin: 0 calc(1em - 10px);
+}
+
+.header_2afwll > .title {
+	font-family: 'Museo Sans (700)';
+	font-size: 15pt;
+}
+
+.header_2afwll > .title > .content {
+	padding: 20px;
+	max-width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
+}
+
+.header_2afwll.hide-landscape-title > .title {
+	height: 40px;
+}
+
+.header_2afwll.hide-landscape-title > .title > .content {
+	display: none;
+}
+
+@media screen and (max-width: 739px) {
+	.header_2afwll > .nav > .content {
+		justify-content: space-between;
+    	align-items: center;
 	}
-	.header_cvm3v7 > .logo-container > img {
-		height: 40px;
+
+	.header_2afwll > .nav > .content > .links {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		flex-flow: column;
+		background-color: var(--nav-background-color);
+		border-bottom-width: 1px;
+		border-bottom-style: solid;
+		border-bottom-color: var(--nav-border-color);
+	}
+
+	.header_2afwll > .nav.menu-open > .content > .links {
+		display: flex;
+	}
+
+	.header_2afwll > .nav > .content > .links > .pages {
+		flex-flow: column;
+	}
+
+	.header_2afwll > .nav > .content > .links > .pages > .link_ke15oa,
+	.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0;
+		height: 60px;
+		font-family: 'Museo Sans (700)';
+		font-size: 15pt;
+
+		&.active {
+			border-bottom: none;
+		}
+	}
+
+	.header_2afwll > .nav > .content > .links > .auth {
+		flex-flow: column;
+		justify-content: center;
+	}
+
+	.header_2afwll > .nav > .content > .links > .auth > .log-in {
+		height: 60px;
+		font-family: 'Museo Sans (700)';
+		font-size: 15pt;
+	}
+
+	.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa > .icon-left {
+		display: none;
+	}
+
+	.header_2afwll > .nav > .content > .links > .auth > .link_ke15oa > span:not(.icon-left) {
+		display: inline;
+	}
+
+	.header_2afwll > .nav > .content > .menu-button {
+		display: block;
+	}
+
+	.header_2afwll.hide-landscape-title > .title {
+		height: auto;
+	}
+
+	.header_2afwll.hide-landscape-title > .title > .content {
+		display: block;
 	}
 }
 
 @include theme using ($root, $scheme) {
-	#{$root} .header_cvm3v7 {
-		@include theme-colors(
-			$scheme,
-			(
-				'border-bottom-color': $nav-border-color,
-				'background-color': $nav-background-color,
-			)
-		);
-	}
-	#{$root} .header_cvm3v7 > .logo {
+	#{$root} .header_2afwll > .nav > .content > .logo {
 		@if $scheme == light {
 			background-image: url(create-url(
 				map-get($readup-config, 'static-server'),

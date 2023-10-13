@@ -13,11 +13,6 @@
 	cssComponentId: panel_zd0n2d
 */
 
-.panel_zd0n2d > .content {
-	max-width: 980px;
-	padding: 40px 20px;
-	margin: 0 auto;
-}
 .panel_zd0n2d > .content > h1 {
 	font-family: 'Cambria (bold)';
 	font-size: 36pt;
@@ -51,10 +46,6 @@
 }
 
 @media (max-width: 449px) {
-	.panel_zd0n2d > .content {
-		padding: 24px 10px;
-		margin: 0 auto;
-	}
 	.panel_zd0n2d > .content > h1 {
 		font-size: 24pt;
 		margin-bottom: 20px;

@@ -1,6 +1,6 @@
 import Page from '../../../common/reading/Page';
 import EventPageApi from './EventPageApi';
-import parseDocumentMetadata from '../../../common/reading/parseDocumentMetadata';
+import parseDocumentMetadata, { MetadataParseResult } from '../../../common/reading/parseDocumentMetadata';
 import Reader from '../../../common/reading/Reader';
 import createPageParseResult from '../../../common/reading/createPageParseResult';
 import UserArticle from '../../../common/models/UserArticle';
@@ -22,9 +22,9 @@ import ScrollService from '../../../common/services/ScrollService';
 import UserAccount from '../../../common/models/UserAccount';
 import Post, { createCommentThread } from '../../../common/models/social/Post';
 import CommentThread from '../../../common/models/CommentThread';
-import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
+import DisplayPreference, { getClientDefaultDisplayPreference, DisplayTheme } from '../../../common/models/userAccounts/DisplayPreference';
 import ShareChannel from '../../../common/sharing/ShareChannel';
-import { parseQueryString } from '../../../common/routing/queryString';
+import { parseQueryString, authenticateQueryStringKey } from '../../../common/routing/queryString';
 import { ParserDocumentLocation } from '../../../common/ParserDocumentLocation';
 import { DeviceType } from '../../../common/DeviceType';
 import parseDocumentContent from '../../../common/contentParsing/parseDocumentContent';
@@ -50,18 +50,18 @@ import { mergeComment, updateComment } from '../../../common/comments';
 import { createArticleSlug } from '../../../common/routing/routes';
 import UserPage from '../../../common/models/UserPage';
 import { createUrl } from '../../../common/HttpEndpoint';
+import { ExtensionOptionKey } from '../../options-page/ExtensionOptions';
+import ParseResult from '../../../common/contentParsing/ParseResult';
+import ReaderReminder from '../../../common/components/ReaderReminder';
+import { isReadupElement } from '../../../common/contentParsing/utils';
 
 // TODO PROXY EXT: taken from the native reader
 // our case is similar to
 // ensure the rest also respects this documentLocation
 
 const {
-	url,
-	displayPreference: queryDisplayPreference,
-	star,
+	url
 } = parseQueryString(window.location.search);
-
-const starOnOpen = star === 'true';
 
 let documentLocation: ParserDocumentLocation = new URL(url);
 
@@ -70,15 +70,17 @@ let documentLocation: ParserDocumentLocation = new URL(url);
 let deviceType: DeviceType = DeviceType.DesktopChrome;
 
 // TODO PROXY EXT: native article, fill these vars
-let displayPreference: DisplayPreference = JSON.parse(
-	queryDisplayPreference
-) as DisplayPreference;
-let article: UserArticle;
-let page: Page;
-let userPage: UserPage;
-let user: UserAccount;
+let displayPreference: DisplayPreference | null;
+let article: UserArticle | null;
+let page: Page | null;
+let userPage: UserPage | null;
+let user: UserAccount | null;
 let contentRoot: HTMLElement;
 let scrollRoot: HTMLElement;
+
+// These global parse results are assigned during initialization and never change afterwards.
+let metadataParseResult: MetadataParseResult;
+let contentParseResult: ParseResult;
 
 // globals
 let authServiceLinkCompletionHandler: (
@@ -95,22 +97,45 @@ function render(
 	>,
 	callback?: () => void
 ) {
-	ReactDOM.render(
-		React.createElement(ReaderUIEmbed, {
-			...(embedProps = {
-				...embedProps,
-				...props,
-			}),
-			article: {
-				isLoading: !article,
-				value: article,
-			},
-			displayPreference,
-			user,
-		}),
-		embedRootElement,
-		callback
-	);
+	Promise
+		.all([
+			new Promise(
+				resolve => {
+					ReactDOM.render(
+						React.createElement(ReaderUIEmbed, {
+							...(embedProps = {
+								...embedProps,
+								...props,
+							}),
+							article: {
+								isLoading: !article,
+								value: article,
+							},
+							displayPreference,
+							user,
+						}),
+						embedRootElement,
+						resolve
+					);
+				}
+			),
+			new Promise(
+				resolve => {
+					ReactDOM.render(
+						React.createElement(
+							ReaderReminder,
+							{
+								...reminderProps,
+								isActive: !user && !reminderState.isDismissed && !reminderState.isDisabled
+							}
+						),
+						reminderRootElement,
+						resolve
+					);
+				}
+			)
+		])
+		.then(callback);
 }
 
 // user interface
@@ -362,12 +387,15 @@ let embedProps: Pick<
 	onCreateAbsoluteUrl,
 	onDeleteComment: onDeleteComment,
 	onLinkAuthServiceAccount: onLinkAuthServiceAccount,
-	onNavBack: () => {
-		// TODO PROXY EXT: this depends on the reader being loaded
-		// in the same tab as where the article request happened
-		// In case of action button.
-		window.history.go(-1);
-	},
+	// Due to a bug in Safari it isn't possible to nav back from the reader page.
+	onNavBack: window.history.length > 1 ?
+		() => {
+			// TODO PROXY EXT: this depends on the reader being loaded
+			// in the same tab as where the article request happened
+			// In case of action button.
+			window.history.go(-1);
+		} :
+		null,
 	onNavTo: handleLink,
 	onPostArticle,
 	onPostComment,
@@ -378,6 +406,27 @@ let embedProps: Pick<
 	onToggleStar: toggleStar,
 };
 let embedRootElement: HTMLDivElement;
+// This is the props object and container element for the sign-in reminder react component.
+const reminderProps = {
+	onSignIn: () => {
+		openInNewTab(createUrl(window.reallyreadit.extension.config.webServer, null, { [authenticateQueryStringKey]: 'signIn' }))
+	},
+	onDismiss: async (disableReminder: boolean) => {
+		reminderState.isDismissed = true;
+		if (disableReminder) {
+			await chrome.storage.local.set({ 'disableSignInReminder': true });
+			reminderState.isDisabled = true;
+		}
+		render();
+	}
+};
+let reminderState = {
+	// This is the in-memory ephemeral preference for this reader tab.
+	isDismissed: false,
+	// This is synced during initialization with the preference persisted to extension storage.
+	isDisabled: false
+};
+let reminderRootElement: HTMLDivElement;
 
 /**
  * Inserts an element in the document that contains an attachment point for ReaderUIEmbed.tsx via render(),
@@ -396,7 +445,13 @@ function insertEmbed() {
 	// create root element
 	embedRootElement = window.document.createElement('div');
 	embedRootElement.id = 'com_readup_embed';
+	embedRootElement.className = 'com_readup_container';
 	scrollRoot.append(embedRootElement);
+	// create reminder element
+	reminderRootElement = window.document.createElement('div');
+	reminderRootElement.id = 'com_readup_reminder';
+	reminderRootElement.className = 'com_readup_container';
+	scrollRoot.prepend(reminderRootElement);
 	// initial render
 	render();
 	// create scroll service
@@ -451,6 +506,15 @@ function updateDisplayPreference(preference: DisplayPreference | null) {
 	if (textSizeChanged && page) {
 		page.updateLineHeight();
 	}
+
+	// Synchronize the display preference with the state in the URL.
+	const url = new URL(window.location.href);
+	if (preference) {
+		url.searchParams.set('theme', preference.theme === DisplayTheme.Light ? 'light' : 'dark');
+	} else {
+		url.searchParams.delete('theme');
+	}
+	window.history.replaceState(null, document.title, url.toString());
 }
 
 function updateUser(userIn: UserAccount) {
@@ -510,20 +574,22 @@ const eventPageApi = new EventPageApi({
 			displayPreference = preference;
 		}
 	},
-	onUserSignedOut: () => {
-		reader.unloadPage();
-		// TODO PROXY EXT Native does not have this error handler
-		console.error('You were signed out in another tab.');
-		// showError('You were signed out in another tab.');
+	onUserSignedIn: async () => {
+		eventPageApi.startLoadingAnimation();
+		await loadUserArticle();
+		eventPageApi.stopLoadingAnimation();
 	},
-	onUserUpdated: (user) => {
-		updateUser(user);
+	onUserSignedOut: async () => {
+		await unloadUserArticle();
+	},
+	onUserUpdated: (updatedUser) => {
+		updateUser(updatedUser);
 	},
 });
 
 // document messaging interface
 window.addEventListener('message', (event) => {
-	if (!/(\/\/|\.)readup\.com$/.test(event.origin)) {
+	if (!/(\/\/|\.)readup\.org$/.test(event.origin)) {
 		return;
 	}
 	switch ((event.data?.type as String) || null) {
@@ -614,11 +680,23 @@ async function fetchAndInjectArticle() {
 
 	// Inject the article content
 	document.body = doc.body;
-	document.head.innerHTML = doc.head.innerHTML;
 
-	// Note that the <html> element is not overwritten here.
-	// One good side-effect of this is that the background color
-	// set in the reader(-dark).html stays preserved while loading
+	// Replace the head content without removing the temp background style element.
+	const deleteQueue = [];
+	for (const child of document.head.children) {
+		if (!isReadupElement(child)) {
+			deleteQueue.push(child);
+		}
+	}
+	while (deleteQueue.length) {
+		deleteQueue
+			.pop()
+			.remove();
+	}
+	const moveQueue = Array.from(doc.head.children);
+	while (moveQueue.length) {
+		document.head.append(moveQueue.pop());
+	}
 }
 
 async function processArticleContent(doc: Document) {
@@ -731,15 +809,17 @@ async function processArticleContent(doc: Document) {
 // eventPageApi.getDisplayPreference().then(
 // 	async (cachedDisplayPreference) => {
 async function initialize() {
+	eventPageApi.registerPage();
+
 	eventPageApi.startLoadingAnimation();
 
 	await fetchAndInjectArticle();
 
-	const metadataParseResult = parseDocumentMetadata({
+	metadataParseResult = parseDocumentMetadata({
 		url: documentLocation,
 	});
 
-	const contentParseResult = parseDocumentContent({
+	contentParseResult = parseDocumentContent({
 		url: documentLocation,
 	});
 
@@ -753,40 +833,35 @@ async function initialize() {
 			title: metadataParseResult.metadata.article.title,
 			byline: createByline(metadataParseResult.metadata.article.authors),
 		},
-		transitionElement: document.documentElement,
-		// completeTransition works on the <html> element,
-		// which results in a longer flash in dark mode (0 opacity = white)
-		// TODO: target the body in this styleArticleDocument, instead of in this file?
-		// completeTransition: true
+		transitionElement: document.body,
 	});
 
-	// Complete the fade-in transition of the text
-	// These can't be inserted as inline styles, because the old inline styles
-	// still need to exist for the old transition state to exist.
-	const styleElement = document.createElement('style');
-	styleElement.textContent = `
-		body {
-			opacity: 1 !important;
-			transition: opacity 350ms !important;
-		}`;
-	document.head.insertAdjacentElement('beforeend', styleElement);
+	// Set the global user object before rendering the UI.
+	user = await eventPageApi.getUserAccountFromCache();
+
+	// Initialize the sign-in reminder preference from storage.
+	const storageQuery = await chrome.storage.local.get('disableSignInReminder');
+	reminderState.isDisabled = !!storageQuery['disableSignInReminder'];
 
 	// insert React UI
 	insertEmbed();
 
 	// Update the display preference (re-renders the first time)
 	// Sets the font and background color.
+	displayPreference = await eventPageApi.getDisplayPreferenceFromCache();
+	if (displayPreference == null) {
+		displayPreference = await eventPageApi.changeDisplayPreference(getClientDefaultDisplayPreference());
+	}
 	updateDisplayPreference(displayPreference);
-
-	// Overwrite the cached copy that was given as a URL parameter, if needed.
-	eventPageApi
-		.getDisplayPreference()
-		.then((displayPreference) => updateDisplayPreference(displayPreference));
 
 	// See build/targets/extension/contentScripts/reader.js
 	// We need to load these here (after document pruning and styling)
 	window.reallyreadit.extension.injectInlineStyles();
 	window.reallyreadit.extension.injectSvgElements();
+
+	// Complete the fade-in transition of the text
+	document.body.style.transition = 'opacity 350ms';
+	document.body.style.opacity = '1';
 
 	// TODO EXT NOTE: web needed this, but native doesn't have
 	hasStyledArticleDocument = true;
@@ -796,28 +871,51 @@ async function initialize() {
 	);
 	procesLazyImages(publisherConfig?.imageStrategy);
 
+	// PROXY EXT NOTE: native doesn't have this, still needed?
+	// Intercept mouseup event on article content to prevent article scripts
+	// from handling click events.
+	document
+		.getElementById('com_readup_article_content')
+		.addEventListener('mouseup', (event) => {
+			event.stopPropagation();
+		});
+
+	// Check to see if the user is signed in.
+	if (!user) {
+		eventPageApi.stopLoadingAnimation();
+		return;
+	}
+
+	// Load the user article. This may fail if the cached user is stale and we're not actually signed in.
+	try {
+		await loadUserArticle();
+		eventPageApi.stopLoadingAnimation();
+	} catch {
+		await unloadUserArticle();
+		eventPageApi.stopLoadingAnimation();
+		return;
+	}
+
+	// star the article if auto-starring is on
+	const extensionOptions = await eventPageApi.getExtensionOptions();
+	if (extensionOptions[ExtensionOptionKey.StarOnSave]) {
+		await eventPageApi.setStarred({
+			articleId: article.id,
+			isStarred: true,
+		});
+	}
+}
+
+async function loadUserArticle() {
 	// ArticleLookupResult
-	const result = await eventPageApi.registerPage(
+	const result = await eventPageApi.getUserArticle(
 		createPageParseResult(metadataParseResult, contentParseResult)
 	);
-
-	eventPageApi.stopLoadingAnimation();
-
-	// TODO PROXY EXT NOTE: The below is currently exactly the same as the native reader
-	// extract into common?
 
 	// set globals
 	article = result.userArticle;
 	userPage = result.userPage;
 	user = result.user;
-
-	// star the article if auto-starring is on
-	if (starOnOpen) {
-		eventPageApi.setStarred({
-			articleId: article.id,
-			isStarred: true,
-		});
-	}
 
 	// update the title and byline
 	updateArticleHeader({
@@ -853,15 +951,24 @@ async function initialize() {
 			})
 		);
 	}
+}
 
-	// PROXY EXT NOTE: native doesn't have this, still needed?
-	// Intercept mouseup event on article content to prevent article scripts
-	// from handling click events.
-	document
-		.getElementById('com_readup_article_content')
-		.addEventListener('mouseup', (event) => {
-			event.stopPropagation();
-		});
+async function unloadUserArticle() {
+	// clear the comments
+	embedProps.comments = null;
+
+	// reset the reader
+	reader.unloadPage();
+	page?.unload();
+	page = null;
+
+	// clear globals
+	article = null;
+	userPage = null;
+	user = null;
+
+	// re-render ui
+	render();
 }
 
 initialize();

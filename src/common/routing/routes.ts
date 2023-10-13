@@ -12,6 +12,7 @@ import { Route } from './Route';
 import DialogKey from './DialogKey';
 import ScreenKey from './ScreenKey';
 import UserAccountRole from '../models/UserAccountRole';
+import { authServiceTokenQueryStringKey, authenticateQueryStringKey, extensionInstalledQueryStringKey } from './queryString';
 
 const routes: Route<DialogKey, ScreenKey>[] = [
 	{
@@ -30,6 +31,30 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		dialogKey: DialogKey.ResetPassword,
 		pathRegExp: /^\/$/,
 		queryStringKeys: ['reset-password', 'email', 'token'],
+		screenKey: ScreenKey.Home,
+	},
+	{
+		createUrl: (params) =>
+			`/?${authServiceTokenQueryStringKey}=${params[authServiceTokenQueryStringKey]}`,
+		dialogKey: DialogKey.CreateAuthServiceAccount,
+		pathRegExp: /^\/$/,
+		queryStringKeys: [authServiceTokenQueryStringKey],
+		screenKey: ScreenKey.Home,
+	},
+	{
+		createUrl: (params) =>
+			`/?${authenticateQueryStringKey}=${params[authenticateQueryStringKey]}`,
+		dialogKey: DialogKey.Authenticate,
+		pathRegExp: /^\/$/,
+		queryStringKeys: [authenticateQueryStringKey],
+		screenKey: ScreenKey.Home,
+	},
+	{
+		createUrl: () =>
+			`/?${extensionInstalledQueryStringKey}`,
+		dialogKey: DialogKey.ExtensionInstalled,
+		pathRegExp: /^\/$/,
+		queryStringKeys: [extensionInstalledQueryStringKey],
 		screenKey: ScreenKey.Home,
 	},
 	{
@@ -124,16 +149,9 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Faq,
 	},
 	{
-		authLevel: UserAccountRole.Regular,
 		createUrl: () => '/my-feed',
 		pathRegExp: /^\/my-feed$/,
 		screenKey: ScreenKey.MyFeed,
-	},
-	{
-		authLevel: UserAccountRole.Regular,
-		createUrl: () => '/impact',
-		pathRegExp: /^\/impact$/,
-		screenKey: ScreenKey.MyImpact,
 	},
 	// {
 	// 	createUrl: () => '/leaderboards',
@@ -171,7 +189,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 	(function () {
 		const pathRegExp = /^\/(starred|history)$/;
 		return {
-			authLevel: UserAccountRole.Regular,
 			createUrl: (params) => {
 				if (
 					params &&

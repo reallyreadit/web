@@ -18,12 +18,12 @@ import { Screen } from '../Root';
 import Alert from '../../../../common/models/notifications/Alert';
 
 interface Props {
-	onViewContenders: () => void;
+	onViewLeaderboards: () => void;
 	onViewHome: () => void;
 	onViewMyFeed: () => void;
 	onViewMyReads: () => void;
 	selectedScreen: Screen;
-	user: UserAccount;
+	user: UserAccount | null;
 }
 export default class NavTray extends React.PureComponent<Props> {
 	public render() {
@@ -39,7 +39,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						onClick={this.props.onViewHome}
 					>
 						<Icon
-							badge={hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
+							badge={this.props.user && hasAnyAlerts(this.props.user, Alert.Aotd) ? 1 : 0}
 							name="trophy"
 						/>
 						<label>AOTD</label>
@@ -48,14 +48,14 @@ export default class NavTray extends React.PureComponent<Props> {
 				<li>
 					<button
 						className={
-							this.props.selectedScreen.key === ScreenKey.Contenders
+							this.props.selectedScreen.key === ScreenKey.Leaderboards
 								? 'selected'
 								: null
 						}
-						onClick={this.props.onViewContenders}
+						onClick={this.props.onViewLeaderboards}
 					>
 						<Icon name="podium" />
-						<label>Contenders</label>
+						<label>Leaderboards</label>
 					</button>
 				</li>
 				<li>
@@ -80,7 +80,7 @@ export default class NavTray extends React.PureComponent<Props> {
 						}
 						onClick={this.props.onViewMyFeed}
 					>
-						<Icon badge={this.props.user.followerAlertCount} name="candy" />
+						<Icon badge={this.props.user?.followerAlertCount ?? 0} name="group-circle" />
 						<label>My Feed</label>
 					</button>
 				</li>
