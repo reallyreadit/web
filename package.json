@@ -12,9 +12,9 @@
 			},
 			"embed": "1.0.2",
 			"embedIframe": "1.0.0",
-			"extension": "7.0.3",
+			"extension": "8.0.0",
 			"nativeClient": {
-				"reader": "14.0.4",
+				"reader": "15.0.0",
 				"shareExtension": "4.0.6"
 			}
 		}
