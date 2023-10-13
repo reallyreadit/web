@@ -33,7 +33,6 @@ interface State extends NotificationPreference {
 function isEnabled(preference: AlertPreference) {
 	return (
 		preference.email !== AlertEmailPreference.None ||
-		preference.extension ||
 		preference.push
 	);
 }
@@ -43,7 +42,7 @@ function coalesce<T>(a: T | null, b: T) {
 function merge(partial: Partial<SelectorValue>, preference: AlertPreference) {
 	return {
 		email: coalesce(partial.email, preference.email),
-		extension: coalesce(partial.extension, preference.extension),
+		extension: preference.extension,
 		push: coalesce(partial.push, preference.push),
 	};
 }
@@ -144,7 +143,6 @@ export default class NotificationPreferencesControl extends React.Component<
 					onChange={this._changeAotd}
 					isEnabled={this.state.isAotdEnabled}
 					email={this.state.aotd.email}
-					extension={this.state.aotd.extension}
 					push={this.state.aotd.push}
 				/>
 				<AlertSelector
@@ -152,7 +150,6 @@ export default class NotificationPreferencesControl extends React.Component<
 					onChange={this._changePost}
 					isEnabled={this.state.isPostEnabled}
 					email={this.state.post.email}
-					extension={this.state.post.extension}
 					push={this.state.post.push}
 				/>
 				<AlertSelector
@@ -160,7 +157,6 @@ export default class NotificationPreferencesControl extends React.Component<
 					onChange={this._changeReply}
 					isEnabled={this.state.isReplyEnabled}
 					email={this.state.reply.email}
-					extension={this.state.reply.extension}
 					push={this.state.reply.push}
 				/>
 				<AlertSelector
@@ -168,7 +164,6 @@ export default class NotificationPreferencesControl extends React.Component<
 					onChange={this._changeLoopback}
 					isEnabled={this.state.isLoopbackEnabled}
 					email={this.state.loopback.email}
-					extension={this.state.loopback.extension}
 					push={this.state.loopback.push}
 				/>
 				<AlertSelector
@@ -176,7 +171,6 @@ export default class NotificationPreferencesControl extends React.Component<
 					onChange={this._changeFollower}
 					isEnabled={this.state.isFollowerEnabled}
 					email={this.state.follower.email}
-					extension={this.state.follower.extension}
 					push={this.state.follower.push}
 				/>
 			</div>
