@@ -208,7 +208,12 @@ async function openReaderInTab(
 	if (displayPreference) {
 		url.searchParams.append('theme', displayPreference.theme === DisplayTheme.Light ? 'light' : 'dark');
 	}
-	await chrome.tabs.update(tab.id, { url: url.toString() });
+	// As of Safari 16.6.1 navigating to an extension page destroys the tab's entire history with no ability to navigate backwards. As a workaround always open the reader in a new tab instead.
+	if (url.protocol === 'safari-web-extension:') {
+		await chrome.tabs.create({ url: url.toString() });
+	} else {
+		await chrome.tabs.update(tab.id, { url: url.toString() });
+	}
 }
 
 async function openReaderInCurrentTab(articleUrl: string) {

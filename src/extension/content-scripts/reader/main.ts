@@ -387,12 +387,15 @@ let embedProps: Pick<
 	onCreateAbsoluteUrl,
 	onDeleteComment: onDeleteComment,
 	onLinkAuthServiceAccount: onLinkAuthServiceAccount,
-	onNavBack: () => {
-		// TODO PROXY EXT: this depends on the reader being loaded
-		// in the same tab as where the article request happened
-		// In case of action button.
-		window.history.go(-1);
-	},
+	// Due to a bug in Safari it isn't possible to nav back from the reader page.
+	onNavBack: window.history.length > 1 ?
+		() => {
+			// TODO PROXY EXT: this depends on the reader being loaded
+			// in the same tab as where the article request happened
+			// In case of action button.
+			window.history.go(-1);
+		} :
+		null,
 	onNavTo: handleLink,
 	onPostArticle,
 	onPostComment,
