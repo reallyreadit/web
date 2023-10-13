@@ -226,8 +226,6 @@ async function openReaderInCurrentTab(articleUrl: string) {
 // chrome event handlers
 chrome.runtime.onInstalled.addListener(async (details) => {
 	console.log(`[EventPage] installed, reason: ${details.reason}`);
-	// clear all alarms (temporary debugging for BAI failure investigation)
-	await chrome.alarms.clearAll();
 	// ensure sameSite is set on sessionId and sessionKey cookies
 	const cookieNames = [window.reallyreadit.extension.config.cookieName, sessionIdCookieKey];
 	for (const cookieName of cookieNames) {
