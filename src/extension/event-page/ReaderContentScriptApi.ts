@@ -166,7 +166,6 @@ export default class ReaderContentScriptApi {
 								}
 								return result;
 							} catch (ex) {
-								await this.removeTab(sender.tab.id);
 								await this._badge.setDefault(sender.tab.id);
 								throw ex;
 							}

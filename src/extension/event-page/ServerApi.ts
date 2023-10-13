@@ -105,7 +105,7 @@ export default class ServerApi {
 				})
 				// Process response
 				.then(
-					({
+					async ({
 						response,
 						responseText,
 						responseObject,
@@ -125,7 +125,7 @@ export default class ServerApi {
 								console.log(
 									`[ServerApi] user signed out (received 401 response from API server)`
 								);
-								_this.userSignedOut();
+								await _this.userSignedOut();
 								_this._onUserSignedOut();
 							}
 							reject(

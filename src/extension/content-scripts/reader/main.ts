@@ -883,9 +883,15 @@ async function initialize() {
 		return;
 	}
 
-	// Load the user article.
-	await loadUserArticle();
-	eventPageApi.stopLoadingAnimation();
+	// Load the user article. This may fail if the cached user is stale and we're not actually signed in.
+	try {
+		await loadUserArticle();
+		eventPageApi.stopLoadingAnimation();
+	} catch {
+		await unloadUserArticle();
+		eventPageApi.stopLoadingAnimation();
+		return;
+	}
 
 	// star the article if auto-starring is on
 	const extensionOptions = await eventPageApi.getExtensionOptions();
@@ -950,7 +956,7 @@ async function unloadUserArticle() {
 
 	// reset the reader
 	reader.unloadPage();
-	page.unload();
+	page?.unload();
 	page = null;
 
 	// clear globals
