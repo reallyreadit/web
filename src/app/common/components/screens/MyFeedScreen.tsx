@@ -393,7 +393,8 @@ export default function createMyFeedScreenFactory<TScreenKey>(
 					}
 				) :
 				{
-					isLoading: false,
+					// If a user signs in the base class will reload the profile so we should be in a loading state until that request finishes.
+					isLoading: true,
 					value: null
 				};
 			return {
