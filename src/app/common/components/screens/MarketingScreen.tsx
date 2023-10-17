@@ -76,7 +76,7 @@ class MarketingScreen extends React.Component<
 			{
 				heading: 'Made for readers, by readers',
 				paragraph:
-					'Readup is built by people who love deep reading. Our apps remove distractions from articles.',
+					'Readup is built by people who love deep reading. Our apps and browser extensions remove distractions from articles.',
 				imageName: 'kill-ads-3.0.png',
 				imageAlt: 'No paywalls or ads on Readup',
 			},
@@ -209,16 +209,7 @@ class MarketingScreen extends React.Component<
 			<div className="marketing-screen_n5a6wc">
 				<HomePanel className="home-hero-image">
 					<div className="home-hero-image__intro-text">
-						<h1 className="heading-regular">
-							Online reading is broken.
-							<br />
-							We're fixing it.
-						</h1>
-						<p>
-							Readup is a free &amp; open-source reading platform.
-							<br />
-							Join our community today!
-						</p>
+						<h1 className="heading-small">Readup is a social reading platform that respects your time and rewards your attention.</h1>
 					</div>
 					<img
 						className="home-hero-image__image"
