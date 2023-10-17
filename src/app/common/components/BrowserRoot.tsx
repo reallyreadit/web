@@ -108,6 +108,18 @@ interface State extends RootState {
 	welcomeMessage: WelcomeMessage | null;
 }
 export type SharedState = RootSharedState & Pick<State, 'isExtensionInstalled'>;
+type ScreenChangeOptions = {
+	key: ScreenKey;
+	urlParams?: { [key: string]: string };
+	method: NavMethod.Push | NavMethod.ReplaceAll;
+} | {
+	key: ScreenKey;
+	urlParams?: { [key: string]: string };
+	method: NavMethod.Replace;
+	screenIndex: number;
+} | {
+	method: NavMethod.Pop;
+};
 enum WelcomeMessage {
 	AppleIdInvalidJwt = 'AppleInvalidAuthToken',
 	AppleIdInvalidSession = 'AppleInvalidSessionId',
@@ -850,23 +862,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				}
 			});
 	}
-	private changeScreen(
-		options:
-			| {
-					key: ScreenKey;
-					urlParams?: { [key: string]: string };
-					method: NavMethod.Push | NavMethod.ReplaceAll;
-			  }
-			| {
-					key: ScreenKey;
-					urlParams?: { [key: string]: string };
-					method: NavMethod.Replace;
-					screenIndex: number;
-			  }
-			| {
-					method: NavMethod.Pop;
-			  }
-	) {
+	private changeScreen(options: ScreenChangeOptions) {
 		let screens: Screen[];
 		if (options.method === NavMethod.Pop) {
 			if (this.state.screens.length > 1) {
@@ -940,6 +936,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					method: NavMethod.Pop;
 			  }
 	) {
+		let screenChangeOptions: ScreenChangeOptions;
 		if (options.method === NavMethod.Replace) {
 			const screenIndex = this.state.screens.findIndex(
 				(screen) => screen.id === options.screenId
@@ -947,17 +944,23 @@ export default class extends Root<Props, State, SharedState, Events> {
 			if (screenIndex === -1) {
 				return;
 			}
-			this.setState(
-				this.changeScreen({
-					key: options.key,
-					urlParams: options.urlParams,
-					method: options.method,
-					screenIndex,
-				})
-			);
+			screenChangeOptions = {
+				key: options.key,
+				urlParams: options.urlParams,
+				method: options.method,
+				screenIndex,
+			};
 		} else {
-			this.setState(this.changeScreen(options));
+			screenChangeOptions = options;
 		}
+		this.setState(
+			this.changeScreen(screenChangeOptions),
+			screenChangeOptions.method !== NavMethod.Pop ?
+				() => {
+					window.scrollTo(0, 0);
+				} :
+				null
+		);
 	}
 	private setUpdateAvailable() {
 		this._isUpdateAvailable = true;
