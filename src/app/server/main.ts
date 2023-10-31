@@ -277,9 +277,6 @@ server.get('/proof/:token', (req, res) => {
 			);
 		});
 });
-server.get('/downloads', (req, res) => {
-	redirect(req, res, findRouteByKey(routes, ScreenKey.Download).createUrl());
-});
 server.get('/leaderboards', (req, res) => {
 	redirect(
 		req,
@@ -332,9 +329,6 @@ server.get('/mission', (req, res) => {
 });
 server.get('/team', (req, res) => {
 	redirect(req, res, findRouteByKey(routes, ScreenKey.About).createUrl());
-});
-server.get('/downloads', (req, res) => {
-	redirect(req, res, findRouteByKey(routes, ScreenKey.Download).createUrl());
 });
 // handle redirects
 server.get<{}, any, any, { token: string }>('/confirmEmail', (req, res) => {

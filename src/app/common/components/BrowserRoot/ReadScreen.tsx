@@ -35,20 +35,19 @@ import { calculateEstimatedReadTime } from '../../../../common/calculate';
 import ScreenKey from '../../../../common/routing/ScreenKey';
 import Icon from '../../../../common/components/Icon';
 import Link from '../../../../common/components/Link';
-import SemanticVersion from '../../../../common/SemanticVersion';
+import { Intent } from '../../../../common/components/Toaster';
 
 interface Props {
 	article: Fetchable<UserArticle>;
 	deviceType: DeviceType;
-	extensionVersion: SemanticVersion;
 	location: RouteLocation;
 	isExtensionInstalled: boolean;
-	onBeginOnboarding: (analyticsAction: string) => void;
 	onCopyAppReferrerTextToClipboard: (analyticsAction: string) => void;
 	onCreateStaticContentUrl: (path: string) => string;
 	onNavTo: (ref: NavReference, options?: NavOptions) => boolean;
 	onOpenNewPlatformNotificationRequestDialog: () => void;
 	onReadArticle: (article: UserArticle) => void;
+	onShowToast: (text: string, intent: Intent) => void;
 	user: UserAccount | null;
 }
 class ReadScreen extends React.PureComponent<Props> {
@@ -201,20 +200,15 @@ class ReadScreen extends React.PureComponent<Props> {
 											</div>
 											<DownloadButton
 												analyticsAction="ReadScreen"
-												deviceType={this.props.deviceType}
 												location={this.props.location}
-												showOpenInApp={true}
-												onNavTo={this.props.onNavTo}
 												onCopyAppReferrerTextToClipboard={
 													this.props.onCopyAppReferrerTextToClipboard
-												}
-												onCreateStaticContentUrl={
-													this.props.onCreateStaticContentUrl
 												}
 												onOpenNewPlatformNotificationRequestDialog={
 													this.props
 														.onOpenNewPlatformNotificationRequestDialog
 												}
+												onShowToast={this.props.onShowToast}
 											/>
 										</div>
 									</>

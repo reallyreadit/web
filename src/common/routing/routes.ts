@@ -112,11 +112,6 @@ const routes: Route<DialogKey, ScreenKey>[] = [
 		screenKey: ScreenKey.Contenders,
 	},
 	{
-		createUrl: () => '/download',
-		pathRegExp: /^\/download$/,
-		screenKey: ScreenKey.Download,
-	},
-	{
 		createUrl: (params) => `/email/confirm/${params['result']}`,
 		noIndex: () => true,
 		pathRegExp: /^\/email\/confirm\/([^/]+)$/,

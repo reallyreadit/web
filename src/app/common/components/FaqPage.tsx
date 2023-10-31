@@ -20,6 +20,8 @@ import Link, { DiscordInviteLink } from '../../../common/components/Link';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import { NavReference, Screen, SharedState } from './Root';
 import UserAccount from '../../../common/models/UserAccount';
+import { getStoreUrl } from '../../../common/stores';
+import { Intent } from '../../../common/components/Toaster';
 
 interface Faq {
 	question: string;
@@ -88,11 +90,11 @@ const faqs: FaqCategory[] = [
 				question: 'How do I get started on my computer?',
 				answer: (
 					<p>
-						Get the browser extesion for your browser from our{' '}
-						<Link screen={ScreenKey.Download} onClick={props.onNavTo}>
-							Downloads page
+						Get the{' '}
+						<Link onClick={props.onOpenExtensionStore}>
+							browser extesion
 						</Link>
-						.
+						{' '}for your browser.
 					</p>
 				),
 			},
@@ -212,11 +214,11 @@ const faqs: FaqCategory[] = [
 				question: 'How do I save articles to Readup on my laptop or computer?',
 				answer: (
 					<p>
-						First, get the browser extesion for your browser from our{' '}
-						<Link screen={ScreenKey.Download} onClick={props.onNavTo}>
-							Downloads page
+						First, get the{' '}
+						<Link onClick={props.onOpenExtensionStore}>
+							browser extesion
 						</Link>
-						. Then just click the browser extension button. When you view an
+						{' '}for your browser. Then just click the browser extension button. When you view an
 						article in Reader Mode, it will automatically be saved to the
 						History section of My Reads.
 					</p>
@@ -462,11 +464,14 @@ type Props = {
 	location: RouteLocation;
 	onNavTo: (ref: NavReference) => void;
 	onCreateStaticContentUrl: (path: string) => string;
+	onOpenExtensionStore: () => void;
 	onOpenNewPlatformNotificationRequestDialog: () => void;
 	user: UserAccount;
 };
 
-type Services = Pick<Props, Exclude<keyof Props, 'location' | 'user'>>;
+type Services = Pick<Props, Exclude<keyof Props, 'location' | 'onOpenExtensionStore' | 'user'>> & {
+	onShowToast: (text: string, intent: Intent) => void
+};
 
 const renderSettings = (props: Props): React.ReactElement<Link> | string => {
 	if (props.user) {
@@ -592,6 +597,16 @@ export function createScreenFactory<TScreenKey>(
 				location={screen.location}
 				onCreateStaticContentUrl={services.onCreateStaticContentUrl}
 				onNavTo={services.onNavTo}
+				onOpenExtensionStore={
+					() => {
+						const url = getStoreUrl();
+						if (!url) {
+							services.onShowToast('Sorry, this browser is not supported.', Intent.Neutral);
+							return;
+						}
+						window.open(url);
+					}
+				}
 				onOpenNewPlatformNotificationRequestDialog={
 					services.onOpenNewPlatformNotificationRequestDialog
 				}

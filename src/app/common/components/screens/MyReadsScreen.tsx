@@ -41,6 +41,8 @@ import { ArticleStarredEvent } from '../../AppApi';
 import { AppPlatform } from '../../../../common/AppPlatform';
 import Link from '../../../../common/components/Link';
 import InfoBox from '../../../../common/components/InfoBox';
+import { getStoreUrl } from '../../../../common/stores';
+import { Intent } from '../../../../common/components/Toaster';
 
 enum View {
 	History = 'History',
@@ -81,6 +83,7 @@ interface Props {
 	) => void;
 	onShare: (data: ShareEvent) => ShareResponse;
 	onShareViaChannel: (data: ShareChannelData) => void;
+	onShowToast: (text: string, intent: Intent) => void;
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
@@ -145,6 +148,14 @@ class MyReadsScreen extends React.Component<Props, State> {
 	};
 	private readonly _openSignInPrompt = () => {
 		this.props.onOpenSignInPrompt('MyReads');
+	};
+	private readonly _openExtensionStore = () => {
+		const url = getStoreUrl();
+		if (!url) {
+			this.props.onShowToast('Sorry, this browser is not supported.', Intent.Neutral);
+			return;
+		}
+		window.open(url);
 	};
 	constructor(props: Props) {
 		super(props);
@@ -286,8 +297,8 @@ class MyReadsScreen extends React.Component<Props, State> {
 							<span>
 								Pro tip: Save articles from your web browser with one click
 								using the Readup{' '}
-								<Link screen={ScreenKey.Download} onClick={this.props.onNavTo}>
-									browser extensions
+								<Link onClick={this._openExtensionStore}>
+									browser extension
 								</Link>
 								.
 							</span>

@@ -17,7 +17,6 @@ enum ScreenKey {
 	Blog,
 	Comments,
 	Contenders,
-	Download,
 	EmailConfirmation,
 	EmailSubscriptions,
 	ExtensionRemoval,

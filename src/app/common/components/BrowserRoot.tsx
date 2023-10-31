@@ -30,7 +30,6 @@ import DialogManager from '../../../common/components/DialogManager';
 import ScreenKey from '../../../common/routing/ScreenKey';
 import createCommentsScreenFactory from './screens/CommentsScreen';
 import createHomeScreenFactory from './screens/HomeScreen';
-import createDownloadPageFactory from './BrowserRoot/DownloadPage';
 import createLeaderboardsScreenFactory from './screens/LeaderboardsScreen';
 import BrowserApiBase from '../../../common/BrowserApiBase';
 import ExtensionApi from '../ExtensionApi';
@@ -447,14 +446,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
 			}),
-			[ScreenKey.Download]: createDownloadPageFactory(ScreenKey.Download, {
-				onOpenNewPlatformNotificationRequestDialog:
-					this._openNewPlatformNotificationRequestDialog,
-				onCreateStaticContentUrl: this._createStaticContentUrl,
-				onOpenDialog: this._dialog.openDialog,
-				onCloseDialog: this._dialog.closeDialog,
-				onNavTo: this._navTo,
-			}),
 			[ScreenKey.Blog]: createBlogScreenFactory(ScreenKey.Blog, {
 				deviceType: this.props.deviceType,
 				onCreateAbsoluteUrl: this._createAbsoluteUrl,
@@ -506,6 +497,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onOpenNewPlatformNotificationRequestDialog:
 					this._openNewPlatformNotificationRequestDialog,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
+				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: this.props.deviceType,
@@ -632,6 +624,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
+				onShowToast: this._toaster.addToast,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
@@ -674,8 +667,6 @@ export default class extends Root<Props, State, SharedState, Events> {
 			}),
 			[ScreenKey.Read]: createReadScreenFactory(ScreenKey.Read, {
 				deviceType: this.props.deviceType,
-				extensionVersion: this.props.extensionApi.installedVersion,
-				onBeginOnboarding: this._beginOnboardingAtCreateAccount,
 				onCopyAppReferrerTextToClipboard: this._copyAppReferrerTextToClipboard,
 				onCreateStaticContentUrl: this._createStaticContentUrl,
 				onGetArticle: this.props.serverApi.getArticle,
@@ -684,6 +675,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 					this._openNewPlatformNotificationRequestDialog,
 				onReadArticle: this._readArticle,
 				onSetScreenState: this._setScreenState,
+				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.Search]: createSearchScreenFactory(ScreenKey.Search, {
 				deviceType: this.props.deviceType,

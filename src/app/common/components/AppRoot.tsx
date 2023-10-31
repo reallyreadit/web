@@ -525,6 +525,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onNavTo: this._navTo,
 				onOpenNewPlatformNotificationRequestDialog:
 					this._openNewPlatformNotificationRequestDialog,
+				onShowToast: this._toaster.addToast
 			}),
 			[ScreenKey.Home]: createHomeScreenFactory(ScreenKey.Home, {
 				deviceType: DeviceType.Ios,
@@ -648,6 +649,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onSetScreenState: this._setScreenState,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
+				onShowToast: this._toaster.addToast,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewComments: this._viewComments,
 				onViewProfile: this._viewProfile,
