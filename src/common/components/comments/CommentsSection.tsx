@@ -49,7 +49,7 @@ export default (props: {
 				<ContentBox className="post">
 					<div className="locked">
 						<Icon className="padlock" display="block" name="padlock" />
-						You must read the article before you can post or reply.
+						You must read the article before you can comment on it.
 					</div>
 				</ContentBox>
 			) : null}
