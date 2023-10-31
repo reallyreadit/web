@@ -11,7 +11,6 @@
 import * as React from 'react';
 import RouteLocation from '../../../common/routing/RouteLocation';
 import Link from '../../../common/components/Link';
-import ScreenKey from '../../../common/routing/ScreenKey';
 import { NavReference } from './Root';
 import { getStoreUrl, DeviceType } from '../../../common/DeviceType';
 
@@ -21,7 +20,7 @@ interface Props {
 const PrivacyPolicyPage: React.SFC<Props> = (props) => (
 	<div className="privacy-policy-page_75v4wh">
 		<h2>Privacy Policy and Terms of Use</h2>
-		<h3>Updated: Thursday, May 20, 2022</h3>
+		<h3>Updated: Thursday, October 30, 2023</h3>
 		<section>
 			<p>
 				This privacy policy and terms of use notice applies to The Readup
@@ -32,13 +31,6 @@ const PrivacyPolicyPage: React.SFC<Props> = (props) => (
 				<li>
 					The Readup web services hosted at readup.com, readup.org,
 					reallyread.it, and any subdomains thereof.
-				</li>
-				<li>
-					The{' '}
-					<Link screen={ScreenKey.Download} onClick={props.onNavTo}>
-						Readup Windows and Linux apps
-					</Link>
-					.
 				</li>
 				<li>
 					The{' '}
