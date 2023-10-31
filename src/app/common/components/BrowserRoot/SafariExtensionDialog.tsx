@@ -28,7 +28,7 @@ export const SafariExtensionDialog: React.FunctionComponent<Props> = (
 	props
 ) => (
 	<Dialog onClose={props.onClose} title={'"Save to Readup" in Safari'}>
-		<div className="install-extension-step_gudkmn">
+		<div className="safari-extension-dialog_dh72ij">
 			<h3>Step 1: Install the Readup macOS App (includes Safari Extension)</h3>
 			<Button
 				intent="loud"

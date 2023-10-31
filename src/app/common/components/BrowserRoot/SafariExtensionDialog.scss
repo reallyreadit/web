@@ -1,0 +1,61 @@
+// Copyright (C) 2022 reallyread.it, inc.
+//
+// This file is part of Readup.
+//
+// Readup is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License version 3 as published by the Free Software Foundation.
+//
+// Readup is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License version 3 along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+
+/*
+	componentPath: src/app/common/components/BrowserRoot/SafariExtensionDialog
+	cssComponentId: safari-extension-dialog_dh72ij
+*/
+@import '../../../../common/styles/colors';
+
+.safari-extension-dialog_dh72ij {
+	text-align: center;
+}
+.safari-extension-dialog_dh72ij > h1 {
+	font-size: 30pt;
+	font-family: 'Museo Sans (500)';
+	margin-bottom: 25px;
+}
+.safari-extension-dialog_dh72ij > h2 {
+	font-size: 20pt;
+	font-family: 'Museo Sans (500)';
+}
+.safari-extension-dialog_dh72ij > h2 + h2 {
+	margin-top: 25px;
+}
+.safari-extension-dialog_dh72ij > h3 {
+	font-size: 15pt;
+	font-family: 'Museo Sans (500)';
+	margin: 25px 0 15px 0;
+}
+.safari-extension-dialog_dh72ij > p {
+	margin: 15px 0;
+}
+.safari-extension-dialog_dh72ij > img {
+	border-style: solid;
+	border-width: 1px;
+	width: 300px;
+	height: 180px;
+}
+.safari-extension-dialog_dh72ij > .skip {
+	display: block;
+    margin-top: 1em;
+    color: var(--text-muted-color);
+}
+
+@include theme using ($root, $scheme) {
+	#{$root} .safari-extension-dialog_dh72ij > img {
+		@include theme-colors(
+			$scheme,
+			(
+				'border-color': $content-border-color,
+			)
+		);
+	}
+}
