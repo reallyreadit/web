@@ -167,8 +167,8 @@ export default class TrackingAnimation extends React.PureComponent<
 						To understand how Readup curates articles, enjoy this 30-second
 						animation.
 					</li>
-					<li className="caption">Reading requires focus.</li>
-					<li className="caption">Readup helps you finish.</li>
+					<li className="caption">Great articles capture your attention.</li>
+					<li className="caption">Readup tracks your progress.</li>
 					<li className="caption">Readup is a community. </li>
 					<li className="caption">We vote with our attention.</li>
 					<li className="caption">Every midnight, we have another winner!</li>
