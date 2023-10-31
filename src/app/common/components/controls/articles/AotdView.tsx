@@ -25,6 +25,8 @@ import { NavReference } from '../../Root';
 import { DeviceType } from '../../../../../common/DeviceType';
 import { ShareChannelData } from '../../../../../common/sharing/ShareData';
 import MorphingArticleDetails from '../../../../../common/components/MorphingArticleDetails';
+import RankCallout from './RankCallout';
+import Icon from '../../../../../common/components/Icon';
 
 export type Sort = CommunityReadSort.Hot | CommunityReadSort.New;
 export default class AotdView extends React.Component<{
@@ -44,13 +46,21 @@ export default class AotdView extends React.Component<{
 	) => void;
 	onShare: (data: ShareEvent) => ShareResponse;
 	onShareViaChannel: (data: ShareChannelData) => void;
+	onShowTrackingAnimation: (fromPrompt: boolean) => void;
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewAotdHistory: () => void;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
+	showTrackingAnimationPrompt: boolean,
 	sort: Sort;
 	user: UserAccount | null;
 }> {
+	private readonly _showTrackingAnimation = () => {
+		this.props.onShowTrackingAnimation(false);
+	};
+	private readonly _showTrackingAnimationFromPrompt = () => {
+		this.props.onShowTrackingAnimation(true);
+	};
 	private readonly _changeSort = (
 		event: React.ChangeEvent<HTMLSelectElement>
 	) => {
@@ -109,7 +119,15 @@ export default class AotdView extends React.Component<{
 				</div>
 				<div className="separator"></div>
 				<div className="section-header">
-					<label>Contenders</label>
+					<label>
+						Contenders
+						{!this.props.showTrackingAnimationPrompt ?
+							<Icon
+								name="info"
+								onClick={this._showTrackingAnimation}
+							/> :
+							null}
+					</label>
 					{this.props.onChangeSort ? (
 						<SelectList
 							disabled={this.props.isLoading}
@@ -138,6 +156,11 @@ export default class AotdView extends React.Component<{
 									onToggleStar={this.props.onToggleArticleStar}
 									onViewComments={this.props.onViewComments}
 									onViewProfile={this.props.onViewProfile}
+									rankCallout={
+										this.props.showTrackingAnimationPrompt && index === 0 ?
+											<RankCallout onClick={this._showTrackingAnimationFromPrompt} /> :
+											null
+									}
 									user={this.props.user}
 								/>
 							</li>

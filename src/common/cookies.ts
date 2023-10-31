@@ -12,4 +12,5 @@
 export const extensionInstallationRedirectPathCookieKey =
 	'extensionInstallationRedirectPath';
 export const extensionVersionCookieKey = 'extensionVersion';
+export const hideTrackingAnimationPromptCookieKey = 'hideTrackingAnimationPrompt';
 export const sessionIdCookieKey = 'sessionId';

@@ -57,6 +57,7 @@ export type IconName =
 	| 'group-circle'
 	| 'hourglass'
 	| 'history-simple'
+	| 'info'
 	| 'internet'
 	| 'link'
 	| 'linkedin'

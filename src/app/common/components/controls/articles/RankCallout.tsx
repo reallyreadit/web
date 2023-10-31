@@ -10,9 +10,15 @@
 
 import * as React from 'react';
 import Callout from '../../../../../common/components/Callout';
+import Link from '../../../../../common/components/Link';
 
-export default () => (
+export default (
+	props: {
+		onClick: () => void
+	}
+) => (
 	<Callout className="rank-callout_9oonk9">
-		At midnight PST the #1 article becomes the AOTD.
+		Upvote articles by reading them to completion.<br />
+		<Link onClick={props.onClick}>See how it works.</Link>
 	</Callout>
 );

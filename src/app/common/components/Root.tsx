@@ -98,10 +98,14 @@ import OnboardingFlow, {
 import AuthServiceAccountForm from '../../../common/models/userAccounts/AuthServiceAccountForm';
 import AuthServiceCredentialAuthResponse from '../../../common/models/auth/AuthServiceCredentialAuthResponse';
 import SignInForm from '../../../common/models/userAccounts/SignInForm';
+import TrackingAnimationDialog from './TrackingAnimationDialog';
+import * as Cookies from 'js-cookie';
+import { hideTrackingAnimationPromptCookieKey } from '../../../common/cookies';
 
 export interface Props {
 	captcha: CaptchaBase;
 	initialLocation: RouteLocation;
+	initialShowTrackingAnimationPrompt: boolean;
 	initialUserProfile: WebAppUserProfile | null;
 	serverApi: ServerApi;
 	staticServerEndpoint: HttpEndpoint;
@@ -169,10 +173,11 @@ export interface ScreenFactory<TSharedState> {
 export type State = {
 	displayTheme: DisplayTheme | null;
 	screens: Screen[];
+	showTrackingAnimationPrompt: boolean;
 	user: UserAccount | null;
 } & ToasterState &
 	DialogServiceState;
-export type SharedState = Pick<State, 'displayTheme' | 'user'>;
+export type SharedState = Pick<State, 'displayTheme' | 'showTrackingAnimationPrompt' | 'user'>;
 export type Events = {
 	articleUpdated: ArticleUpdatedEvent;
 	articlePosted: Post;
@@ -736,6 +741,41 @@ export default abstract class Root<
 	protected readonly _sendPasswordCreationEmail = () => {
 		return this.props.serverApi.sendPasswordCreationEmail();
 	};
+	protected readonly _showTrackingAnimation = (fromPrompt: boolean) => {
+		this._dialog.openDialog(
+			<TrackingAnimationDialog
+				onClose={
+					async () => {
+						if (!fromPrompt) {
+							this._dialog.closeDialog();
+							return;
+						}
+						this.setState({
+							showTrackingAnimationPrompt: false
+						}, () => {
+							this._dialog.closeDialog();
+						});
+						if (this.state.user) {
+							if (!this.state.user.dateOrientationCompleted) {
+								try {
+									await this.props.serverApi.registerOrientationCompletion();
+								} catch {
+									// Non-critical error.
+								}
+							}
+						} else if (!Cookies.get(hideTrackingAnimationPromptCookieKey)) {
+							Cookies.set(hideTrackingAnimationPromptCookieKey, 'true', {
+								domain: '.' + this.props.webServerEndpoint.host,
+								sameSite: 'none',
+								secure: this.props.webServerEndpoint.protocol === 'https',
+								expires: 365
+							});
+						}
+					}
+				}
+			/>
+		);
+	};
 	protected readonly _signIn = (form: Pick<SignInForm, 'authServiceToken' | 'email' | 'password'> & { analyticsAction: string }) => {
 		return this.props.serverApi
 			.signIn({
@@ -789,6 +829,7 @@ export default abstract class Root<
 		// state
 		this.state = {
 			displayTheme: props.initialUserProfile?.displayPreference?.theme,
+			showTrackingAnimationPrompt: props.initialShowTrackingAnimationPrompt,
 			toasts: [],
 			user: props.initialUserProfile?.userAccount,
 		} as TState;
@@ -897,6 +938,9 @@ export default abstract class Root<
 				{
 					...(supplementaryState as State),
 					displayTheme: userProfile?.displayPreference.theme,
+					showTrackingAnimationPrompt: userProfile ?
+						!userProfile.userAccount.dateOrientationCompleted :
+						!Cookies.get(hideTrackingAnimationPromptCookieKey),
 					user: userProfile?.userAccount,
 				},
 				() => {

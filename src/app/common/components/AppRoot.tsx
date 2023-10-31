@@ -546,6 +546,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
+				onShowTrackingAnimation: this._showTrackingAnimation,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
@@ -1005,6 +1006,7 @@ export default class extends Root<Props, State, RootSharedState, Events> {
 	protected getSharedState() {
 		return {
 			displayTheme: this.state.displayTheme,
+			showTrackingAnimationPrompt: this.state.showTrackingAnimationPrompt,
 			user: this.state.user,
 		};
 	}

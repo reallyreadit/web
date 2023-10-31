@@ -13,6 +13,10 @@
 	cssComponentId: rank-callout_9oonk9
 */
 
+// The positioning of the note and arrow is generated using the css-callout utility.
+// To create a new rule set position the note manually using devtools and copy the top, left, and width values to the "note" json params and run css-callout.
+// Paste the values into this stylesheet and view the results. The "arrow" params can then be adjusted further if required.
+
 .callout_k8z57c.rank-callout_9oonk9 > .ellipse {
 	top: -6px;
 	right: -6px;
@@ -23,6 +27,7 @@
 .callout_k8z57c.rank-callout_9oonk9 > .note {
 	font-family: 'Museo Sans (300)';
 	font-size: 11pt;
+	text-align: center;
 }
 
 /**
@@ -40,15 +45,15 @@ created using css-callout with params:
       "width": 3,
       "point": {
          "length": 18,
-         "rotation": -6
+         "rotation": -5
       }
    },
    "note": {
       "pos": {
-         "x": 112,
-         "y": -71
+         "x": 74,
+         "y": -77
       },
-      "width": 181
+      "width": 126
    },
    "selector": ".callout_k8z57c.rank-callout_9oonk9"
 }
@@ -57,29 +62,29 @@ created using css-callout with params:
 	top: -5px;
 	left: 28px;
 	border-width: 3px;
-	font-size: 126.28px;
-	transform-origin: 20.43px 20.43px;
-	transform: translate(-20.43px, -20.43px) rotate(-0.53rad);
-}
-.callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
-.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
+	font-size: 90.65px;
+	transform-origin: 15.21px 15.21px;
+	transform: translate(-15.21px, -15.21px) rotate(-0.90rad);
+ }
+ .callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
+ .callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
 	width: 18px;
 	height: 3px;
-}
-.callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
-	transform: translate(17.43px, 15.93px) rotate(-73.5deg);
-}
-.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
-	transform: translate(17.43px, 15.93px) rotate(-6deg);
-}
-.callout_k8z57c.rank-callout_9oonk9 > .note {
-	top: -71px;
-	left: 112px;
-	width: 181px;
-}
+ }
+ .callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
+	transform: translate(12.21px, 10.71px) rotate(-72.5deg);
+ }
+ .callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
+	transform: translate(12.21px, 10.71px) rotate(-5deg);
+ }
+ .callout_k8z57c.rank-callout_9oonk9 > .note {
+	top: -77px;
+	left: 74px;
+	width: 126px;
+ }
 
 @media (min-width: 375px) {
-	/**
+/**
 created using css-callout with params:
 {
    "arrow": {
@@ -94,15 +99,15 @@ created using css-callout with params:
       "width": 3,
       "point": {
          "length": 18,
-         "rotation": -6
+         "rotation": -5
       }
    },
    "note": {
       "pos": {
-         "x": 164,
-         "y": -74
+         "x": 124,
+         "y": -77
       },
-      "width": 181
+      "width": 126
    },
    "selector": ".callout_k8z57c.rank-callout_9oonk9"
 }
@@ -111,9 +116,9 @@ created using css-callout with params:
 		top: -5px;
 		left: 28px;
 		border-width: 3px;
-		font-size: 194.8px;
-		transform-origin: 30.47px 30.47px;
-		transform: translate(-30.47px, -30.47px) rotate(-0.36rad);
+		font-size: 145.22px;
+		transform-origin: 23.21px 23.21px;
+		transform: translate(-23.21px, -23.21px) rotate(-0.52rad);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
@@ -121,20 +126,20 @@ created using css-callout with params:
 		height: 3px;
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
-		transform: translate(27.47px, 25.97px) rotate(-73.5deg);
+		transform: translate(20.21px, 18.71px) rotate(-72.5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
-		transform: translate(27.47px, 25.97px) rotate(-6deg);
+		transform: translate(20.21px, 18.71px) rotate(-5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .note {
-		top: -74px;
-		left: 164px;
-		width: 181px;
+		top: -77px;
+		left: 124px;
+		width: 126px;
 	}
 }
 
-@media (min-width: 420px) {
-	/**
+@media (min-width: 440px) {
+/**
 created using css-callout with params:
 {
    "arrow": {
@@ -149,15 +154,15 @@ created using css-callout with params:
       "width": 3,
       "point": {
          "length": 18,
-         "rotation": -6
+         "rotation": -5
       }
    },
    "note": {
       "pos": {
-         "x": 206,
-         "y": -71
+         "x": 132,
+         "y": -72
       },
-      "width": 181
+      "width": 184
    },
    "selector": ".callout_k8z57c.rank-callout_9oonk9"
 }
@@ -166,9 +171,9 @@ created using css-callout with params:
 		top: -5px;
 		left: 28px;
 		border-width: 3px;
-		font-size: 250.16px;
-		transform-origin: 38.57px 38.57px;
-		transform: translate(-38.57px, -38.57px) rotate(-0.26rad);
+		font-size: 151.98px;
+		transform-origin: 24.20px 24.20px;
+		transform: translate(-24.20px, -24.20px) rotate(-0.44rad);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
@@ -176,19 +181,19 @@ created using css-callout with params:
 		height: 3px;
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
-		transform: translate(35.57px, 34.07px) rotate(-73.5deg);
+		transform: translate(21.20px, 19.70px) rotate(-72.5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
-		transform: translate(35.57px, 34.07px) rotate(-6deg);
+		transform: translate(21.20px, 19.70px) rotate(-5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .note {
-		top: -71px;
-		left: 206px;
-		width: 181px;
+		top: -72px;
+		left: 132px;
+		width: 184px;
 	}
 }
 
-@media (min-width: 550px) {
+@media (min-width: 480px) {
 	.callout_k8z57c.rank-callout_9oonk9 > .note {
 		font-size: 13pt;
 	}
@@ -207,13 +212,13 @@ created using css-callout with params:
       "width": 3,
       "point": {
          "length": 18,
-         "rotation": -6
+         "rotation": -5
       }
    },
    "note": {
       "pos": {
-         "x": 294,
-         "y": -62
+         "x": 132,
+         "y": -72
       },
       "width": 216
    },
@@ -224,9 +229,9 @@ created using css-callout with params:
 		top: -5px;
 		left: 28px;
 		border-width: 3px;
-		font-size: 369.8px;
-		transform-origin: 56.1px 56.1px;
-		transform: translate(-56.1px, -56.1px) rotate(-0.14rad);
+		font-size: 151.98px;
+		transform-origin: 24.20px 24.20px;
+		transform: translate(-24.20px, -24.20px) rotate(-0.44rad);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
@@ -234,20 +239,20 @@ created using css-callout with params:
 		height: 3px;
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
-		transform: translate(53.1px, 51.6px) rotate(-73.5deg);
+		transform: translate(21.20px, 19.70px) rotate(-72.5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
-		transform: translate(53.1px, 51.6px) rotate(-6deg);
+		transform: translate(21.20px, 19.70px) rotate(-5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .note {
-		top: -62px;
-		left: 294px;
+		top: -72px;
+		left: 132px;
 		width: 216px;
 	}
 }
 
-@media (min-width: 845px) {
-	/**
+@media (min-width: 946px) {
+/**
 created using css-callout with params:
 {
    "arrow": {
@@ -262,13 +267,13 @@ created using css-callout with params:
       "width": 3,
       "point": {
          "length": 18,
-         "rotation": -10
+         "rotation": -5
       }
    },
    "note": {
       "pos": {
-         "x": 92,
-         "y": -89
+         "x": 130,
+         "y": -102
       },
       "width": 216
    },
@@ -279,9 +284,9 @@ created using css-callout with params:
 		top: -5px;
 		left: 28px;
 		border-width: 3px;
-		font-size: 120.1px;
-		transform-origin: 19.53px 19.53px;
-		transform: translate(-19.53px, -19.53px) rotate(-0.83rad);
+		font-size: 172.15px;
+		transform-origin: 27.15px 27.15px;
+		transform: translate(-27.15px, -27.15px) rotate(-0.67rad);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before,
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
@@ -289,14 +294,14 @@ created using css-callout with params:
 		height: 3px;
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::before {
-		transform: translate(16.53px, 15.030000000000001px) rotate(-77.5deg);
+		transform: translate(24.15px, 22.65px) rotate(-72.5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .arrow::after {
-		transform: translate(16.53px, 15.030000000000001px) rotate(-10deg);
+		transform: translate(24.15px, 22.65px) rotate(-5deg);
 	}
 	.callout_k8z57c.rank-callout_9oonk9 > .note {
-		top: -89px;
-		left: 92px;
+		top: -102px;
+		left: 130px;
 		width: 216px;
 	}
 }

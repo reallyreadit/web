@@ -527,6 +527,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 				onRegisterUserChangeHandler: this._registerAuthChangedEventHandler,
 				onShare: this._handleShareRequest,
 				onShareViaChannel: this._handleShareChannelRequest,
+				onShowTrackingAnimation: this._showTrackingAnimation,
 				onToggleArticleStar: this._toggleArticleStar,
 				onViewAotdHistory: this._viewAotdHistory,
 				onViewAuthor: this._viewAuthor,
@@ -991,6 +992,7 @@ export default class extends Root<Props, State, SharedState, Events> {
 		return {
 			displayTheme: this.state.displayTheme,
 			isExtensionInstalled: this.state.isExtensionInstalled,
+			showTrackingAnimationPrompt: this.state.showTrackingAnimationPrompt,
 			user: this.state.user,
 		};
 	}

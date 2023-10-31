@@ -22,6 +22,7 @@ type CommonInitData = {
 	deviceType: DeviceType;
 	exchanges: Exchange[];
 	initialLocation: RouteLocation;
+	initialShowTrackingAnimationPrompt: boolean,
 	staticServerEndpoint: HttpEndpoint;
 	userProfile: WebAppUserProfile | null;
 	version: string;

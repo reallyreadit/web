@@ -75,11 +75,13 @@ interface Props {
 	) => Function;
 	onShare: (data: ShareEvent) => ShareResponse;
 	onShareViaChannel: (data: ShareChannelData) => void;
+	onShowTrackingAnimation: (fromPrompt: boolean) => void;
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewAotdHistory: () => void;
 	onViewAuthor: (slug: string, name: string) => void;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
+	showTrackingAnimationPrompt: boolean;
 	user: UserAccount | null;
 }
 interface State {
@@ -270,10 +272,12 @@ class HomeScreen extends React.Component<Props, State> {
 					onReadArticle={this.props.onReadArticle}
 					onShare={this.props.onShare}
 					onShareViaChannel={this.props.onShareViaChannel}
+					onShowTrackingAnimation={this.props.onShowTrackingAnimation}
 					onToggleArticleStar={this.props.onToggleArticleStar}
 					onViewAotdHistory={this.props.onViewAotdHistory}
 					onViewComments={this.props.onViewComments}
 					onViewProfile={this.props.onViewProfile}
+					showTrackingAnimationPrompt={this.props.showTrackingAnimationPrompt}
 					sort={this.state.sort}
 					user={this.props.user}
 				/>
@@ -294,7 +298,7 @@ export default function createScreenFactory<TScreenKey>(
 	key: TScreenKey,
 	deps: Pick<
 		Props,
-		Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'user'>
+		Exclude<keyof Props, 'location' | 'isExtensionInstalled' | 'showTrackingAnimationPrompt' | 'user'>
 	>
 ) {
 	return {

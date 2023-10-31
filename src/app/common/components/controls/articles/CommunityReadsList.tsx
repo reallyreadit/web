@@ -91,10 +91,12 @@ export default class extends React.PureComponent<{
 	) => void;
 	onShare: (data: ShareEvent) => ShareResponse;
 	onShareViaChannel: (data: ShareChannelData) => void;
+	onShowTrackingAnimation: (fromPrompt: boolean) => void;
 	onToggleArticleStar: (article: UserArticle) => Promise<void>;
 	onViewAotdHistory: () => void;
 	onViewComments: (article: UserArticle) => void;
 	onViewProfile: (userName: string) => void;
+	showTrackingAnimationPrompt: boolean,
 	sort: Sort;
 	user: UserAccount;
 }> {
@@ -115,10 +117,12 @@ export default class extends React.PureComponent<{
 					onReadArticle={this.props.onReadArticle}
 					onShare={this.props.onShare}
 					onShareViaChannel={this.props.onShareViaChannel}
+					onShowTrackingAnimation={this.props.onShowTrackingAnimation}
 					onToggleArticleStar={this.props.onToggleArticleStar}
 					onViewAotdHistory={this.props.onViewAotdHistory}
 					onViewComments={this.props.onViewComments}
 					onViewProfile={this.props.onViewProfile}
+					showTrackingAnimationPrompt={this.props.showTrackingAnimationPrompt}
 					sort={this.props.sort}
 					user={this.props.user}
 				/>

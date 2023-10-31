@@ -61,6 +61,7 @@ const rootProps = {
 		...initData.initialLocation,
 		fragment: location.hash,
 	},
+	initialShowTrackingAnimationPrompt: initData.initialShowTrackingAnimationPrompt,
 	initialUserProfile: initData.userProfile,
 	serverApi,
 	staticServerEndpoint: initData.staticServerEndpoint,

@@ -37,6 +37,7 @@ import {
 import {
 	extensionVersionCookieKey,
 	sessionIdCookieKey,
+	hideTrackingAnimationPromptCookieKey,
 } from '../../common/cookies';
 import {
 	findRouteByLocation,
@@ -546,6 +547,9 @@ server.get<
 			path: req.path,
 			queryString: createQueryString(req.query),
 		},
+		initialShowTrackingAnimationPrompt: req.userProfile ?
+			!req.userProfile.userAccount.dateOrientationCompleted :
+			!req.cookies[hideTrackingAnimationPromptCookieKey],
 		initialUserProfile: req.userProfile,
 		serverApi: req.api,
 		staticServerEndpoint: config.staticServer,
@@ -561,6 +565,7 @@ server.get<
 		exchanges: [] as Exchange[],
 		extensionVersion: extensionVersionString,
 		initialLocation: rootProps.initialLocation,
+		initialShowTrackingAnimationPrompt: rootProps.initialShowTrackingAnimationPrompt,
 		staticServerEndpoint: config.staticServer,
 		userProfile: req.userProfile,
 		version: version.app,
