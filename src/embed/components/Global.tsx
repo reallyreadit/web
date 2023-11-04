@@ -34,12 +34,16 @@ export interface Props {
 	dialogs: KeyValuePair<number, DialogState>[];
 	dialogService: DialogService<{}>;
 	error: string | null;
+	onOpenProgressInfoDialog: () => void;
 	toasterService: ToasterService;
 	toasts: Toast[];
 }
 export default (props: Props) => (
 	<div className={classNames('global_lutpij', { error: !!props.error })}>
-		<ProgressIndicator article={props.article} />
+		<ProgressIndicator
+			article={props.article}
+			onOpenProgressInfoDialog={props.onOpenProgressInfoDialog}
+		/>
 		<DialogManager
 			dialogs={props.dialogs}
 			onGetDialogRenderer={props.dialogService.getDialogRenderer}

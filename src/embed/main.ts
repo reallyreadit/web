@@ -55,6 +55,7 @@ import { createQueryString } from '../common/routing/queryString';
 import { openTweetComposerBrowserWindow } from '../common/sharing/twitter';
 import * as React from 'react';
 import OnboardingFlow from './components/OnboardingFlow';
+import ProgressIndicatorInfoDialog from './components/ProgressIndicatorInfoDialog';
 
 interface State {
 	article: UserArticle;
@@ -309,6 +310,17 @@ function activate(initializationResponse: InitializationActivationResponse) {
 		services: {
 			clipboardService,
 			dialogService,
+			onOpenProgressInfoDialog: () => {
+				dialogService.openDialog(
+					React.createElement(
+						ProgressIndicatorInfoDialog,
+						{
+							onClose: dialogService.closeDialog,
+							showLearnMoreLink: state.article.slug !== 'blogreadupcom_how-readup-knows-whether-or-not-youve-read-an-article'
+						}
+					)
+				);
+			},
 			toasterService,
 		},
 		state: {

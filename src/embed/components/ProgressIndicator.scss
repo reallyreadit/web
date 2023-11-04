@@ -74,6 +74,7 @@ $progress-bar-width: 0.75em;
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	margin: 0 auto;
 	font-size: 8pt;
 	width: 8em;
 	height: 8em;
@@ -138,10 +139,17 @@ $progress-bar-width: 0.75em;
 	display: none;
 }
 .progress-indicator_vgryrl > .length {
-	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	font-size: 10pt;
 	margin-top: 5px;
 	font-style: italic;
+}
+.progress-indicator_vgryrl > .length > .icon_rour3d {
+    font-size: 12pt;
+	margin-left: 5px;
+    cursor: pointer;
 }
 
 @keyframes progress-indicator_vgryrl-pop-in {

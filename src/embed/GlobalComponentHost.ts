@@ -16,6 +16,7 @@ type Services = Pick<
 	GlobalProps,
 	| 'clipboardService'
 	| 'dialogService'
+	| 'onOpenProgressInfoDialog'
 	| 'toasterService'
 >;
 type State = Pick<

@@ -90,6 +90,7 @@ enum Visibility {
 }
 interface Props {
 	article: UserArticle;
+	onOpenProgressInfoDialog: () => void;
 }
 interface State {
 	visibility: Visibility;
@@ -172,7 +173,7 @@ export default class ProgressIndicator extends React.Component<Props, State> {
 					</div>
 				</div>
 				<div className="length">
-					{calculateEstimatedReadTime(this.props.article.wordCount)} min. read
+					{calculateEstimatedReadTime(this.props.article.wordCount)} min. read <Icon title="What's this?" name="info" onClick={this.props.onOpenProgressInfoDialog} />
 				</div>
 			</div>
 		);
