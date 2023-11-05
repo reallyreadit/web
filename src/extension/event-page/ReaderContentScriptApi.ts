@@ -22,7 +22,6 @@ import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import { ExtensionOptions } from '../options-page/ExtensionOptions';
-import WebAppUserProfile from '../../common/models/userAccounts/WebAppUserProfile';
 
 interface ReaderContentScriptTab {
 	articleId: number | null;
@@ -405,10 +404,9 @@ export default class ReaderContentScriptApi {
 			data: preference,
 		});
 	}
-	public async userSignedIn(profile: WebAppUserProfile) {
+	public async userSignedIn() {
 		await this.sendMessageToAllTabs({
-			type: 'userSignedIn',
-			data: profile,
+			type: 'userSignedIn'
 		});
 	}
 	public async userSignedOut() {

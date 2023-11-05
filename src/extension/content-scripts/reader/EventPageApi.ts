@@ -19,7 +19,6 @@ import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import { ExtensionOptions } from '../../options-page/ExtensionOptions';
-import WebAppUserProfile from '../../../common/models/userAccounts/WebAppUserProfile';
 
 function sendMessage<T>(
 	type: string,
@@ -84,7 +83,7 @@ export default class EventPageApi {
 		onCommentPosted: (comment: CommentThread) => void;
 		onCommentUpdated: (comment: CommentThread) => void;
 		onDisplayPreferenceChanged: (preference: DisplayPreference) => void;
-		onUserSignedIn: (profile: WebAppUserProfile) => void;
+		onUserSignedIn: () => void;
 		onUserSignedOut: () => void;
 		onUserUpdated: (user: UserAccount) => void;
 	}) {
@@ -112,7 +111,7 @@ export default class EventPageApi {
 					handlers.onDisplayPreferenceChanged(message.data);
 					break;
 				case 'userSignedIn':
-					handlers.onUserSignedIn(message.data);
+					handlers.onUserSignedIn();
 					break;
 				case 'userSignedOut':
 					handlers.onUserSignedOut();

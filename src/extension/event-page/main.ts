@@ -167,17 +167,26 @@ const webAppApi = new WebAppApi({
 		await serverApi.userUpdated(profile.userAccount);
 		await serverApi.displayPreferenceChanged(profile.displayPreference);
 		// update readers
-		await readerContentScriptApi.userSignedIn(profile);
+		await readerContentScriptApi.userSignedIn();
 	},
 	onUserSignedOut: async () => {
 		await serverApi.userSignedOut();
 		await readerContentScriptApi.userSignedOut();
 	},
 	onUserUpdated: async (user) => {
+		// get the existing cached user first so that we can compare it to the updated one and fire the correct event
+		const cachedUser = await serverApi.getUserFromCache();
 		// update server cache
 		await serverApi.userUpdated(user);
 		// update readers
-		await readerContentScriptApi.userUpdated(user);
+		if (cachedUser?.id !== user.id) {
+			if (cachedUser) {
+				await readerContentScriptApi.userSignedOut();
+			}
+			await readerContentScriptApi.userSignedIn();
+		} else {
+			await readerContentScriptApi.userUpdated(user);
+		}
 	},
 	onReadArticle: async (article) => {
 		await openReaderInCurrentTab(article.url);
