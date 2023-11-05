@@ -33,6 +33,7 @@ import {
 	appReferralQueryStringKey,
 	marketingVariantQueryStringKey,
 	appPlatformQueryStringKey,
+	authenticateQueryStringKey,
 } from '../../common/routing/queryString';
 import {
 	extensionVersionCookieKey,
@@ -214,6 +215,8 @@ server.use((req, res, next) => {
 				req.userProfile = profile;
 				// this header is added to allow the hosting web server to log the id of an authenticated user
 				res.setHeader('X-Readup-User-Id', profile.userAccount.id);
+				// the authenticate query string key should be deleted if present if the user is already signed in
+				delete req.query[authenticateQueryStringKey];
 				next();
 			})
 			.catch((reason: string[] | Error) => {
