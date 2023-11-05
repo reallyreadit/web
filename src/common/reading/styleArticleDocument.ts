@@ -21,6 +21,9 @@ export const articleBylineId = 'com_readup_article_byline',
 	darkBackgroundColor = '#181818';
 
 const styleContent = `
+#com_readup_document {
+	padding-top: calc(100px + env(safe-area-inset-top));
+}
 #com_readup_document.com_readup_scroll_capture {
 	height: 100vh;
 }
@@ -52,6 +55,9 @@ const styleContent = `
 	content: "";
 	display: block;
 	height: 300px;
+}
+#com_readup_reminder {
+	padding: 0 10px;
 }
 #com_readup_article_content {
 	max-width: 800px;
