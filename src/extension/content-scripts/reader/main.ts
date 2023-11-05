@@ -930,10 +930,13 @@ async function loadUserArticle() {
 	// re-render ui
 	render();
 
-	// load comments or check for bookmark
+	// load comments
 	if (result.userArticle.isRead) {
 		loadComments();
-	} else if (page.getBookmarkScrollTop() > window.innerHeight) {
+	}
+
+	// check for bookmark
+	if (page.getBookmarkScrollTop() > window.innerHeight) {
 		dialogService.openDialog(
 			React.createElement(BookmarkDialog, {
 				onClose: dialogService.closeDialog,
