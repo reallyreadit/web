@@ -231,9 +231,9 @@ class CommentsScreen extends React.Component<
 						user={this.props.user}
 					/>
 					<CommentsSection
-						article={this.props.article.value}
 						comments={this.state.comments.value}
 						highlightedCommentId={this.props.highlightedCommentId}
+						isAllowedToPost={this.props.article.value.isRead}
 						noCommentsMessage="Be the first to post a comment on this article."
 						onCloseDialog={this.props.onCloseDialog}
 						onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}

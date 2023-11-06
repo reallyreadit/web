@@ -10,7 +10,6 @@
 
 import * as React from 'react';
 import UserAccount from '../../models/UserAccount';
-import UserArticle from '../../models/UserArticle';
 import CommentThread from '../../models/CommentThread';
 import ShareResponse from '../../sharing/ShareResponse';
 import { ShareEvent } from '../../sharing/ShareEvent';
@@ -24,9 +23,9 @@ import Icon from '../Icon';
 import { ShareChannelData } from '../../sharing/ShareData';
 
 export default (props: {
-	article: UserArticle;
 	comments: CommentThread[];
 	highlightedCommentId?: string | null;
+	isAllowedToPost: boolean,
 	noCommentsMessage: string;
 	onAuthenticationRequired?: (completionDelegate?: () => void) => Function;
 	onCloseDialog: () => void;
@@ -42,10 +41,9 @@ export default (props: {
 	onViewProfile: (userName: string) => void;
 	user: UserAccount | null;
 }) => {
-	const isAllowedToPost = props.article.isRead;
 	return (
 		<div className="comments-section_mqmgnd">
-			{!isAllowedToPost ? (
+			{!props.isAllowedToPost ? (
 				<ContentBox className="post">
 					<div className="locked">
 						<Icon className="padlock" display="block" name="padlock" />
@@ -63,15 +61,15 @@ export default (props: {
 								onAuthenticationRequired={props.onAuthenticationRequired}
 								onCloseDialog={props.onCloseDialog}
 								onCreateAbsoluteUrl={props.onCreateAbsoluteUrl}
-								onDeleteComment={isAllowedToPost ? props.onDeleteComment : null}
+								onDeleteComment={props.isAllowedToPost ? props.onDeleteComment : null}
 								onNavTo={props.onNavTo}
 								onOpenDialog={props.onOpenDialog}
-								onPostComment={isAllowedToPost ? props.onPostComment : null}
+								onPostComment={props.isAllowedToPost ? props.onPostComment : null}
 								onPostCommentAddendum={
-									isAllowedToPost ? props.onPostCommentAddendum : null
+									props.isAllowedToPost ? props.onPostCommentAddendum : null
 								}
 								onPostCommentRevision={
-									isAllowedToPost ? props.onPostCommentRevision : null
+									props.isAllowedToPost ? props.onPostCommentRevision : null
 								}
 								onShare={props.onShare}
 								onShareViaChannel={props.onShareViaChannel}

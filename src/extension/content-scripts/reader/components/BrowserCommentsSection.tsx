@@ -72,8 +72,8 @@ export default class BrowserCommentsSection extends React.Component<Props> {
 					</ContentBox>
 				) : (
 					<CommentsSection
-						article={this.props.article}
 						comments={this.props.comments.value}
+						isAllowedToPost={this.props.article.isRead}
 						noCommentsMessage="No comments on this article yet."
 						onCloseDialog={this.props.dialogService.closeDialog}
 						onShareViaChannel={this.props.onShareViaChannel}

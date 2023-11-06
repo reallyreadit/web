@@ -104,8 +104,8 @@ export default class EmbedCommentsSection extends React.Component<Props> {
 				) : (
 					<>
 						<CommentsSection
-							article={this.props.article}
 							comments={this.props.comments.value}
+							isAllowedToPost={this.props.article.isRead}
 							noCommentsMessage="No comments on this article yet."
 							onAuthenticationRequired={this._requireAuthenticationForReply}
 							onCloseDialog={this.props.dialogService.closeDialog}

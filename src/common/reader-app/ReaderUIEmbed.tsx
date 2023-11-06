@@ -217,8 +217,8 @@ export default class ReaderUIEmbed extends React.Component<
 						</ContentBox>
 					) : (
 						<CommentsSection
-							article={this.props.article.value}
 							comments={this.props.comments.value}
+							isAllowedToPost={this.props.article.value.isRead}
 							noCommentsMessage="No comments on this article yet."
 							onCloseDialog={this.props.dialogService.closeDialog}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
