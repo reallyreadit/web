@@ -25,6 +25,8 @@
 		flex: 0 0 auto;
 		display: flex;
 		flex-flow: column;
+		border-top-width: env(safe-area-inset-top);
+		border-top-style: solid;
 		border-right-width: 1px;
 		border-right-style: solid;
 		padding-top: $header-height;
@@ -46,6 +48,7 @@
 		@include theme-colors(
 			$scheme,
 			(
+				'border-top-color': $nav-background-color
 				'border-right-color': $nav-border-color,
 				'background-color': $nav-background-color,
 			)
