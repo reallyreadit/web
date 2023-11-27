@@ -185,11 +185,7 @@ const reader = new Reader((event) => {
 			switch (result.type) {
 				case ResultType.Success:
 					article = result.value;
-					if (article.isRead && !embedProps.comments) {
-						loadComments();
-					} else {
-						render();
-					}
+					render();
 					break;
 			}
 		}
@@ -713,6 +709,21 @@ updateDisplayPreference(displayPreference);
 document.documentElement.style.transition = 'opacity 350ms';
 document.documentElement.style.opacity = '1';
 
+// Set up the comments loading observer. This should happen after the article text is fully rendered so that the observer doesn't fire immediately.
+const embedElementObserver = new IntersectionObserver(
+	(entries, observer) => {
+		const entry = entries[0];
+		if (!entry) {
+			return;
+		}
+		if (entry.isIntersecting) {
+			observer.unobserve(entry.target);
+			loadComments();
+		}
+	}
+);
+embedElementObserver.observe(embedRootElement);
+
 // send parse result
 messagingContext.sendMessage(
 	{
@@ -738,10 +749,6 @@ messagingContext.sendMessage(
 		reader.loadPage(page);
 		// re-render ui
 		render();
-		// load comments
-		if (result.userArticle.isRead) {
-			loadComments();
-		}
 		// check for bookmark
 		if (page.getBookmarkScrollTop() > window.innerHeight) {
 			dialogService.openDialog(

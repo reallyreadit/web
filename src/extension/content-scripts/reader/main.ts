@@ -641,11 +641,7 @@ function loadComments() {
 
 function renderUserArticle(articleIn: UserArticle) {
 	article = articleIn;
-	if (article.isRead && !embedProps.comments) {
-		loadComments();
-	} else {
-		render();
-	}
+	render();
 }
 
 // reader
@@ -880,6 +876,21 @@ async function initialize() {
 	document.body.style.transition = 'opacity 350ms';
 	document.body.style.opacity = '1';
 
+	// Set up the comments loading observer. This should happen after the article text is fully rendered so that the observer doesn't fire immediately.
+	const embedElementObserver = new IntersectionObserver(
+		(entries, observer) => {
+			const entry = entries[0];
+			if (!entry) {
+				return;
+			}
+			if (entry.isIntersecting) {
+				observer.unobserve(entry.target);
+				loadComments();
+			}
+		}
+	);
+	embedElementObserver.observe(embedRootElement);
+
 	// TODO EXT NOTE: web needed this, but native doesn't have
 	hasStyledArticleDocument = true;
 	const publisherConfig = findPublisherConfig(
@@ -947,11 +958,6 @@ async function loadUserArticle() {
 	// re-render ui
 	render();
 
-	// load comments
-	if (result.userArticle.isRead) {
-		loadComments();
-	}
-
 	// check for bookmark
 	if (page.getBookmarkScrollTop() > window.innerHeight) {
 		dialogService.openDialog(
@@ -974,9 +980,6 @@ async function loadUserArticle() {
 }
 
 async function unloadUserArticle() {
-	// clear the comments
-	embedProps.comments = null;
-
 	// reset the reader
 	reader.unloadPage();
 	page?.unload();
