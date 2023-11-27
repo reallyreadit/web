@@ -4,7 +4,7 @@
 	"private": true,
 	"it.reallyread": {
 		"version": {
-			"app": "1.64.4",
+			"app": "1.64.5",
 			"appPublic": "1.64.0",
 			"common": {
 				"contentParser": "2.0.2",
@@ -12,9 +12,9 @@
 			},
 			"embed": "1.0.3",
 			"embedIframe": "1.0.0",
-			"extension": "8.0.0",
+			"extension": "8.1.0",
 			"nativeClient": {
-				"reader": "15.0.0",
+				"reader": "16.0.0",
 				"shareExtension": "4.0.6"
 			}
 		}
