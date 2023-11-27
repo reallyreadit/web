@@ -210,7 +210,7 @@ export default class ReaderUIEmbed extends React.Component<
 						promptMessage="Post this article."
 					/>
 				) : null}
-				{this.props.article.value && this.props.comments && this.props.user ? (
+				{this.props.comments ? (
 					this.props.comments.isLoading ? (
 						<ContentBox className="loading-comments">
 							<SpinnerIcon /> Loading comments...
@@ -218,7 +218,7 @@ export default class ReaderUIEmbed extends React.Component<
 					) : (
 						<CommentsSection
 							comments={this.props.comments.value}
-							isAllowedToPost={this.props.article.value.isRead}
+							isAllowedToPost={this.props.article.value?.isRead}
 							noCommentsMessage="No comments on this article yet."
 							onCloseDialog={this.props.dialogService.closeDialog}
 							onCreateAbsoluteUrl={this.props.onCreateAbsoluteUrl}
