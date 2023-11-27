@@ -308,6 +308,15 @@ export default {
 			},
 		},
 		{
+			hostname: 'www.outsideonline.com',
+			transpositions: [
+				{
+					elementSelectors: ['body > main article p:not(.o-content-cta-text)'],
+					parentElementSelector: 'body > section .o-rich-text',
+				},
+			],
+		},
+		{
 			hostname: 'politico.com',
 			imageContainerSearch: {
 				selectorBlacklist: ['.social-tools'],
