@@ -19,6 +19,7 @@ import WindowOpenRequest from '../../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../../common/models/userAccounts/DisplayPreference';
 import { ExtensionOptions } from '../../options-page/ExtensionOptions';
+import CommentsQuery from '../../../common/models/social/CommentsQuery';
 
 function sendMessage<T>(
 	type: string,
@@ -198,8 +199,8 @@ export default class EventPageApi {
 	public closeWindow(id: number) {
 		sendMessage('closeWindow', id);
 	}
-	public getComments(slug: string) {
-		return sendMessageAwaitingResponse<CommentThread[]>('getComments', slug);
+	public getComments(query: CommentsQuery) {
+		return sendMessageAwaitingResponse<CommentThread[]>('getComments', query);
 	}
 	public hasWindowClosed(id: number) {
 		return sendMessageAwaitingResponse<boolean>('hasWindowClosed', id);

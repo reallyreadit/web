@@ -54,6 +54,9 @@ import { ExtensionOptionKey } from '../../options-page/ExtensionOptions';
 import ParseResult from '../../../common/contentParsing/ParseResult';
 import ReaderReminder from '../../../common/components/ReaderReminder';
 import { isReadupElement } from '../../../common/contentParsing/utils';
+import { isHttpProblemDetails } from '../../../common/ProblemDetails';
+import { getPromiseErrorMessage } from '../../../common/format';
+import Fetchable from '../../../common/Fetchable';
 
 // TODO PROXY EXT: taken from the native reader
 // our case is similar to
@@ -612,14 +615,28 @@ function loadComments() {
 			isLoading: true,
 		},
 	});
-	eventPageApi.getComments(article.slug).then((comments: CommentThread[]) => {
-		render({
-			comments: {
-				isLoading: false,
-				value: comments,
-			},
+	const query = article != null ? { slug: article.slug } : { url };
+	eventPageApi
+		.getComments(query)
+		.then((comments: CommentThread[]) => {
+			render({
+				comments: {
+					isLoading: false,
+					value: comments,
+				},
+			});
+		})
+		.catch(reason => {
+			const comments: Fetchable<CommentThread[]> = {
+				isLoading: false
+			};
+			if (isHttpProblemDetails(reason) && reason.status === 404) {
+				comments.value = [];
+			} else {
+				comments.errors = [getPromiseErrorMessage(reason)];
+			}
+			render({ comments });
 		});
-	});
 }
 
 function renderUserArticle(articleIn: UserArticle) {

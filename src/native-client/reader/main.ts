@@ -53,7 +53,7 @@ import DisplayPreference, { getClientDefaultDisplayPreference } from '../../comm
 import { Message } from '../../common/MessagingContext';
 import { parseUrlForRoute } from '../../common/routing/Route';
 import ScreenKey from '../../common/routing/ScreenKey';
-import { ProblemDetails } from '../../common/ProblemDetails';
+import { ProblemDetails, HttpProblemDetails } from '../../common/ProblemDetails';
 import { Result, ResultType } from '../../common/Result';
 import { createArticleSlug } from '../../common/routing/routes';
 import { parseQueryString } from '../../common/routing/queryString';
@@ -64,6 +64,8 @@ import { AppPlatform } from '../../common/AppPlatform';
 import { createUrl } from '../../common/HttpEndpoint';
 import ReaderReminder from '../../common/components/ReaderReminder';
 import { AuthenticationMethod } from '../../common/models/auth/AuthenticationRequest';
+import Fetchable from '../../common/Fetchable';
+import { getPromiseErrorMessage } from '../../common/format';
 
 const initData = window.reallyreadit.nativeClient.reader.initData;
 
@@ -477,15 +479,31 @@ function loadComments() {
 	messagingContext.sendMessage(
 		{
 			type: 'getComments',
-			data: article.slug,
+			data: article != null ?
+				{
+					slug: article.slug
+				} :
+				{
+					url: documentLocation.href
+				}
 		},
-		(comments: CommentThread[]) => {
-			render({
-				comments: {
-					isLoading: false,
-					value: comments,
-				},
-			});
+		(result: Result<CommentThread[], HttpProblemDetails>) => {
+			const comments: Fetchable<CommentThread[]> = {
+				isLoading: false
+			};
+			switch (result.type) {
+				case ResultType.Success:
+					comments.value = result.value;
+					break;
+				case ResultType.Failure:
+					if (result.error.status === 404) {
+						comments.value = [];
+					} else {
+						comments.errors = [getPromiseErrorMessage(result.error)];
+					}
+					break;
+			}
+			render({ comments });
 		}
 	);
 }

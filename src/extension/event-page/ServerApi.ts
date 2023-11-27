@@ -20,6 +20,7 @@ import DisplayPreference from '../../common/models/userAccounts/DisplayPreferenc
 import InstallationRequest from '../../common/models/extension/InstallationRequest';
 import InstallationResponse from '../../common/models/extension/InstallationResponse';
 import CommentCreationResponse from '../../common/models/social/CommentCreationResponse';
+import CommentsQuery from '../../common/models/social/CommentsQuery';
 
 function getCustomHeaders() {
 	return {
@@ -161,11 +162,11 @@ export default class ServerApi {
 			data: { slug },
 		});
 	}
-	public getComments(slug: string) {
+	public getComments(query: CommentsQuery) {
 		return this.fetchJson<CommentThread[]>({
 			method: 'GET',
-			path: '/Articles/ListComments',
-			data: { slug },
+			path: '/Social/Comments',
+			data: query,
 		});
 	}
 	public postArticle(form: PostForm) {

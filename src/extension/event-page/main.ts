@@ -74,7 +74,7 @@ const readerContentScriptApi = new ReaderContentScriptApi({
 			return article;
 		});
 	},
-	onGetComments: (slug) => serverApi.getComments(slug),
+	onGetComments: (query) => serverApi.getComments(query),
 	onPostArticle: (form) => {
 		return serverApi.postArticle(form).then(async (post) => {
 			await webAppApi.articlePosted(post);

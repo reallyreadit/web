@@ -22,6 +22,7 @@ import WindowOpenRequest from '../common/WindowOpenRequest';
 import ArticleIssueReportRequest from '../../common/models/analytics/ArticleIssueReportRequest';
 import DisplayPreference from '../../common/models/userAccounts/DisplayPreference';
 import { ExtensionOptions } from '../options-page/ExtensionOptions';
+import CommentsQuery from '../../common/models/social/CommentsQuery';
 
 interface ReaderContentScriptTab {
 	articleId: number | null;
@@ -51,7 +52,7 @@ export default class ReaderContentScriptApi {
 			commitData: ReadStateCommitData,
 			isCompletionCommit: boolean
 		) => Promise<UserArticle>;
-		onGetComments: (slug: string) => Promise<CommentThread[]>;
+		onGetComments: (query: CommentsQuery) => Promise<CommentThread[]>;
 		onPostArticle: (form: PostForm) => Promise<Post>;
 		onPostComment: (
 			form: CommentForm
