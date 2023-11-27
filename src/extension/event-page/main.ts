@@ -179,13 +179,15 @@ const webAppApi = new WebAppApi({
 		// update server cache
 		await serverApi.userUpdated(user);
 		// update readers
-		if (cachedUser?.id !== user.id) {
-			if (cachedUser) {
+		if (cachedUser != null && user != null && cachedUser.id === user.id) {
+			await readerContentScriptApi.userUpdated(user);
+		} else {
+			if (cachedUser != null) {
 				await readerContentScriptApi.userSignedOut();
 			}
-			await readerContentScriptApi.userSignedIn();
-		} else {
-			await readerContentScriptApi.userUpdated(user);
+			if (user != null) {
+				await readerContentScriptApi.userSignedIn();
+			}
 		}
 	},
 	onReadArticle: async (article) => {
