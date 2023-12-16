@@ -152,20 +152,32 @@ export default class ReaderContentScriptApi {
 									articleId: result.userArticle.id,
 									id: sender.tab.id,
 								});
+								// Update other reader tabs with the same article.
 								const tabs = await this.getTabs();
 								for (const tab of tabs) {
 									if (tab.articleId === result.userArticle.id) {
-										await this._badge.setReading(tab.id, result.userArticle);
-										await chrome.action.setTitle({
-											tabId: tab.id,
-											title: `${calculateEstimatedReadTime(
-												result.userArticle.wordCount
-											)} min. read`,
-										});
+										// Cached tabs may be stale. Remove if they no longer exist.
+										try {
+											await chrome.action.setTitle({
+												tabId: tab.id,
+												title: `${calculateEstimatedReadTime(
+													result.userArticle.wordCount
+												)} min. read`,
+											});
+											await this._badge.setReading(tab.id, result.userArticle);
+										} catch (ex) {
+											console.log(
+												`[ReaderApi] error setting title of tab # ${tab.id}, message: ${ex}`
+											);
+											await this.removeTab(tab.id);
+										}
 									}
 								}
 								return result;
 							} catch (ex) {
+								console.error(
+									`[ReaderApi] error getting user article for tab # ${sender.tab.id}, message: ${ex}`
+								);
 								await this._badge.setDefault(sender.tab.id);
 								throw ex;
 							}
