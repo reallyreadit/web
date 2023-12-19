@@ -6,7 +6,7 @@
 2.  Configure the NodeJS environment for development
 
         export NODE_ENV=development
-        export NODE_TLS_REJECT_UNAUTHORIZED=0
+        export NODE_EXTRA_CA_CERTS=/path/to/custom/ca/cert.pem
 
 3.  Install packages
 
